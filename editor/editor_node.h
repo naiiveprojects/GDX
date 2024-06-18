@@ -674,6 +674,9 @@ private:
 
 	void _pick_main_scene_custom_action(const String &p_custom_action_name);
 
+	void _editor_borderless(bool p_pressed);
+	void _panel_visible(bool p_pressed);
+
 protected:
 	void _notification(int p_what);
 

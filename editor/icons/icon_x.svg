@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon_x">
+    <path d="M0 0L64 0L64 64L0 64L0 0Z" id="Rectangle" fill="#000000" fill-rule="evenodd" stroke="none" />
+    <path d="M19.6239 10.0828L31.9869 22.4401L44.2907 10.1421L53.7929 19.6398L41.4891 31.9379L53.8318 44.2747L44.3296 53.7725L31.9869 41.4356L19.585 53.8318L10.0828 44.334L22.4847 31.9379L10.1216 19.5805L19.6239 10.0828L19.6239 10.0828Z" id="Vector" fill="#FFFFFF" fill-rule="evenodd" stroke="none" />
+  </g>
+</svg>

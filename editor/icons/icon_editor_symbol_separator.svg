@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon_editor_symbol_separator">
+    <path d="M0 0L32 0L32 32L0 32L0 0Z" id="Rectangle" fill="none" fill-rule="evenodd" stroke="none" />
+    <path d="M14.0207 31.6066L14.0207 -0.393398L16.0207 -0.393398L16.0207 31.6066L14.0207 31.6066Z" transform="rotate(-45 15.02 15.61)" id="Rectangle" fill="#FFFFFF" fill-opacity="0.49803922" fill-rule="evenodd" stroke="none" />
+  </g>
+</svg>
