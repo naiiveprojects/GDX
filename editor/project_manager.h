@@ -77,7 +77,7 @@ class ProjectManager : public Control {
 	AcceptDialog *dialog_error;
 	ProjectDialog *npdialog;
 
-	HBoxContainer *local_projects_hb;
+	VBoxContainer *local_projects_hb;
 	TabContainer *tabs;
 	ProjectList *_project_list;
 
