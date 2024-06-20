@@ -108,7 +108,7 @@ private:
 		FOLDER_COLLAPSE_ALL,
 	};
 
-	FileSortOption file_sort = FILE_SORT_NAME;
+	FileSortOption file_sort = FILE_SORT_TYPE;
 
 	VBoxContainer *scanning_vb;
 	ProgressBar *scanning_progress;
