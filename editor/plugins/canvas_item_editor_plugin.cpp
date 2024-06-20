@@ -5831,7 +5831,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	show_origin = true;
 	show_viewport = true;
 	show_helpers = false;
-	show_rulers = true;
+	show_rulers = false;
 	show_guides = true;
 	show_position_gizmos = true;
 	show_lock_gizmos = true;
@@ -5899,8 +5899,8 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	editor->call_deferred("connect", "stop_pressed", this, "_update_override_camera_button", make_binds(false));
 
 	// A fluid container for all toolbars.
-	HFlowContainer *main_flow = memnew(HFlowContainer);
-	add_child(main_flow);
+	HBoxContainer *main_flow = memnew(HBoxContainer);
+	//add_child(main_flow);
 
 	// Main toolbars.
 	HBoxContainer *main_menu_hbox = memnew(HBoxContainer);
@@ -5935,6 +5935,8 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	controls_vb = memnew(VBoxContainer);
 	controls_vb->set_begin(Point2(5, 5));
+
+	controls_vb->add_child(main_flow);
 
 	zoom_hb = memnew(HBoxContainer);
 	// Bring the zoom percentage closer to the zoom buttons
