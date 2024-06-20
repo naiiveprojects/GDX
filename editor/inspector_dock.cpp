@@ -567,6 +567,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 
 	HBoxContainer *general_options_hb = memnew(HBoxContainer);
 	add_child(general_options_hb);
+	general_options_hb->hide();
 
 	resource_new_button = memnew(ToolButton);
 	resource_new_button->set_tooltip(TTR("Create a new resource in memory and edit it."));
@@ -626,7 +627,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	history_menu = memnew(MenuButton);
 	history_menu->set_tooltip(TTR("History of recently edited objects."));
 	history_menu->set_icon(get_icon("History", "EditorIcons"));
-	general_options_hb->add_child(history_menu);
+	//general_options_hb->add_child(history_menu);
 	history_menu->connect("about_to_show", this, "_prepare_history");
 	history_menu->get_popup()->connect("id_pressed", this, "_select_history");
 
@@ -645,6 +646,8 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	subresource_hb->add_child(open_docs_button);
 	open_docs_button->connect("pressed", this, "_menu_option", varray(OBJECT_REQUEST_HELP));
 
+	subresource_hb->add_child(history_menu);
+
 	new_resource_dialog = memnew(CreateDialog);
 	editor->get_gui_base()->add_child(new_resource_dialog);
 	new_resource_dialog->set_base_type("Resource");
@@ -652,6 +655,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 
 	HBoxContainer *property_tools_hb = memnew(HBoxContainer);
 	add_child(property_tools_hb);
+	property_tools_hb->hide();
 
 	search = memnew(LineEdit);
 	search->set_h_size_flags(Control::SIZE_EXPAND_FILL);
