@@ -367,11 +367,11 @@ void EditorNode::_version_control_menu_option(int p_idx) {
 
 void EditorNode::_update_title() {
 	const String appname = ProjectSettings::get_singleton()->get("application/config/name");
-	String title = (appname.empty() ? TTR("Unnamed Project") : appname) + String(" - ") + VERSION_NAME;
+	String title = (appname.empty() ? TTR("Unnamed Project") : appname); // + String(" - ") + VERSION_NAME;
 	const String edited = editor_data.get_edited_scene_root() ? editor_data.get_edited_scene_root()->get_filename() : String();
 	if (!edited.empty()) {
 		// Display the edited scene name before the program name so that it can be seen in the OS task bar.
-		title = vformat("%s - %s", edited.get_file(), title);
+		title = vformat("%s - %s", title, edited.replace_first("res://", ""));
 	}
 	if (unsaved_cache) {
 		// Display the "modified" mark before anything else so that it can always be seen in the OS task bar.
@@ -521,7 +521,6 @@ void EditorNode::_notification(int p_what) {
 			}
 
 			_update_debug_options();
-			//OS::get_singleton()->set_borderless_window(true);
 
 			// Save the project after opening to mark it as last modified, except in headless mode.
 			if (OS::get_singleton()->can_draw() && !OS::get_singleton()->is_no_window_mode_enabled()) {
@@ -5843,8 +5842,13 @@ void EditorNode::_editor_borderless(bool p_pressed) {
 		OS::get_singleton()->set_borderless_window(false);
 		OS::get_singleton()->set_window_maximized(true);
 	} else {
-		OS::get_singleton()->set_borderless_window(true);
-		OS::get_singleton()->set_window_maximized(true);
+		if (OS::get_singleton()->is_window_maximized()) {
+			OS::get_singleton()->set_borderless_window(true);
+			OS::get_singleton()->set_window_maximized(true);
+		} else {
+			OS::get_singleton()->set_borderless_window(true);
+			OS::get_singleton()->center_window();
+		}
 	}
 }
 
@@ -6308,6 +6312,7 @@ EditorNode::EditorNode() {
 	tab_preview_panel->add_child(tab_preview);
 
 	scene_tabs = memnew(Tabs);
+	scene_tabs->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 	//scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
 	//scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
 	scene_tabs->set_select_with_rmb(true);
@@ -6709,6 +6714,7 @@ EditorNode::EditorNode() {
 	//help_menu->set_icon(gui_base->get_icon("HelpSearch", "EditorIcons"));
 	help_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 	left_menu_hb->add_child(help_menu);
+	help_menu->hide();
 
 	p = help_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
@@ -6846,7 +6852,7 @@ EditorNode::EditorNode() {
 
 	ToolButton *button_editor_borderless = memnew(ToolButton);
 	button_editor_borderless->set_tooltip("Borderless Mode");
-	button_editor_borderless->set_icon(gui_base->get_icon("Viewport", "EditorIcons"));
+	button_editor_borderless->set_icon(gui_base->get_icon("WindowFilled", "EditorIcons"));
 	button_editor_borderless->set_toggle_mode(true);
 	button_editor_borderless->connect("toggled", this, "_editor_borderless");
 	right_menu_hb->add_child(button_editor_borderless);
@@ -6860,7 +6866,7 @@ EditorNode::EditorNode() {
 	right_menu_hb->add_child(distraction_free);
 
 	update_spinner = memnew(MenuButton);
-	menu_hb->add_child(update_spinner);
+	tabbar_container->add_child(update_spinner);
 	update_spinner->set_icon(gui_base->get_icon("Progress1", "EditorIcons"));
 	update_spinner->get_popup()->connect("id_pressed", this, "_menu_option");
 	p = update_spinner->get_popup();
