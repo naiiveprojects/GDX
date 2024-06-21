@@ -1,10 +1,7 @@
 name: 🎬 Action
 on:
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-  
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       compile:
