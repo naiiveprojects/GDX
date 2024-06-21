@@ -12,6 +12,8 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
 - Editor
   - borderless mode
   - show/hide bottom panel button
+  - Script Editor
+    - Switch between Default & Docked mode for Script List
 - Windows
   - dark mode in window title bar (non-client area)
   - resizable borderless window (call via script: `OS.window_borderless = true`)
@@ -50,6 +52,7 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
 	- double max char/ces
 	- file system file sort : FILE_SORT_TYPE 
 	- inspector : hide general option, move history menu
+	- stay_in_script_editor_on_node_selected : false
 - project manager
 	- revamp layout
 	- change grid container to flow container
