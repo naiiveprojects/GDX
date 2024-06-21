@@ -7,6 +7,7 @@
 - colaps client area to non client area (Windows only)
 - add custom build script
 - dark initial color bg
+- android : using proguard
 - Editor
 	- use project icon on project menu button
 	- re-arrage title bar (Project Name, Edited Node Path)
@@ -56,7 +57,6 @@
 
 ToDo
 - Add AutoWidth to ItemList Class
-- Add Proguard android to reduce binary size
 
 
 - clear
