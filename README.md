@@ -1,78 +1,65 @@
-# Godot Engine
+- MiniZip Module
+- change icons, logo, & splash
+- no visual script
+- no deprecated feature
+- force dark mode in window title bar (windows only)
+- resizable borderless window (Windows only)
+- colaps client area to non client area (Windows only)
+- add custom build script
+- dark initial color bg
+- Editor
+	- use project icon on project menu button
+	- re-arrage title bar (Project Name, Edited Node Path)
+	- revamp layout
+	- minify icon
+	- add borderless mode
+	- show/hide bottom panel
+	- remove video driver toggle
+	- Dark default theme
+	- remove version info button
+	- hide help menu
+	- editor log :
+		- remove init message
+		- change Output title to build version
+	- colapse tool menu in canvas item editor
+	- corner radius: 8
+- default editor setting
+	- Color Picker mode: HSV
+	- clear color : 0.2, 0.2, 0.2
+	- word_wrap : true
+	- Type Hint: True
+	- convert_text_resources_to_binary_on_export : true
+	- text_editor/cursor/scroll_past_end_of_file : true
+	- constrain_editor_view : false
+	- always_open_output_on_play : false
+	- (Debugger) auto switch to remove scene tree : True
+	- auto_switch_to_remote_scene_tree : true
+	- editors/2d/grid_color : Color(0.5, 0.5, 0.5, 0.07)
+	- double max char/ces
+	- file system file sort : FILE_SORT_TYPE 
+	- inspector : hide general option, move history menu
+- project manager
+	- revamp layout
+	- change grid container to flow container
+	- not include default icon & environment when creating project
+	- favorite ontop project icon
+	- option on top
+	- black background
+	- re-arrage title bar ( + version full build + hash)
+- default project manager
+	- sorting_order : Last modified
+- Github Action
+  - no static checks
+  - manual trigger
+  - Android : compile armv7
+  - Linux : Editor & Template
 
-<p align="center">
-  <a href="https://godotengine.org">
-    <img src="logo_outlined.svg" width="400" alt="Godot Engine logo">
-  </a>
-</p>
+ToDo
+- Add AutoWidth to ItemList Class
+- Add Proguard android to reduce binary size
 
-## 2D and 3D cross-platform game engine
 
-**[Godot Engine](https://godotengine.org) is a feature-packed, cross-platform
-game engine to create 2D and 3D games from a unified interface.** It provides a
-comprehensive set of [common tools](https://godotengine.org/features), so that users can focus on making games
-without having to reinvent the wheel. Games can be exported with one click to a
-number of platforms, including the major desktop platforms (Linux, macOS,
-Windows), mobile platforms (Android, iOS), as well as Web-based platforms
-(HTML5) and
-[consoles](https://docs.godotengine.org/en/latest/tutorials/platform/consoles.html).
-
-## Free, open source and community-driven
-
-Godot is completely free and open source under the very permissive [MIT license](https://godotengine.org/license).
-No strings attached, no royalties, nothing. The users' games are theirs, down
-to the last line of engine code. Godot's development is fully independent and
-community-driven, empowering users to help shape their engine to match their
-expectations. It is supported by the [Software Freedom Conservancy](https://sfconservancy.org/)
-not-for-profit.
-
-Before being open sourced in [February 2014](https://github.com/godotengine/godot/commit/0b806ee0fc9097fa7bda7ac0109191c9c5e0a1ac),
-Godot had been developed by [Juan Linietsky](https://github.com/reduz) and
-[Ariel Manzur](https://github.com/punto-) (both still maintaining the project) for several
-years as an in-house engine, used to publish several work-for-hire titles.
-
-![Screenshot of a 3D scene in the Godot Engine editor](https://raw.githubusercontent.com/godotengine/godot-design/master/screenshots/editor_tps_demo_1920x1080.jpg)
-
-## Getting the engine
-
-### Binary downloads
-
-Official binaries for the Godot editor and the export templates can be found
-[on the homepage](https://godotengine.org/download).
-
-### Compiling from source
-
-[See the official docs](https://docs.godotengine.org/en/latest/development/compiling/)
-for compilation instructions for every supported platform.
-
-## Community and contributing
-
-Godot is not only an engine but an ever-growing community of users and engine
-developers. The main community channels are listed [on the homepage](https://godotengine.org/community).
-
-The best way to get in touch with the core engine developers is to join the
-[Godot Contributors Chat](https://chat.godotengine.org).
-
-To get started contributing to the project, see the [contributing guide](CONTRIBUTING.md).
-
-## Documentation and demos
-
-The official documentation is hosted on [ReadTheDocs](https://docs.godotengine.org).
-It is maintained by the Godot community in its own [GitHub repository](https://github.com/godotengine/godot-docs).
-
-The [class reference](https://docs.godotengine.org/en/latest/classes/)
-is also accessible from the Godot editor.
-
-We also maintain official demos in their own [GitHub repository](https://github.com/godotengine/godot-demo-projects)
-as well as a list of [awesome Godot community resources](https://github.com/godotengine/awesome-godot).
-
-There are also a number of other
-[learning resources](https://docs.godotengine.org/en/latest/community/tutorials.html)
-provided by the community, such as text and video tutorials, demos, etc.
-Consult the [community channels](https://godotengine.org/community)
-for more information.
-
-[![Actions Build Status](https://github.com/godotengine/godot/workflows/Godot/badge.svg?branch=master)](https://github.com/godotengine/godot/actions)
-[![Code Triagers Badge](https://www.codetriage.com/godotengine/godot/badges/users.svg)](https://www.codetriage.com/godotengine/godot)
-[![Translate on Weblate](https://hosted.weblate.org/widgets/godot-engine/-/godot/svg-badge.svg)](https://hosted.weblate.org/engage/godot-engine/?utm_source=widget)
-[![TODOs](https://badgen.net/https/api.tickgit.com/badgen/github.com/godotengine/godot)](https://www.tickgit.com/browse?repo=github.com/godotengine/godot)
+- clear
+	- scons -c
+- build name
+	- $env:BUILD_NAME="NA\\\\VE"
