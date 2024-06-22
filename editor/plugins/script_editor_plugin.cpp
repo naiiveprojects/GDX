@@ -1488,8 +1488,8 @@ void ScriptEditor::_notification(int p_what) {
 					TabContainer* tb = dynamic_cast<TabContainer*>(list_split_container->get_parent());
 					tb->set_current_tab(list_split_container->get_index());
 				}
-				
 			} else {
+
 				if (find_in_files->is_visible_in_tree()) {
 					editor->hide_bottom_panel();
 				}
@@ -2707,6 +2707,10 @@ void ScriptEditor::_script_list_gui_input(const Ref<InputEvent> &ev) {
 	Ref<InputEventMouseButton> mb = ev;
 	if (mb.is_valid() && mb->is_pressed()) {
 		switch (mb->get_button_index()) {
+			case BUTTON_LEFT: {
+				editor->get_singleton()->set_visible_editor(EditorNode::EDITOR_SCRIPT);
+			} break;
+
 			case BUTTON_MIDDLE: {
 				// Right-click selects automatically; middle-click does not.
 				int idx = script_list->get_item_at_position(mb->get_position(), true);
