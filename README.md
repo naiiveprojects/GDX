@@ -14,11 +14,11 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
   - show/hide bottom panel button
   - Script Editor
     - Switch between Default & Docked mode for Script List
-- Windows
+- OS Windows
   - dark mode in window title bar (non-client area)
   - resizable borderless window (call via script: `OS.window_borderless = true`)
   - colapse client area to non client area
-- Android
+- OS Android
   - proguard (reduce android build size)
 - `& more ...`
 
@@ -27,32 +27,34 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
 - change icons, logo, & splash
 - dark initial color bg
 - Editor
-	- use project icon on project menu button
-	- re-arrage title bar (Project Name, Edited Node Path)
-	- revamp layout
-	- minify icon
-	- Dark default theme
-	- editor log :
-		- remove init message
-		- change Output title to build version
-	- colapse tool menu in canvas item editor
-	- corner radius : 8
+  - use project icon on project menu button
+  - re-arrage title bar (Project Name, Edited Node Path)
+  - revamp layout
+  - minify icon
+  - Dark default theme
+  - inspector :
+    	- hide general option
+    	- move history menu
+  - editor log :
+  - remove init message
+  - change Output title to build version
+  - colapse tool menu in canvas item editor
+    - double max char/sec
 - default editor setting
-	- Color Picker mode: HSV
-	- clear color : 0.2, 0.2, 0.2
-	- word_wrap : true
-	- Type Hint: True
-	- convert_text_resources_to_binary_on_export : true
-	- text_editor/cursor/scroll_past_end_of_file : true
-	- constrain_editor_view : false
-	- always_open_output_on_play : false
-	- (Debugger) auto switch to remove scene tree : True
-	- auto_switch_to_remote_scene_tree : true
-	- editors/2d/grid_color : Color(0.5, 0.5, 0.5, 0.07)
-	- double max char/ces
-	- file system file sort : FILE_SORT_TYPE 
-	- inspector : hide general option, move history menu
-	- stay_in_script_editor_on_node_selected : false
+  - Default dark theme
+  - corner radius : 8
+  - Color Picker mode : HSV
+  - clear color : 0.2, 0.2, 0.2
+  - word_wrap : true
+  - Type Hint: True
+  - convert_text_resources_to_binary_on_export : true
+  - text_editor/cursor/scroll_past_end_of_file : true
+  - constrain_editor_view : false
+  - always_open_output_on_play : false
+  - auto_switch_to_remote_scene_tree : true
+  - editors/2d/grid_color : Color(0.5, 0.5, 0.5, 0.07)
+  - file system file sort : FILE_SORT_TYPE
+  - stay_in_script_editor_on_node_selected : false
 - project manager
 	- revamp layout
 	- change grid container to flow container
@@ -79,11 +81,3 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
   - version info button
   - help menu button
 - `& more ...`
-
-## ToDo
-
-- 
-
----
-
-`scons -c` `$env:BUILD_NAME="NA\\\\VE"`
