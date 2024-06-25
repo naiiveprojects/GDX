@@ -13,7 +13,7 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
   - borderless mode
   - show/hide bottom panel button
   - Script Editor
-    - Switch between Default & Docked mode for Script List
+  - Switch between Default & Docked mode for Script List
 - OS Windows
   - dark mode in window title bar (non-client area)
   - resizable borderless window (call via script: `OS.window_borderless = true`)
@@ -33,13 +33,13 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
   - minify icon
   - Dark default theme
   - inspector :
-    	- hide general option
-    	- move history menu
+  	- hide general option
+  	- move history menu
   - editor log :
-  - remove init message
-  - change Output title to build version
+    - remove init message
+    - change Output title to build version
   - colapse tool menu in canvas item editor
-    - double max char/sec
+  - double max char/sec
 - default editor setting
   - Default dark theme
   - corner radius : 8
