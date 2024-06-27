@@ -321,7 +321,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	OS::get_singleton()->benchmark_begin_measure("create_editor_theme");
 	Ref<Theme> theme = Ref<Theme>(memnew(Theme));
 
-	const float default_contrast = 0.5;
+	const float default_contrast = 0.3;
 
 	//Theme settings
 	Color accent_color = EDITOR_GET("interface/theme/accent_color");
@@ -377,8 +377,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_base_color = Color(0.99, 0.96, 0.89);
 		preset_contrast = 0.06;
 	} else { // Default
-		preset_accent_color = Color(0.66, 0.75, 0.93);
-		preset_base_color = Color(0.08, 0.08, 0.08);
+		preset_accent_color = Color(0.4, 0.6, 0.9);
+		preset_base_color = Color(0.13, 0.13, 0.13);
 		preset_contrast = default_contrast;
 	}
 
@@ -720,7 +720,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color", "CheckButton", font_color);
 	theme->set_color("font_color_hover", "CheckButton", font_color_hl);
 	theme->set_color("font_color_focus", "CheckButton", font_color_focus);
-	theme->set_color("font_color_pressed", "CheckButton", accent_color);
+	theme->set_color("font_color_pressed", "CheckButton", font_color);
 	theme->set_color("font_color_disabled", "CheckButton", font_color_disabled);
 	theme->set_color("icon_color_hover", "CheckButton", icon_color_hover);
 
@@ -750,7 +750,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color", "CheckBox", font_color);
 	theme->set_color("font_color_hover", "CheckBox", font_color_hl);
 	theme->set_color("font_color_focus", "CheckBox", font_color_focus);
-	theme->set_color("font_color_pressed", "CheckBox", accent_color);
+	theme->set_color("font_color_pressed", "CheckBox", font_color);
 	theme->set_color("font_color_disabled", "CheckBox", font_color_disabled);
 	theme->set_color("icon_color_hover", "CheckBox", icon_color_hover);
 
@@ -834,8 +834,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Tree & ItemList background
 	Ref<StyleBoxFlat> style_tree_bg = style_default->duplicate();
-	style_tree_bg->set_bg_color(dark_color_1);
-	style_tree_bg->set_border_color(dark_color_3);
+	style_tree_bg->set_bg_color(base_color);
+	style_tree_bg->set_border_color(base_color);
 	theme->set_stylebox("bg", "Tree", style_tree_bg);
 
 	const Color guide_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.05);
