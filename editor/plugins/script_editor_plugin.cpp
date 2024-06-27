@@ -973,7 +973,7 @@ bool ScriptEditor::toggle_scripts_panel() {
 		list_split_container->add_child(list_split);
 		list_split->set_v_size_flags(SIZE_EXPAND_FILL);
 		list_split->set_h_size_flags(SIZE_EXPAND_FILL);
-		EditorNode::get_singleton()->add_control_to_dock(EditorNode::DOCK_SLOT_LEFT_UR, list_split_container);
+		EditorNode::get_singleton()->add_control_to_dock(EditorNode::DOCK_SLOT_LEFT_BR, list_split_container);
 		TabContainer* tb = dynamic_cast<TabContainer*>(list_split_container->get_parent());
 		tb->set_current_tab(list_split_container->get_index());
 	}
@@ -3329,7 +3329,7 @@ ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	overview_vbox->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	list_split->add_child(overview_vbox);
-	if (EditorSettings::get_singleton()->get_project_metadata("scripts_panel", "show_scripts_panel", true)) {
+	if (EditorSettings::get_singleton()->get_project_metadata("scripts_panel", "show_scripts_panel", false)) {
 		toggle_scripts_panel();
 	}
 	//list_split->set_visible(EditorSettings::get_singleton()->get_project_metadata("scripts_panel", "show_scripts_panel", false));
