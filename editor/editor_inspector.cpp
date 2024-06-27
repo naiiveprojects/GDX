@@ -946,7 +946,7 @@ void EditorInspectorCategory::_notification(int p_what) {
 		}
 		w = MIN(w, get_size().width - hs * 2);
 
-		int ofs = (get_size().width - w) / 2;
+		int ofs = 0;
 
 		if (icon.is_valid()) {
 			draw_texture(icon, Point2(ofs, (get_size().height - icon->get_height()) / 2).floor());
