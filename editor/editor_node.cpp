@@ -569,7 +569,7 @@ void EditorNode::_notification(int p_what) {
 
 			gui_base->add_style_override("panel", gui_base->get_stylebox("Background", "EditorStyles"));
 			scene_root_parent->add_style_override("panel", gui_base->get_stylebox("Content", "EditorStyles"));
-			bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
+			//bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
 			//scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
 			//scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
 
@@ -588,10 +588,10 @@ void EditorNode::_notification(int p_what) {
 
 			recent_scenes->set_as_minsize();
 
-			// debugger area
+			/*// debugger area
 			if (ScriptEditor::get_singleton()->get_debugger()->is_visible()) {
 				bottom_panel->add_style_override("panel", gui_base->get_stylebox("BottomPanelDebuggerOverride", "EditorStyles"));
-			}
+			}*/
 
 			// update_icons
 			for (int i = 0; i < singleton->main_editor_buttons.size(); i++) {
@@ -5189,25 +5189,25 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 			bottom_panel_items[i].button->set_pressed(i == p_idx);
 			bottom_panel_items[i].control->set_visible(i == p_idx);
 		}
-		if (ScriptEditor::get_singleton()->get_debugger() == bottom_panel_items[p_idx].control) { // this is the debug panel which uses tabs, so the top section should be smaller
+		/*if (ScriptEditor::get_singleton()->get_debugger() == bottom_panel_items[p_idx].control) { // this is the debug panel which uses tabs, so the top section should be smaller
 			bottom_panel->add_style_override("panel", gui_base->get_stylebox("BottomPanelDebuggerOverride", "EditorStyles"));
 		} else {
 			bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
-		}
+		}*/
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_VISIBLE);
 		center_split->set_collapsed(false);
 		if (bottom_panel_raise->is_pressed()) {
 			top_split->hide();
 		}
-		bottom_panel_raise->show();
+		bottom_panel_raise->set_disabled(false);
 
 	} else {
-		bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
+		//bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
 		bottom_panel_items[p_idx].button->set_pressed(false);
 		bottom_panel_items[p_idx].control->set_visible(false);
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 		center_split->set_collapsed(true);
-		bottom_panel_raise->hide();
+		bottom_panel_raise->set_disabled(true);
 		if (bottom_panel_raise->is_pressed()) {
 			top_split->show();
 		}
@@ -6956,7 +6956,7 @@ EditorNode::EditorNode() {
 	// Bottom panels
 
 	bottom_panel = memnew(PanelContainer);
-	bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
+	//bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
 	center_split->add_child(bottom_panel);
 	center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 
@@ -6967,8 +6967,17 @@ EditorNode::EditorNode() {
 	bottom_panel_hb->set_custom_minimum_size(Size2(0, 24 * EDSCALE)); // Adjust for the height of the "Expand Bottom Dock" icon.
 	bottom_panel_vb->add_child(bottom_panel_hb);
 
+	bottom_panel_hb->add_child(update_spinner);
+
+	/*
+	PanelContainer *bottom_panel_hb_editors_bg = memnew(PanelContainer);
+	bottom_panel_hb_editors_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	bottom_panel_hb_editors_bg->set_h_size_flags(6);
+	bottom_panel_hb->add_child(bottom_panel_hb_editors_bg);
+	*/
 	bottom_panel_hb_editors = memnew(HBoxContainer);
-	bottom_panel_hb_editors->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	bottom_panel_hb_editors->set_h_size_flags(6);
+	//bottom_panel_hb_editors->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	bottom_panel_hb->add_child(bottom_panel_hb_editors);
 
 	/*
@@ -6999,15 +7008,13 @@ EditorNode::EditorNode() {
 	Control *h_spacer = memnew(Control);
 	bottom_panel_hb->add_child(h_spacer);
 
-	bottom_panel_hb->add_child(update_spinner);
-
 	bottom_panel_raise = memnew(ToolButton);
 	bottom_panel_raise->set_icon(gui_base->get_icon("ExpandBottomDock", "EditorIcons"));
 
 	bottom_panel_raise->set_shortcut(ED_SHORTCUT("editor/bottom_panel_expand", TTR("Expand Bottom Panel"), KEY_MASK_SHIFT | KEY_F12));
 
 	bottom_panel_hb->add_child(bottom_panel_raise);
-	bottom_panel_raise->hide();
+	bottom_panel_raise->set_disabled(true);
 	bottom_panel_raise->set_toggle_mode(true);
 	bottom_panel_raise->connect("toggled", this, "_bottom_panel_raise_toggled");
 
