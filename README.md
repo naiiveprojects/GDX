@@ -1,14 +1,19 @@
 **gdx** is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x).
 Its primary objective is to reduce its binary size, and add/refine/remove some of its functionality.
 
-<img src="ss1.png">
-<img src="ss2.png">
+---
 
-[see preview](preview.mp4)
+<center>
+<img src="ss1.png" width="100%">
+<img src="ss3.png" width="49%"/><img src="ss2.png" width="51%"/> 
+<i>screenshots is using assets below</i>
+</center>
 
-screenshot and preview is using addons below
-- Filesystem https://github.com/naiiveprojects/nv.gd.file_system
-- window control `comming soon`
+---
+
+- Custom Borderless `comming soon`
+- File System https://github.com/naiiveprojects/nv.gd.file_system
+- Background https://twitter.com/Ry_Hawthorne
 
 ## Added
 
@@ -33,6 +38,8 @@ screenshot and preview is using addons below
 - change icons, logo, & splash
 - dark initial color bg
 - Editor
+  - centered bottom dock
+  - move update spinner to bottom dock
   - use project icon on project menu button
   - re-arrage title bar (Project Name, Edited Node Path)
   - revamp layout
@@ -87,3 +94,6 @@ screenshot and preview is using addons below
   - version info button
   - help menu button
 - `& more ...`
+
+---
+
