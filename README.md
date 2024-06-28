@@ -1,13 +1,4 @@
-**gdx** is a custom version of the [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x).
-
-For more information on modifications, check [**This Changelogs**](GDX_CHANGELOG.md).
-
-**TLDR:**
-
-- Reduce Binary Size
-- Update certain visual aspects of the engine
-- Quality of Life Improvements
-- Add, refine, or remove some of functionalities
+**gdx** is a custom version of the [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x), For more information on modifications, check [**This Changelogs**](GDX_CHANGELOG.md).
 
 ---
 
