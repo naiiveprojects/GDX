@@ -1,8 +1,14 @@
-**gdx** is a custom latest version of the [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x).
+**gdx** is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x).
 Its primary objective is to reduce its binary size, and add/refine/remove some of its functionality.
 
 <img src="ss1.png">
 <img src="ss2.png">
+
+[see preview](preview.mp4)
+
+screenshot and preview is using addons below
+- Filesystem https://github.com/naiiveprojects/nv.gd.file_system
+- window control `comming soon`
 
 ## Added
 
