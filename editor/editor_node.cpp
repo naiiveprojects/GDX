@@ -6313,8 +6313,8 @@ EditorNode::EditorNode() {
 
 	scene_tabs = memnew(Tabs);
 	scene_tabs->set_mouse_filter(Control::MOUSE_FILTER_PASS);
-	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
-	//scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
+	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	//scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
 	scene_tabs->set_select_with_rmb(true);
 	scene_tabs->add_tab("unsaved");
 	scene_tabs->set_tab_align(Tabs::ALIGN_CENTER);
@@ -6332,7 +6332,7 @@ EditorNode::EditorNode() {
 
 	tabbar_container = memnew(HBoxContainer);
 	tabbar_container->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	tabbar_container->set_v_size_flags(Control::SIZE_SHRINK_END);
+	tabbar_container->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	scene_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 
 	scene_tabs_context_menu = memnew(PopupMenu);
@@ -6356,6 +6356,7 @@ EditorNode::EditorNode() {
 	scene_tab_add = memnew(ToolButton);
 	//tabbar_container->add_child(scene_tab_add);
 	//tabbar_container->add_child(distraction_free);
+	scene_tab_add->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	scene_tab_add->set_tooltip(TTR("Add a new scene."));
 	scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 	scene_tab_add->add_color_override("icon_color_normal", Color(0.6f, 0.6f, 0.6f, 0.8f));
@@ -6387,7 +6388,8 @@ EditorNode::EditorNode() {
 	scene_root_parent->add_child(viewport);
 
 	PanelContainer *left_menu_hb_bg = memnew(PanelContainer);
-	left_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
+	left_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	left_menu_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	left_menu_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	menu_hb->add_child(left_menu_hb_bg);
 
@@ -6580,7 +6582,8 @@ EditorNode::EditorNode() {
 	//menu_hb->add_spacer();
 	
 	PanelContainer *main_editor_button_vb_bg = memnew(PanelContainer);
-	main_editor_button_vb_bg->add_style_override("panel", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
+	main_editor_button_vb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	main_editor_button_vb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	main_editor_button_vb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	main_editor_button_vb = memnew(HBoxContainer);
 	main_editor_button_vb_bg->add_child(main_editor_button_vb);
@@ -6731,7 +6734,8 @@ EditorNode::EditorNode() {
 
 
 	PanelContainer *play_hb_bg = memnew(PanelContainer);
-	play_hb_bg->add_style_override("panel", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
+	play_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	play_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	play_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	menu_hb->add_child(play_hb_bg);
 	//menu_hb->move_child(play_hb_bg, 2);
@@ -6809,7 +6813,8 @@ EditorNode::EditorNode() {
 #endif
 
 	PanelContainer *right_menu_hb_bg = memnew(PanelContainer);
-	right_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("Information3dViewport", "EditorStyles"));
+	right_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	right_menu_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	right_menu_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	menu_hb->add_child(right_menu_hb_bg);
 
@@ -6994,6 +6999,8 @@ EditorNode::EditorNode() {
 	Control *h_spacer = memnew(Control);
 	bottom_panel_hb->add_child(h_spacer);
 
+	bottom_panel_hb->add_child(update_spinner);
+
 	bottom_panel_raise = memnew(ToolButton);
 	bottom_panel_raise->set_icon(gui_base->get_icon("ExpandBottomDock", "EditorIcons"));
 
@@ -7003,8 +7010,6 @@ EditorNode::EditorNode() {
 	bottom_panel_raise->hide();
 	bottom_panel_raise->set_toggle_mode(true);
 	bottom_panel_raise->connect("toggled", this, "_bottom_panel_raise_toggled");
-
-	bottom_panel_hb->add_child(update_spinner);
 
 	log = memnew(EditorLog);
 	ToolButton *output_button = add_bottom_panel_item(TTR("Output"), log);
