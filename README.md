@@ -97,3 +97,17 @@ Its primary objective is to reduce its binary size, and add/refine/remove some o
 
 ---
 
+## Issue
+
+- Github Action
+  - Android
+    - Problem:
+      - /home/runner/work/_temp/*****.sh: line 2: ./gradlew: Permission denied
+      - Error: Process completed with exit code 126.
+    - Explanation:
+      - Permission denied 😊
+    - Solution:
+      - terminal
+        - `cd platform/android/java`
+        - `git update-index --chmod=+x gradlew`
+      - Commit & Push
