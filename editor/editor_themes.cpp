@@ -378,7 +378,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_contrast = 0.06;
 	} else { // Default
 		preset_accent_color = Color(0.4, 0.6, 0.9);
-		preset_base_color = Color(0.13, 0.13, 0.13);
+		preset_base_color = Color(0.11, 0.11, 0.12);
 		preset_contrast = default_contrast;
 	}
 
