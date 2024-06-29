@@ -476,22 +476,7 @@ private:
 
 					if (ProjectSettings::get_singleton()->save_custom(dir.plus_file("project.godot"), initial_settings, Vector<String>(), false) != OK) {
 						set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-					}/* else {
-						ResourceSaver::save(dir.plus_file("icon.png"), create_unscaled_default_project_icon());
-						FileAccess *f = FileAccess::open(dir.plus_file("default_env.tres"), FileAccess::WRITE);
-						if (!f) {
-							set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-						} else {
-							f->store_line("[gd_resource type=\"Environment\" load_steps=2 format=2]");
-							f->store_line("");
-							f->store_line("[sub_resource type=\"ProceduralSky\" id=1]");
-							f->store_line("");
-							f->store_line("[resource]");
-							f->store_line("background_mode = 2");
-							f->store_line("background_sky = SubResource( 1 )");
-							memdelete(f);
-						}
-					}*/
+					}
 
 				} else if (mode == MODE_INSTALL) {
 					if (project_path->get_text().ends_with(".zip")) {
@@ -2471,7 +2456,6 @@ ProjectManager::ProjectManager() {
 	gui_base->add_child(panel);
 	panel->set_anchors_and_margins_preset(Control::PRESET_WIDE);
 	panel->set_self_modulate(Color(0, 0, 0, 1));
-	//panel->add_style_override("panel", gui_base->get_stylebox("Background", "EditorStyles"));
 
 	VBoxContainer *vb = memnew(VBoxContainer);
 	panel->add_child(vb);
@@ -2488,9 +2472,11 @@ ProjectManager::ProjectManager() {
 
 	tabs = memnew(TabContainer);
 	center_box->add_child(tabs);
-	//tabs->add_font_override("font", get_font("title", "EditorFonts"));
 	tabs->set_anchors_and_margins_preset(Control::PRESET_WIDE);
-	tabs->set_tab_align(TabContainer::ALIGN_LEFT);
+	tabs->add_style_override("tab_bg", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->add_style_override("tab_fg", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->add_style_override("panel", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->set_tab_align(TabContainer::ALIGN_CENTER);
 	tabs->connect("tab_changed", this, "_on_tab_changed");
 
 	local_projects_hb = memnew(VBoxContainer);
@@ -2509,9 +2495,6 @@ ProjectManager::ProjectManager() {
 	project_filter->set_h_size_flags(SIZE_EXPAND_FILL);
 	sort_filters->add_child(project_filter);
 
-	//Label *sort_label = memnew(Label);
-	//sort_label->set_text(TTR("Sort:"));
-	//sort_filters->add_child(sort_label);
 	Vector<String> sort_filter_titles;
 	sort_filter_titles.push_back(TTR("Name"));
 	sort_filter_titles.push_back(TTR("Path"));
@@ -2535,7 +2518,7 @@ ProjectManager::ProjectManager() {
 	loading_label->hide();
 
 	PanelContainer *pc = memnew(PanelContainer);
-	pc->add_style_override("panel", gui_base->get_stylebox("bg", "Tree"));
+	//pc->add_style_override("panel", gui_base->get_stylebox("bg", "Tree"));
 	search_tree_vb->add_child(pc);
 	pc->set_v_size_flags(SIZE_EXPAND_FILL);
 
@@ -2545,37 +2528,28 @@ ProjectManager::ProjectManager() {
 	pc->add_child(_project_list);
 	_project_list->set_enable_h_scroll(false);
 
-	//HBoxContainer *tree_vb = memnew(HBoxContainer);
-	//tree_vb->set_custom_minimum_size(Size2(120, 120));
-	//local_projects_hb->add_child(tree_vb);
-
 	Button *open = memnew(Button);
 	open->set_text(TTR("Edit"));
 	open->set_icon(gui_base->get_icon("Edit", "EditorIcons"));
 	open->set_shortcut(ED_SHORTCUT("project_manager/edit_project", TTR("Edit Project"), KEY_MASK_CMD | KEY_E));
-	//tree_vb->add_child(open);
 	sort_filters->add_child(open);
 	open->connect("pressed", this, "_open_selected_projects_ask");
 	open_btn = open;
 
 	Button *run = memnew(Button);
-	//run->set_text(TTR("Run"));
+	run->set_tooltip(TTR("Run"));
 	run->set_icon(gui_base->get_icon("Play", "EditorIcons"));
 	run->set_shortcut(ED_SHORTCUT("project_manager/run_project", TTR("Run Project"), KEY_MASK_CMD | KEY_R));
-	//tree_vb->add_child(run);
 	sort_filters->add_child(run);
 	run->connect("pressed", this, "_run_project");
 	run_btn = run;
 
 	Button *scan = memnew(Button);
-	//scan->set_text(TTR("Scan"));
+	scan->set_tooltip(TTR("Scan"));
 	scan->set_icon(gui_base->get_icon("Load", "EditorIcons"));
 	scan->set_shortcut(ED_SHORTCUT("project_manager/scan_projects", TTR("Scan Projects"), KEY_MASK_CMD | KEY_S));
-	//tree_vb->add_child(scan);
 	sort_filters->add_child(scan);
 	scan->connect("pressed", this, "_scan_projects");
-
-	//tree_vb->add_child(memnew(HSeparator));
 
 	scan_dir = memnew(FileDialog);
 	scan_dir->set_access(FileDialog::ACCESS_FILESYSTEM);
@@ -2589,52 +2563,44 @@ ProjectManager::ProjectManager() {
 	create->set_text(TTR("Create"));
 	create->set_icon(gui_base->get_icon("New", "EditorIcons"));
 	create->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KEY_MASK_CMD | KEY_N));
-	//tree_vb->add_child(create);
 	sort_filters->add_child(create);
 	create->connect("pressed", this, "_new_project");
 
 	Button *import = memnew(Button);
-	//import->set_text(TTR("Import"));
+	import->set_tooltip(TTR("Import"));
 	import->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
-	//tree_vb->add_child(import);
 	sort_filters->add_child(import);
 	import->connect("pressed", this, "_import_project");
 
 	Button *rename = memnew(Button);
-	//rename->set_text(TTR("Rename"));
+	rename->set_tooltip(TTR("Rename"));
 	rename->set_icon(gui_base->get_icon("Rename", "EditorIcons"));
 	// The F2 shortcut isn't overridden with Enter on macOS as Enter is already used to edit a project.
 	rename->set_shortcut(ED_SHORTCUT("project_manager/rename_project", TTR("Rename Project"), KEY_F2));
-	//tree_vb->add_child(rename);
 	sort_filters->add_child(rename);
 	rename->connect("pressed", this, "_rename_project");
 	rename_btn = rename;
 
 	Button *erase = memnew(Button);
-	//erase->set_text(TTR("Remove"));
+	erase->set_tooltip(TTR("Remove"));
 	erase->set_icon(gui_base->get_icon("Remove", "EditorIcons"));
 	erase->set_shortcut(ED_SHORTCUT("project_manager/remove_project", TTR("Remove Project"), KEY_DELETE));
-	//tree_vb->add_child(erase);
 	sort_filters->add_child(erase);
 	erase->connect("pressed", this, "_erase_project");
 	erase_btn = erase;
 
 	Button *erase_missing = memnew(Button);
-	//erase_missing->set_text(TTR("Remove Missing"));
+	erase_missing->set_tooltip(TTR("Remove Missing"));
 	erase_missing->set_icon(gui_base->get_icon("Clear", "EditorIcons"));
-	//tree_vb->add_child(erase_missing);
 	sort_filters->add_child(erase_missing);
 	erase_missing->connect("pressed", this, "_erase_missing_projects");
 	erase_missing_btn = erase_missing;
-
-	//tree_vb->add_spacer();
 
 	about_btn = memnew(Button);
 	about_btn->set_text(TTR("About"));
 	about_btn->set_icon(gui_base->get_icon("Heart", "EditorIcons"));
 	about_btn->connect("pressed", this, "_show_about");
-	//tree_vb->add_child(about_btn);
 
 	// Add Icon Separator
 	TextureRect *sf_separator = memnew(TextureRect);
@@ -2675,8 +2641,6 @@ ProjectManager::ProjectManager() {
 	sort_filters->move_child(sf_separator_1, 8);
 	sort_filters->move_child(sf_separator_2, 11);
 	//sort_filters->move_child(erase_missing, 2);
-
-
 
 	if (AssetLibraryEditorPlugin::is_available()) {
 		asset_library = memnew(EditorAssetLibrary(true));
