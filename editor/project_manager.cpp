@@ -51,6 +51,7 @@
 #include "scene/gui/separator.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/tool_button.h"
+#include "scene/gui/flow_container.h"
 #include "servers/navigation_server.h"
 
 // Used to test for GLES3 support.
@@ -468,29 +469,13 @@ private:
 						initial_settings["rendering/vram_compression/import_etc"] = true;
 					}
 					initial_settings["application/config/name"] = project_name->get_text().strip_edges();
-					initial_settings["application/config/icon"] = "res://icon.png";
-					initial_settings["rendering/environment/default_environment"] = "res://default_env.tres";
+					initial_settings["application/config/icon"] = "";
+					initial_settings["rendering/environment/default_environment"] = "";
 					initial_settings["physics/common/enable_pause_aware_picking"] = true;
 					initial_settings["gui/common/drop_mouse_on_gui_input_disabled"] = true;
 
 					if (ProjectSettings::get_singleton()->save_custom(dir.plus_file("project.godot"), initial_settings, Vector<String>(), false) != OK) {
 						set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-					} else {
-						ResourceSaver::save(dir.plus_file("icon.png"), create_unscaled_default_project_icon());
-
-						FileAccess *f = FileAccess::open(dir.plus_file("default_env.tres"), FileAccess::WRITE);
-						if (!f) {
-							set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-						} else {
-							f->store_line("[gd_resource type=\"Environment\" load_steps=2 format=2]");
-							f->store_line("");
-							f->store_line("[sub_resource type=\"ProceduralSky\" id=1]");
-							f->store_line("");
-							f->store_line("[resource]");
-							f->store_line("background_mode = 2");
-							f->store_line("background_sky = SubResource( 1 )");
-							memdelete(f);
-						}
 					}
 
 				} else if (mode == MODE_INSTALL) {
@@ -941,7 +926,7 @@ public:
 	}
 
 	void set_is_favorite(bool fav) {
-		favorite_button->set_modulate(fav ? Color(1, 1, 1, 1) : Color(1, 1, 1, 0.2));
+		favorite_button->set_modulate(fav ? Color(1, 0.8, 0.2, 1) : Color(1, 1, 1, 0.2));
 	}
 
 	void _notification(int p_what) {
@@ -1065,7 +1050,7 @@ private:
 	ProjectListFilter::FilterOption _order_option;
 	Set<String> _selected_project_keys;
 	String _last_clicked; // Project key
-	VBoxContainer *_scroll_children;
+	FlowContainer *_scroll_children;
 	int _icon_load_index;
 
 	Vector<Item> _projects;
@@ -1096,8 +1081,10 @@ struct ProjectListComparator {
 ProjectList::ProjectList() {
 	_order_option = ProjectListFilter::FILTER_MODIFIED;
 
-	_scroll_children = memnew(VBoxContainer);
+	_scroll_children = memnew(HFlowContainer);
+	//_scroll_children->set_columns(2);
 	_scroll_children->set_h_size_flags(SIZE_EXPAND_FILL);
+	_scroll_children->set_v_size_flags(SIZE_EXPAND_FILL);
 	add_child(_scroll_children);
 
 	_icon_load_index = 0;
@@ -1300,22 +1287,9 @@ void ProjectList::create_project_item_control(int p_index) {
 	ProjectListItemControl *hb = memnew(ProjectListItemControl);
 	hb->connect("draw", this, "_panel_draw", varray(hb));
 	hb->connect("gui_input", this, "_panel_input", varray(hb));
+	hb->set_custom_minimum_size(Size2(512, 0));
 	hb->add_constant_override("separation", 10 * EDSCALE);
 	hb->set_tooltip(item.description);
-
-	VBoxContainer *favorite_box = memnew(VBoxContainer);
-	favorite_box->set_name("FavoriteBox");
-	TextureButton *favorite = memnew(TextureButton);
-	favorite->set_name("FavoriteButton");
-	favorite->set_normal_texture(favorite_icon);
-	// This makes the project's "hover" style display correctly when hovering the favorite icon
-	favorite->set_mouse_filter(MOUSE_FILTER_PASS);
-	favorite->connect("pressed", this, "_favorite_pressed", varray(hb));
-	favorite_box->add_child(favorite);
-	favorite_box->set_alignment(BoxContainer::ALIGN_CENTER);
-	hb->add_child(favorite_box);
-	hb->favorite_button = favorite;
-	hb->set_is_favorite(item.favorite);
 
 	TextureRect *tf = memnew(TextureRect);
 	// The project icon may not be loaded by the time the control is displayed,
@@ -1328,12 +1302,33 @@ void ProjectList::create_project_item_control(int p_index) {
 	hb->add_child(tf);
 	hb->icon = tf;
 
+	VBoxContainer *favorite_box = memnew(VBoxContainer);
+	favorite_box->set_name("FavoriteBox");
+
+	TextureButton *favorite = memnew(TextureButton);
+	favorite->set_name("FavoriteButton");
+	favorite->set_normal_texture(favorite_icon);
+	//favorite->set_expand(true);
+	favorite->set_stretch_mode(TextureButton::STRETCH_KEEP_ASPECT_CENTERED);
+	favorite->set_h_size_flags(TextureButton::SIZE_EXPAND_FILL);
+	favorite->set_v_size_flags(TextureButton::SIZE_EXPAND_FILL);
+	// This makes the project's "hover" style display correctly when hovering the favorite icon
+	favorite->set_mouse_filter(MOUSE_FILTER_PASS);
+	favorite->connect("pressed", this, "_favorite_pressed", varray(hb));
+	favorite_box->add_child(favorite);
+	favorite_box->set_alignment(BoxContainer::ALIGN_CENTER);
+	tf->add_child(favorite_box);
+	hb->favorite_button = favorite;
+	hb->set_is_favorite(item.favorite);
+
 	VBoxContainer *vb = memnew(VBoxContainer);
 	if (item.grayed) {
 		vb->set_modulate(Color(1, 1, 1, 0.5));
 	}
 	vb->set_h_size_flags(SIZE_EXPAND_FILL);
+	vb->set_v_size_flags(SIZE_SHRINK_CENTER);
 	hb->add_child(vb);
+
 	Control *ec = memnew(Control);
 	ec->set_custom_minimum_size(Size2(0, 1));
 	ec->set_mouse_filter(MOUSE_FILTER_PASS);
@@ -1348,9 +1343,13 @@ void ProjectList::create_project_item_control(int p_index) {
 	path_hb->set_h_size_flags(SIZE_EXPAND_FILL);
 	vb->add_child(path_hb);
 
-	Button *show = memnew(Button);
+	TextureButton *show = memnew(TextureButton);
 	// Display a folder icon if the project directory can be opened, or a "broken file" icon if it can't.
-	show->set_icon(get_icon(!item.missing ? "Load" : "FileBroken", "EditorIcons"));
+	show->set_normal_texture(get_icon(!item.missing ? "Load" : "FileBroken", "EditorIcons"));
+	//show->set_expand(true);
+	show->set_stretch_mode(TextureButton::STRETCH_KEEP_ASPECT_CENTERED);
+	//show->set_h_size_flags(TextureButton::SIZE_EXPAND_FILL);
+	//show->set_v_size_flags(TextureButton::SIZE_EXPAND_FILL);
 	if (!item.grayed) {
 		// Don't make the icon less prominent if the parent is already grayed out.
 		show->set_modulate(Color(1, 1, 1, 0.5));
@@ -1371,6 +1370,7 @@ void ProjectList::create_project_item_control(int p_index) {
 	fpath->add_color_override("font_color", font_color);
 	fpath->set_clip_text(true);
 
+	hb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	_scroll_children->add_child(hb);
 	item.control = hb;
 }
@@ -2455,7 +2455,7 @@ ProjectManager::ProjectManager() {
 	Panel *panel = memnew(Panel);
 	gui_base->add_child(panel);
 	panel->set_anchors_and_margins_preset(Control::PRESET_WIDE);
-	panel->add_style_override("panel", gui_base->get_stylebox("Background", "EditorStyles"));
+	panel->set_self_modulate(Color(0, 0, 0, 1));
 
 	VBoxContainer *vb = memnew(VBoxContainer);
 	panel->add_child(vb);
@@ -2464,7 +2464,7 @@ ProjectManager::ProjectManager() {
 	String cp;
 	cp += 0xA9;
 	// TRANSLATORS: This refers to the application where users manage their Godot projects.
-	OS::get_singleton()->set_window_title(VERSION_NAME + String(" - ") + TTR("Project Manager", "Application"));
+	OS::get_singleton()->set_window_title(vformat("Project Manager | %s | %s", VERSION_FULL_BUILD, String(VERSION_HASH).left(9)));
 
 	Control *center_box = memnew(Control);
 	center_box->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -2473,16 +2473,19 @@ ProjectManager::ProjectManager() {
 	tabs = memnew(TabContainer);
 	center_box->add_child(tabs);
 	tabs->set_anchors_and_margins_preset(Control::PRESET_WIDE);
-	tabs->set_tab_align(TabContainer::ALIGN_LEFT);
+	tabs->add_style_override("tab_bg", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->add_style_override("tab_fg", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->add_style_override("panel", gui_base->get_stylebox("background", "EditorStyle"));
+	tabs->set_tab_align(TabContainer::ALIGN_CENTER);
 	tabs->connect("tab_changed", this, "_on_tab_changed");
 
-	local_projects_hb = memnew(HBoxContainer);
+	local_projects_hb = memnew(VBoxContainer);
 	local_projects_hb->set_name(TTR("Local Projects"));
 	tabs->add_child(local_projects_hb);
 
 	VBoxContainer *search_tree_vb = memnew(VBoxContainer);
 	local_projects_hb->add_child(search_tree_vb);
-	search_tree_vb->set_h_size_flags(SIZE_EXPAND_FILL);
+	search_tree_vb->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	HBoxContainer *sort_filters = memnew(HBoxContainer);
 
@@ -2492,9 +2495,6 @@ ProjectManager::ProjectManager() {
 	project_filter->set_h_size_flags(SIZE_EXPAND_FILL);
 	sort_filters->add_child(project_filter);
 
-	Label *sort_label = memnew(Label);
-	sort_label->set_text(TTR("Sort:"));
-	sort_filters->add_child(sort_label);
 	Vector<String> sort_filter_titles;
 	sort_filter_titles.push_back(TTR("Name"));
 	sort_filter_titles.push_back(TTR("Path"));
@@ -2518,7 +2518,7 @@ ProjectManager::ProjectManager() {
 	loading_label->hide();
 
 	PanelContainer *pc = memnew(PanelContainer);
-	pc->add_style_override("panel", gui_base->get_stylebox("bg", "Tree"));
+	//pc->add_style_override("panel", gui_base->get_stylebox("bg", "Tree"));
 	search_tree_vb->add_child(pc);
 	pc->set_v_size_flags(SIZE_EXPAND_FILL);
 
@@ -2528,33 +2528,28 @@ ProjectManager::ProjectManager() {
 	pc->add_child(_project_list);
 	_project_list->set_enable_h_scroll(false);
 
-	VBoxContainer *tree_vb = memnew(VBoxContainer);
-	tree_vb->set_custom_minimum_size(Size2(120, 120));
-	local_projects_hb->add_child(tree_vb);
-
 	Button *open = memnew(Button);
 	open->set_text(TTR("Edit"));
+	open->set_icon(gui_base->get_icon("Edit", "EditorIcons"));
 	open->set_shortcut(ED_SHORTCUT("project_manager/edit_project", TTR("Edit Project"), KEY_MASK_CMD | KEY_E));
-	tree_vb->add_child(open);
+	sort_filters->add_child(open);
 	open->connect("pressed", this, "_open_selected_projects_ask");
 	open_btn = open;
 
 	Button *run = memnew(Button);
-	run->set_text(TTR("Run"));
+	run->set_tooltip(TTR("Run"));
+	run->set_icon(gui_base->get_icon("Play", "EditorIcons"));
 	run->set_shortcut(ED_SHORTCUT("project_manager/run_project", TTR("Run Project"), KEY_MASK_CMD | KEY_R));
-	tree_vb->add_child(run);
+	sort_filters->add_child(run);
 	run->connect("pressed", this, "_run_project");
 	run_btn = run;
 
-	tree_vb->add_child(memnew(HSeparator));
-
 	Button *scan = memnew(Button);
-	scan->set_text(TTR("Scan"));
+	scan->set_tooltip(TTR("Scan"));
+	scan->set_icon(gui_base->get_icon("Load", "EditorIcons"));
 	scan->set_shortcut(ED_SHORTCUT("project_manager/scan_projects", TTR("Scan Projects"), KEY_MASK_CMD | KEY_S));
-	tree_vb->add_child(scan);
+	sort_filters->add_child(scan);
 	scan->connect("pressed", this, "_scan_projects");
-
-	tree_vb->add_child(memnew(HSeparator));
 
 	scan_dir = memnew(FileDialog);
 	scan_dir->set_access(FileDialog::ACCESS_FILESYSTEM);
@@ -2565,44 +2560,87 @@ ProjectManager::ProjectManager() {
 	scan_dir->connect("dir_selected", this, "_scan_begin");
 
 	Button *create = memnew(Button);
-	create->set_text(TTR("New Project"));
+	create->set_text(TTR("Create"));
+	create->set_icon(gui_base->get_icon("New", "EditorIcons"));
 	create->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KEY_MASK_CMD | KEY_N));
-	tree_vb->add_child(create);
+	sort_filters->add_child(create);
 	create->connect("pressed", this, "_new_project");
 
 	Button *import = memnew(Button);
-	import->set_text(TTR("Import"));
+	import->set_tooltip(TTR("Import"));
+	import->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
-	tree_vb->add_child(import);
+	sort_filters->add_child(import);
 	import->connect("pressed", this, "_import_project");
 
 	Button *rename = memnew(Button);
-	rename->set_text(TTR("Rename"));
+	rename->set_tooltip(TTR("Rename"));
+	rename->set_icon(gui_base->get_icon("Rename", "EditorIcons"));
 	// The F2 shortcut isn't overridden with Enter on macOS as Enter is already used to edit a project.
 	rename->set_shortcut(ED_SHORTCUT("project_manager/rename_project", TTR("Rename Project"), KEY_F2));
-	tree_vb->add_child(rename);
+	sort_filters->add_child(rename);
 	rename->connect("pressed", this, "_rename_project");
 	rename_btn = rename;
 
 	Button *erase = memnew(Button);
-	erase->set_text(TTR("Remove"));
+	erase->set_tooltip(TTR("Remove"));
+	erase->set_icon(gui_base->get_icon("Remove", "EditorIcons"));
 	erase->set_shortcut(ED_SHORTCUT("project_manager/remove_project", TTR("Remove Project"), KEY_DELETE));
-	tree_vb->add_child(erase);
+	sort_filters->add_child(erase);
 	erase->connect("pressed", this, "_erase_project");
 	erase_btn = erase;
 
 	Button *erase_missing = memnew(Button);
-	erase_missing->set_text(TTR("Remove Missing"));
-	tree_vb->add_child(erase_missing);
+	erase_missing->set_tooltip(TTR("Remove Missing"));
+	erase_missing->set_icon(gui_base->get_icon("Clear", "EditorIcons"));
+	sort_filters->add_child(erase_missing);
 	erase_missing->connect("pressed", this, "_erase_missing_projects");
 	erase_missing_btn = erase_missing;
 
-	tree_vb->add_spacer();
-
 	about_btn = memnew(Button);
 	about_btn->set_text(TTR("About"));
+	about_btn->set_icon(gui_base->get_icon("Heart", "EditorIcons"));
 	about_btn->connect("pressed", this, "_show_about");
-	tree_vb->add_child(about_btn);
+
+	// Add Icon Separator
+	TextureRect *sf_separator = memnew(TextureRect);
+	sf_separator->set_custom_minimum_size(Size2(16, 28) * EDSCALE);
+	sf_separator->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
+	sf_separator->set_expand(true);
+	sf_separator->set_texture(gui_base->get_icon("GuiHsplitter", "EditorIcons"));
+	sf_separator->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	sort_filters->add_child(sf_separator);
+
+	// Add Icon Separator
+	TextureRect *sf_separator_1 = memnew(TextureRect);
+	sf_separator_1->set_custom_minimum_size(Size2(16, 28) * EDSCALE);
+	sf_separator_1->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
+	sf_separator_1->set_expand(true);
+	sf_separator_1->set_texture(gui_base->get_icon("GuiHsplitter", "EditorIcons"));
+	sf_separator_1->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	sort_filters->add_child(sf_separator_1);
+
+	// Add Icon Separator
+	TextureRect *sf_separator_2 = memnew(TextureRect);
+	sf_separator_2->set_custom_minimum_size(Size2(16, 28) * EDSCALE);
+	sf_separator_2->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
+	sf_separator_2->set_expand(true);
+	sf_separator_2->set_texture(gui_base->get_icon("GuiHsplitter", "EditorIcons"));
+	sf_separator_2->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	sort_filters->add_child(sf_separator_2);
+
+	// Moving Child
+	sort_filters->move_child(create, 0);
+	sort_filters->move_child(import, 1);
+	sort_filters->move_child(scan, 2);
+	sort_filters->move_child(sf_separator, 3);
+	sort_filters->move_child(open, 4);
+	sort_filters->move_child(run, 5);
+	sort_filters->move_child(rename, 6);
+	sort_filters->move_child(erase, 7);
+	sort_filters->move_child(sf_separator_1, 8);
+	sort_filters->move_child(sf_separator_2, 11);
+	//sort_filters->move_child(erase_missing, 2);
 
 	if (AssetLibraryEditorPlugin::is_available()) {
 		asset_library = memnew(EditorAssetLibrary(true));
@@ -2635,7 +2673,7 @@ ProjectManager::ProjectManager() {
 	version_btn->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
 	version_btn->set_tooltip(TTR("Click to copy."));
 	version_btn->connect("pressed", this, "_version_button_pressed");
-	spacer_vb->add_child(version_btn);
+	// spacer_vb->add_child(version_btn);
 
 	// Add a small horizontal spacer between the version and language buttons
 	// to distinguish them.

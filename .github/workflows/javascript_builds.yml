@@ -48,5 +48,13 @@ jobs:
           target: release
           tools: false
 
+      - name: Compilation (Thread)
+        uses: ./.github/actions/godot-build
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} threads_enabled=yes
+          platform: javascript
+          target: release
+          tools: false
+
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact

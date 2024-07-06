@@ -222,6 +222,7 @@ class ScriptEditor : public PanelContainer {
 	bool members_overview_enabled;
 	ItemList *help_overview;
 	bool help_overview_enabled;
+	MarginContainer *list_split_container;
 	VSplitContainer *list_split;
 	TabContainer *tab_container;
 	EditorFileDialog *file_dialog;

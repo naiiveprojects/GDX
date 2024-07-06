@@ -1,4 +1,4 @@
-name: 🐧 Linux Builds
+name: 🟨 Linux Builds
 on:
   workflow_call:
 
@@ -20,41 +20,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Editor w/ Mono (target=release_debug, tools=yes)
-            cache-name: linux-editor-mono
+          - name: Editor (target=release_debug, tools=yes)
+            cache-name: linux-editor
             target: release_debug
             tools: true
-            sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no
-            bin: "./bin/godot.x11.opt.tools.64.mono"
-            build-mono: true
-            artifact: true
-
-          - name: Editor and sanitizers (target=debug, tools=yes, use_asan=yes, use_ubsan=yes, linker=gold)
-            cache-name: linux-editor-sanitizers
-            target: debug
-            tools: true
-            sconsflags: use_asan=yes use_ubsan=yes linker=gold
-            test: true
-            bin: "./bin/godot.x11.tools.64s"
-            build-mono: false
-            # Skip 2GiB artifact speeding up action.
-            artifact: false
-
-          - name: Template w/ Mono (target=release, tools=no)
-            cache-name: linux-template-mono
-            target: release
-            tools: false
-            sconsflags: module_mono_enabled=yes mono_static=yes mono_glue=no debug_symbols=no
+            sconsflags: debug_symbols=no
             build-mono: false
             artifact: true
 
-          - name: Minimal template (target=release, tools=no, everything disabled)
-            cache-name: linux-template-minimal
+          - name: Template (target=release, tools=no)
+            cache-name: linux-template
             target: release
             tools: false
-            sconsflags: modules_enabled_by_default=no disable_3d=yes disable_advanced_gui=yes deprecated=no minizip=no debug_symbols=no
+            sconsflags: debug_symbols=no
             build-mono: false
-            artifact: false
+            artifact: true
 
     steps:
       - uses: actions/checkout@v4

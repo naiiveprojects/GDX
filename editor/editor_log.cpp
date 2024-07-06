@@ -158,7 +158,7 @@ EditorLog::EditorLog() {
 	HBoxContainer *hb = memnew(HBoxContainer);
 	vb->add_child(hb);
 	title = memnew(Label);
-	title->set_text(TTR("Output:"));
+	title->set_text(VERSION_FULL_BUILD);
 	title->set_h_size_flags(SIZE_EXPAND_FILL);
 	hb->add_child(title);
 
@@ -183,7 +183,6 @@ EditorLog::EditorLog() {
 	log->set_h_size_flags(SIZE_EXPAND_FILL);
 	log->set_deselect_on_focus_loss_enabled(false);
 	vb->add_child(log);
-	add_message(VERSION_FULL_NAME " (c) 2007-2022 Juan Linietsky, Ariel Manzur & Godot Contributors.");
 
 	eh.errfunc = _error_handler;
 	eh.userdata = this;

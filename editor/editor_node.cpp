@@ -367,11 +367,11 @@ void EditorNode::_version_control_menu_option(int p_idx) {
 
 void EditorNode::_update_title() {
 	const String appname = ProjectSettings::get_singleton()->get("application/config/name");
-	String title = (appname.empty() ? TTR("Unnamed Project") : appname) + String(" - ") + VERSION_NAME;
+	String title = (appname.empty() ? TTR("Unnamed Project") : appname); // + String(" - ") + VERSION_NAME;
 	const String edited = editor_data.get_edited_scene_root() ? editor_data.get_edited_scene_root()->get_filename() : String();
 	if (!edited.empty()) {
 		// Display the edited scene name before the program name so that it can be seen in the OS task bar.
-		title = vformat("%s - %s", edited.get_file(), title);
+		title = vformat("%s - %s", title, edited.replace_first("res://", ""));
 	}
 	if (unsaved_cache) {
 		// Display the "modified" mark before anything else so that it can always be seen in the OS task bar.
@@ -569,9 +569,6 @@ void EditorNode::_notification(int p_what) {
 
 			gui_base->add_style_override("panel", gui_base->get_stylebox("Background", "EditorStyles"));
 			scene_root_parent->add_style_override("panel", gui_base->get_stylebox("Content", "EditorStyles"));
-			bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
-			scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
-			scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
 
 			file_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 			project_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
@@ -587,11 +584,6 @@ void EditorNode::_notification(int p_what) {
 			_update_scene_tabs();
 
 			recent_scenes->set_as_minsize();
-
-			// debugger area
-			if (ScriptEditor::get_singleton()->get_debugger()->is_visible()) {
-				bottom_panel->add_style_override("panel", gui_base->get_stylebox("BottomPanelDebuggerOverride", "EditorStyles"));
-			}
 
 			// update_icons
 			for (int i = 0; i < singleton->main_editor_buttons.size(); i++) {
@@ -615,12 +607,11 @@ void EditorNode::_notification(int p_what) {
 			stop_button->set_icon(gui_base->get_icon("Stop", "EditorIcons"));
 
 			prev_scene->set_icon(gui_base->get_icon("PrevScene", "EditorIcons"));
-			distraction_free->set_icon(gui_base->get_icon("DistractionFree", "EditorIcons"));
+			distraction_free->set_icon(gui_base->get_icon("FitWidth", "EditorIcons"));
 			scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 
 			bottom_panel_raise->set_icon(gui_base->get_icon("ExpandBottomDock", "EditorIcons"));
 
-			// clear_button->set_icon(gui_base->get_icon("Close", "EditorIcons")); don't have access to that node. needs to become a class property
 			dock_tab_move_left->set_icon(theme->get_icon("Back", "EditorIcons"));
 			dock_tab_move_right->set_icon(theme->get_icon("Forward", "EditorIcons"));
 
@@ -3230,7 +3221,7 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 		ToolButton *tb = memnew(ToolButton);
 		tb->set_toggle_mode(true);
 		tb->connect("pressed", singleton, "_editor_select", varray(singleton->main_editor_buttons.size()));
-		tb->set_text(p_editor->get_name());
+		tb->set_tooltip(p_editor->get_name());
 		Ref<Texture> icon = p_editor->get_icon();
 
 		if (icon.is_valid()) {
@@ -3243,8 +3234,6 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 		singleton->main_editor_buttons.push_back(tb);
 		singleton->main_editor_button_vb->add_child(tb);
 		singleton->editor_table.push_back(p_editor);
-
-		singleton->distraction_free->raise();
 	}
 	singleton->editor_data.add_editor_plugin(p_editor);
 	singleton->add_child(p_editor);
@@ -5184,25 +5173,19 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 			bottom_panel_items[i].button->set_pressed(i == p_idx);
 			bottom_panel_items[i].control->set_visible(i == p_idx);
 		}
-		if (ScriptEditor::get_singleton()->get_debugger() == bottom_panel_items[p_idx].control) { // this is the debug panel which uses tabs, so the top section should be smaller
-			bottom_panel->add_style_override("panel", gui_base->get_stylebox("BottomPanelDebuggerOverride", "EditorStyles"));
-		} else {
-			bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
-		}
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_VISIBLE);
 		center_split->set_collapsed(false);
 		if (bottom_panel_raise->is_pressed()) {
 			top_split->hide();
 		}
-		bottom_panel_raise->show();
+		bottom_panel_raise->set_disabled(false);
 
 	} else {
-		bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
 		bottom_panel_items[p_idx].button->set_pressed(false);
 		bottom_panel_items[p_idx].control->set_visible(false);
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 		center_split->set_collapsed(true);
-		bottom_panel_raise->hide();
+		bottom_panel_raise->set_disabled(true);
 		if (bottom_panel_raise->is_pressed()) {
 			top_split->show();
 		}
@@ -5797,6 +5780,8 @@ void EditorNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_project_settings_changed"), &EditorNode::_project_settings_changed);
 	ClassDB::bind_method(D_METHOD("_feature_profile_changed"), &EditorNode::_feature_profile_changed);
 
+	ClassDB::bind_method("_panel_visible", &EditorNode::_panel_visible);
+	ClassDB::bind_method("_editor_borderless", &EditorNode::_editor_borderless);
 	ClassDB::bind_method("_screenshot", &EditorNode::_screenshot);
 	ClassDB::bind_method("_request_screenshot", &EditorNode::_request_screenshot);
 	ClassDB::bind_method("_save_screenshot", &EditorNode::_save_screenshot);
@@ -5829,6 +5814,26 @@ static void _execute_thread(void *p_ud) {
 
 	eta->done.set();
 }
+
+void EditorNode::_editor_borderless(bool p_pressed) {
+	if (!p_pressed) {
+		OS::get_singleton()->set_borderless_window(false);
+		OS::get_singleton()->set_window_maximized(true);
+	} else {
+		if (OS::get_singleton()->is_window_maximized()) {
+			OS::get_singleton()->set_borderless_window(true);
+			OS::get_singleton()->set_window_maximized(true);
+		} else {
+			OS::get_singleton()->set_borderless_window(true);
+			OS::get_singleton()->center_window();
+		}
+	}
+}
+
+void EditorNode::_panel_visible(bool p_pressed) {
+    bottom_panel->set_visible(!p_pressed);
+}
+
 
 int EditorNode::execute_and_show_output(const String &p_title, const String &p_path, const List<String> &p_arguments, bool p_close_on_ok, bool p_close_on_errors) {
 	execute_output_dialog->set_title(p_title);
@@ -6085,7 +6090,7 @@ EditorNode::EditorNode() {
 	EDITOR_DEF("interface/editor/show_update_spinner", true);
 	EDITOR_DEF("interface/editor/update_vital_only", true);
 #else
-	EDITOR_DEF("interface/editor/show_update_spinner", false);
+	EDITOR_DEF("interface/editor/show_update_spinner", true);
 	EDITOR_DEF("interface/editor/update_vital_only", false);
 #endif
 	EDITOR_DEF("interface/editor/localize_settings", true);
@@ -6101,7 +6106,7 @@ EditorNode::EditorNode() {
 	EDITOR_DEF("interface/inspector/horizontal_vector_types_editing", true);
 	EDITOR_DEF("interface/inspector/open_resources_in_current_inspector", true);
 	EDITOR_DEF("interface/inspector/resources_to_open_in_new_inspector", "Script,MeshLibrary,TileSet");
-	EDITOR_DEF("interface/inspector/default_color_picker_mode", 0);
+	EDITOR_DEF("interface/inspector/default_color_picker_mode", 1);
 	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::INT, "interface/inspector/default_color_picker_mode", PROPERTY_HINT_ENUM, "RGB,HSV,RAW", PROPERTY_USAGE_DEFAULT));
 	EDITOR_DEF("version_control/username", "");
 	EDITOR_DEF("version_control/ssh_public_key_path", "");
@@ -6282,11 +6287,11 @@ EditorNode::EditorNode() {
 	tab_preview_panel->add_child(tab_preview);
 
 	scene_tabs = memnew(Tabs);
-	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
-	scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
+	scene_tabs->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
 	scene_tabs->set_select_with_rmb(true);
 	scene_tabs->add_tab("unsaved");
-	scene_tabs->set_tab_align(Tabs::ALIGN_LEFT);
+	scene_tabs->set_tab_align(Tabs::ALIGN_CENTER);
 	scene_tabs->set_tab_close_display_policy((bool(EDITOR_DEF("interface/scene_tabs/always_show_close_button", false)) ? Tabs::CLOSE_BUTTON_SHOW_ALWAYS : Tabs::CLOSE_BUTTON_SHOW_ACTIVE_ONLY));
 	scene_tabs->set_min_width(int(EDITOR_DEF("interface/scene_tabs/minimum_width", 50)) * EDSCALE);
 	scene_tabs->set_drag_to_rearrange_enabled(true);
@@ -6300,6 +6305,8 @@ EditorNode::EditorNode() {
 	scene_tabs->connect("resized", this, "_update_scene_tabs");
 
 	tabbar_container = memnew(HBoxContainer);
+	tabbar_container->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	tabbar_container->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	scene_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 
 	scene_tabs_context_menu = memnew(PopupMenu);
@@ -6307,7 +6314,6 @@ EditorNode::EditorNode() {
 	scene_tabs_context_menu->connect("id_pressed", this, "_menu_option");
 	scene_tabs_context_menu->set_hide_on_window_lose_focus(true);
 
-	srt->add_child(tabbar_container);
 	tabbar_container->add_child(scene_tabs);
 	distraction_free = memnew(ToolButton);
 #ifdef OSX_ENABLED
@@ -6317,12 +6323,11 @@ EditorNode::EditorNode() {
 #endif
 	distraction_free->set_tooltip(TTR("Toggle distraction-free mode."));
 	distraction_free->connect("pressed", this, "_toggle_distraction_free_mode");
-	distraction_free->set_icon(gui_base->get_icon("DistractionFree", "EditorIcons"));
+	distraction_free->set_icon(gui_base->get_icon("FitWidth", "EditorIcons"));
 	distraction_free->set_toggle_mode(true);
 
 	scene_tab_add = memnew(ToolButton);
-	tabbar_container->add_child(scene_tab_add);
-	tabbar_container->add_child(distraction_free);
+	scene_tab_add->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
 	scene_tab_add->set_tooltip(TTR("Add a new scene."));
 	scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 	scene_tab_add->add_color_override("icon_color_normal", Color(0.6f, 0.6f, 0.6f, 0.8f));
@@ -6335,8 +6340,9 @@ EditorNode::EditorNode() {
 	srt->add_child(scene_root_parent);
 	scene_root_parent->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
+
 	scene_root = memnew(Viewport);
-	//scene_root->set_usage(Viewport::USAGE_2D); canvas BG mode prevents usage of this as 2D
+	scene_root->set_usage(Viewport::USAGE_2D);// canvas BG mode prevents usage of this as 2D
 	scene_root->set_disable_3d(true);
 
 	VisualServer::get_singleton()->viewport_set_hide_scenario(scene_root->get_viewport_rid(), true);
@@ -6348,13 +6354,19 @@ EditorNode::EditorNode() {
 	viewport->add_constant_override("separation", 0);
 	scene_root_parent->add_child(viewport);
 
+	PanelContainer *left_menu_hb_bg = memnew(PanelContainer);
+	left_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	left_menu_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	left_menu_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	menu_hb->add_child(left_menu_hb_bg);
+
 	HBoxContainer *left_menu_hb = memnew(HBoxContainer);
-	menu_hb->add_child(left_menu_hb);
+	left_menu_hb_bg->add_child(left_menu_hb);
 
 	file_menu = memnew(MenuButton);
 	file_menu->set_flat(false);
 	file_menu->set_switch_on_hover(true);
-	file_menu->set_text(TTR("Scene"));
+	file_menu->set_icon(gui_base->get_icon("PackedScene", "EditorIcons"));
 	file_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 	left_menu_hb->add_child(file_menu);
 
@@ -6462,9 +6474,35 @@ EditorNode::EditorNode() {
 	project_menu->set_flat(false);
 	project_menu->set_switch_on_hover(true);
 	project_menu->set_tooltip(TTR("Miscellaneous project or scene-wide tools."));
-	project_menu->set_text(TTR("Project"));
-	project_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
+	project_menu->add_style_override("hover", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
+	project_menu->add_style_override("focus", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
+	project_menu->add_style_override("disabled", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
+	project_menu->add_style_override("normal", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
+	project_menu->set_expand_icon(true);
+	project_menu->set_icon_align(Button::ALIGN_CENTER);
+
+	// Change Project Menu Icon with project icon
+	const String project_icon = ProjectSettings::get_singleton()->get("application/config/icon");
+	Ref<Texture> default_icon = gui_base->get_icon("X", "EditorIcons");
+	Ref<Texture> icon;
+	if (project_icon != "") {
+		Ref<Image> img;
+		img.instance();
+		Error err = img->load(project_icon);
+		if (err == OK) {
+			Ref<ImageTexture> it = memnew(ImageTexture);
+			it->create_from_image(img);
+			icon = it;
+		}
+	}
+	if (icon.is_null() || icon == gui_base->get_icon("DefaultProjectIcon", "EditorIcons")) {
+		icon = default_icon;
+	}
+
+	project_menu->set_icon(icon);
+	project_menu->set_custom_minimum_size(Size2(32, 32));
 	left_menu_hb->add_child(project_menu);
+	left_menu_hb->move_child(project_menu, 0);
 
 	p = project_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
@@ -6506,15 +6544,20 @@ EditorNode::EditorNode() {
 	p->add_shortcut(ED_SHORTCUT("editor/quit_to_project_list", TTR("Quit to Project List"), KEY_MASK_SHIFT + KEY_MASK_CMD + KEY_Q), RUN_PROJECT_MANAGER, true);
 #endif
 
-	menu_hb->add_spacer();
-
+	PanelContainer *main_editor_button_vb_bg = memnew(PanelContainer);
+	main_editor_button_vb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	main_editor_button_vb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	main_editor_button_vb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	main_editor_button_vb = memnew(HBoxContainer);
-	menu_hb->add_child(main_editor_button_vb);
+	main_editor_button_vb_bg->add_child(main_editor_button_vb);
+	menu_hb->add_child(main_editor_button_vb_bg);
+
+	menu_hb->add_child(tabbar_container);
 
 	debug_menu = memnew(MenuButton);
 	debug_menu->set_flat(false);
 	debug_menu->set_switch_on_hover(true);
-	debug_menu->set_text(TTR("Debug"));
+	debug_menu->set_icon(gui_base->get_icon("Debug", "EditorIcons"));
 	debug_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 	left_menu_hb->add_child(debug_menu);
 
@@ -6567,12 +6610,10 @@ EditorNode::EditorNode() {
 
 	p->connect("id_pressed", this, "_menu_option");
 
-	menu_hb->add_spacer();
-
 	settings_menu = memnew(MenuButton);
 	settings_menu->set_flat(false);
 	settings_menu->set_switch_on_hover(true);
-	settings_menu->set_text(TTR("Editor"));
+	settings_menu->set_icon(gui_base->get_icon("Tools", "EditorIcons"));
 	settings_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 	left_menu_hb->add_child(settings_menu);
 
@@ -6627,7 +6668,7 @@ EditorNode::EditorNode() {
 	help_menu = memnew(MenuButton);
 	help_menu->set_flat(false);
 	help_menu->set_switch_on_hover(true);
-	help_menu->set_text(TTR("Help"));
+	help_menu->set_icon(gui_base->get_icon("HelpSearch", "EditorIcons"));
 	help_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
 	left_menu_hb->add_child(help_menu);
 
@@ -6650,9 +6691,16 @@ EditorNode::EditorNode() {
 	p->add_icon_shortcut(gui_base->get_icon("Godot", "EditorIcons"), ED_SHORTCUT("editor/about", TTR("About Godot")), HELP_ABOUT);
 	p->add_icon_shortcut(gui_base->get_icon("Heart", "EditorIcons"), ED_SHORTCUT("editor/support_development", TTR("Support Godot Development")), HELP_SUPPORT_GODOT_DEVELOPMENT);
 
-	HBoxContainer *play_hb = memnew(HBoxContainer);
-	menu_hb->add_child(play_hb);
 
+	PanelContainer *play_hb_bg = memnew(PanelContainer);
+	play_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	play_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	play_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	menu_hb->add_child(play_hb_bg);
+
+	HBoxContainer *play_hb = memnew(HBoxContainer);
+	play_hb_bg->add_child(play_hb);
+	
 	play_button = memnew(ToolButton);
 	play_hb->add_child(play_button);
 	play_button->set_toggle_mode(true);
@@ -6722,9 +6770,15 @@ EditorNode::EditorNode() {
 	play_custom_scene_button->set_shortcut(ED_SHORTCUT("editor/play_custom_scene", TTR("Play Custom Scene"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_F5));
 #endif
 
-	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
-	menu_hb->add_child(right_menu_hb);
+	PanelContainer *right_menu_hb_bg = memnew(PanelContainer);
+	right_menu_hb_bg->add_style_override("panel", gui_base->get_stylebox("DebuggerPanel", "EditorStyles"));
+	right_menu_hb_bg->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	right_menu_hb_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	menu_hb->add_child(right_menu_hb_bg);
 
+	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
+	right_menu_hb_bg->add_child(right_menu_hb);
+	/*
 	// Toggle for video driver
 	video_driver = memnew(OptionButton);
 	video_driver->set_flat(true);
@@ -6754,6 +6808,7 @@ EditorNode::EditorNode() {
 	video_restart_dialog->get_ok()->set_text(TTR("Save & Restart"));
 	video_restart_dialog->connect("confirmed", this, "_menu_option", varray(SET_VIDEO_DRIVER_SAVE_AND_RESTART));
 	gui_base->add_child(video_restart_dialog);
+	*/
 
 	progress_hb = memnew(BackgroundProgress);
 
@@ -6763,8 +6818,24 @@ EditorNode::EditorNode() {
 	layout_dialog->set_size(Size2(225, 270) * EDSCALE);
 	layout_dialog->connect("name_confirmed", this, "_dialog_action");
 
+	ToolButton *button_editor_borderless = memnew(ToolButton);
+	button_editor_borderless->set_tooltip("Borderless Mode");
+	button_editor_borderless->set_icon(gui_base->get_icon("WindowFilled", "EditorIcons"));
+	button_editor_borderless->set_toggle_mode(true);
+	button_editor_borderless->connect("toggled", this, "_editor_borderless");
+	right_menu_hb->add_child(button_editor_borderless);
+	button_editor_borderless->set_pressed(true);
+	_editor_borderless(true);
+
+	ToolButton *button_panel_bottom = memnew(ToolButton);
+	button_panel_bottom->set_icon(gui_base->get_icon("BottomFilled", "EditorIcons"));
+	button_panel_bottom->set_toggle_mode(true);
+	button_panel_bottom->connect("toggled", this, "_panel_visible");
+	right_menu_hb->add_child(button_panel_bottom);
+
+	right_menu_hb->add_child(distraction_free);
+
 	update_spinner = memnew(MenuButton);
-	right_menu_hb->add_child(update_spinner);
 	update_spinner->set_icon(gui_base->get_icon("Progress1", "EditorIcons"));
 	update_spinner->get_popup()->connect("id_pressed", this, "_menu_option");
 	p = update_spinner->get_popup();
@@ -6843,7 +6914,6 @@ EditorNode::EditorNode() {
 	// Bottom panels
 
 	bottom_panel = memnew(PanelContainer);
-	bottom_panel->add_style_override("panel", gui_base->get_stylebox("panel", "TabContainer"));
 	center_split->add_child(bottom_panel);
 	center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 
@@ -6854,31 +6924,11 @@ EditorNode::EditorNode() {
 	bottom_panel_hb->set_custom_minimum_size(Size2(0, 24 * EDSCALE)); // Adjust for the height of the "Expand Bottom Dock" icon.
 	bottom_panel_vb->add_child(bottom_panel_hb);
 
+	bottom_panel_hb->add_child(update_spinner);
+
 	bottom_panel_hb_editors = memnew(HBoxContainer);
-	bottom_panel_hb_editors->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	bottom_panel_hb_editors->set_h_size_flags(6);
 	bottom_panel_hb->add_child(bottom_panel_hb_editors);
-
-	VBoxContainer *version_info_vbc = memnew(VBoxContainer);
-	bottom_panel_hb->add_child(version_info_vbc);
-
-	// Add a dummy control node for vertical spacing.
-	Control *v_spacer = memnew(Control);
-	version_info_vbc->add_child(v_spacer);
-
-	version_btn = memnew(LinkButton);
-	version_btn->set_text(VERSION_FULL_CONFIG);
-	String hash = String(VERSION_HASH);
-	if (hash.length() != 0) {
-		hash = " " + vformat("[%s]", hash.left(9));
-	}
-	// Set the text to copy in metadata as it slightly differs from the button's text.
-	version_btn->set_meta(META_TEXT_TO_COPY, "v" VERSION_FULL_BUILD + hash);
-	// Fade out the version label to be less prominent, but still readable
-	version_btn->set_self_modulate(Color(1, 1, 1, 0.65));
-	version_btn->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
-	version_btn->set_tooltip(TTR("Click to copy."));
-	version_btn->connect("pressed", this, "_version_button_pressed");
-	version_info_vbc->add_child(version_btn);
 
 	// Add a dummy control node for horizontal spacing.
 	Control *h_spacer = memnew(Control);
@@ -6890,7 +6940,7 @@ EditorNode::EditorNode() {
 	bottom_panel_raise->set_shortcut(ED_SHORTCUT("editor/bottom_panel_expand", TTR("Expand Bottom Panel"), KEY_MASK_SHIFT | KEY_F12));
 
 	bottom_panel_hb->add_child(bottom_panel_raise);
-	bottom_panel_raise->hide();
+	bottom_panel_raise->set_disabled(true);
 	bottom_panel_raise->set_toggle_mode(true);
 	bottom_panel_raise->connect("toggled", this, "_bottom_panel_raise_toggled");
 
