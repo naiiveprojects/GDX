@@ -5831,7 +5831,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	show_origin = true;
 	show_viewport = true;
 	show_helpers = false;
-	show_rulers = true;
+	show_rulers = false;
 	show_guides = true;
 	show_position_gizmos = true;
 	show_lock_gizmos = true;
@@ -5898,9 +5898,12 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	editor->call_deferred("connect", "play_pressed", this, "_update_override_camera_button", make_binds(true));
 	editor->call_deferred("connect", "stop_pressed", this, "_update_override_camera_button", make_binds(false));
 
+	PanelContainer *main_flow_bg = memnew(PanelContainer);
+	main_flow_bg->add_style_override("panel",EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
+	main_flow_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	// A fluid container for all toolbars.
-	HFlowContainer *main_flow = memnew(HFlowContainer);
-	add_child(main_flow);
+	HBoxContainer *main_flow = memnew(HBoxContainer);
+	main_flow_bg->add_child(main_flow);
 
 	// Main toolbars.
 	HBoxContainer *main_menu_hbox = memnew(HBoxContainer);
@@ -5935,9 +5938,17 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	controls_vb = memnew(VBoxContainer);
 	controls_vb->set_begin(Point2(5, 5));
+	controls_vb->set_anchors_preset(LayoutPreset::PRESET_CENTER);
+	controls_vb->set_anchor_and_margin(MARGIN_TOP, ANCHOR_BEGIN, -20 * EDSCALE);
+	controls_vb->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_BEGIN, -10 * EDSCALE);
+	controls_vb->set_h_grow_direction(GROW_DIRECTION_BOTH);
+	controls_vb->set_v_grow_direction(GROW_DIRECTION_END);
+
+	controls_vb->add_child(main_flow_bg);
 
 	zoom_hb = memnew(HBoxContainer);
 	// Bring the zoom percentage closer to the zoom buttons
+	zoom_hb->set_h_size_flags(SIZE_SHRINK_CENTER);
 	zoom_hb->add_constant_override("separation", Math::round(-8 * EDSCALE));
 	controls_vb->add_child(zoom_hb);
 

@@ -1,4 +1,4 @@
-name: 🤖 Android Builds
+name: 🟢 Android Builds
 on:
   workflow_call:
 
@@ -44,14 +44,6 @@ jobs:
         uses: ./.github/actions/godot-build
         with:
           sconsflags: ${{ env.SCONSFLAGS }} android_arch=armv7
-          platform: android
-          target: release
-          tools: false
-
-      - name: Compilation (arm64v8)
-        uses: ./.github/actions/godot-build
-        with:
-          sconsflags: ${{ env.SCONSFLAGS }} android_arch=arm64v8
           platform: android
           target: release
           tools: false

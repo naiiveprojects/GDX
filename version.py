@@ -1,10 +1,10 @@
-short_name = "godot"
-name = "Godot Engine"
+short_name = "gdx"
+name = "gdx"
 major = 3
 minor = 6
 patch = 0
-status = "rc"
+status = "b3"
 module_config = ""
 year = 2024
-website = "https://godotengine.org"
+website = "https://github.com/naiiveprojects"
 docs = "3.6"

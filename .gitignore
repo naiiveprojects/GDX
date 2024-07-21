@@ -22,7 +22,7 @@
 ### Build configuration ###
 ###########################
 
-/custom.py
+#/custom.py
 misc/hooks/pre-commit-custom-*
 
 #############################

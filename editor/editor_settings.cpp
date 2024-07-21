@@ -356,10 +356,10 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	hints["interface/theme/accent_color"] = PropertyInfo(Variant::COLOR, "interface/theme/accent_color", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/theme/contrast", 0.25);
 	hints["interface/theme/contrast"] = PropertyInfo(Variant::REAL, "interface/theme/contrast", PROPERTY_HINT_RANGE, "-1, 1, 0.01");
-	_initial_set("interface/theme/relationship_line_opacity", 0.1);
+	_initial_set("interface/theme/relationship_line_opacity", 0.15);
 	hints["interface/theme/relationship_line_opacity"] = PropertyInfo(Variant::REAL, "interface/theme/relationship_line_opacity", PROPERTY_HINT_RANGE, "0.00, 1, 0.01");
 	_initial_set("interface/theme/highlight_tabs", false);
-	_initial_set("interface/theme/border_size", 1);
+	_initial_set("interface/theme/border_size", 0);
 	_initial_set("interface/theme/use_graph_node_headers", false);
 	hints["interface/theme/border_size"] = PropertyInfo(Variant::INT, "interface/theme/border_size", PROPERTY_HINT_RANGE, "0,2,1", PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/theme/additional_spacing", 0);
@@ -452,7 +452,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	hints["text_editor/navigation/minimap_width"] = PropertyInfo(Variant::INT, "text_editor/navigation/minimap_width", PROPERTY_HINT_RANGE, "50,250,1");
 	_initial_set("text_editor/navigation/mouse_extra_buttons_navigate_history", true);
 	_initial_set("text_editor/navigation/drag_and_drop_selection", true);
-	_initial_set("text_editor/navigation/stay_in_script_editor_on_node_selected", true);
+	_initial_set("text_editor/navigation/stay_in_script_editor_on_node_selected", false);
 
 	// Appearance
 	_initial_set("text_editor/appearance/show_line_numbers", true);
@@ -461,7 +461,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("text_editor/appearance/show_breakpoint_gutter", true);
 	_initial_set("text_editor/appearance/show_info_gutter", true);
 	_initial_set("text_editor/appearance/code_folding", true);
-	_initial_set("text_editor/appearance/word_wrap", false);
+	_initial_set("text_editor/appearance/word_wrap", true);
 	_initial_set("text_editor/appearance/show_line_length_guidelines", true);
 	_initial_set("text_editor/appearance/line_length_guideline_soft_column", 80);
 	hints["text_editor/appearance/line_length_guideline_soft_column"] = PropertyInfo(Variant::INT, "text_editor/appearance/line_length_guideline_soft_column", PROPERTY_HINT_RANGE, "20, 160, 1");
@@ -482,7 +482,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("text_editor/tools/sort_members_outline_alphabetically", false);
 
 	// Cursor
-	_initial_set("text_editor/cursor/scroll_past_end_of_file", false);
+	_initial_set("text_editor/cursor/scroll_past_end_of_file", true);
 	_initial_set("text_editor/cursor/block_caret", false);
 	_initial_set("text_editor/cursor/caret_blink", true);
 	_initial_set("text_editor/cursor/caret_blink_speed", 0.5);
@@ -498,7 +498,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("text_editor/completion/put_callhint_tooltip_below_current_line", true);
 	_initial_set("text_editor/completion/callhint_tooltip_offset", Vector2());
 	_initial_set("text_editor/completion/complete_file_paths", true);
-	_initial_set("text_editor/completion/add_type_hints", false);
+	_initial_set("text_editor/completion/add_type_hints", true);
 	_initial_set("text_editor/completion/use_single_quotes", false);
 
 	// Help
@@ -604,7 +604,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/3d/freelook/freelook_speed_zoom_link", false);
 
 	// 2D
-	_initial_set("editors/2d/grid_color", Color(1.0, 1.0, 1.0, 0.07));
+	_initial_set("editors/2d/grid_color", Color(0.5, 0.5, 0.5, 0.07));
 	_initial_set("editors/2d/guides_color", Color(0.6, 0.0, 0.8));
 	_initial_set("editors/2d/smart_snapping_line_color", Color(0.9, 0.1, 0.1));
 	_initial_set("editors/2d/bone_width", 5);
@@ -615,7 +615,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/2d/bone_outline_color", Color(0.35, 0.35, 0.35));
 	_initial_set("editors/2d/bone_outline_size", 2);
 	_initial_set("editors/2d/viewport_border_color", Color(0.4, 0.4, 1.0, 0.4));
-	_initial_set("editors/2d/constrain_editor_view", true);
+	_initial_set("editors/2d/constrain_editor_view", false);
 	_initial_set("editors/2d/warped_mouse_panning", true);
 	_initial_set("editors/2d/simple_panning", false);
 	_initial_set("editors/2d/scroll_to_pan", false);
@@ -663,7 +663,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("run/output/font_size", 13);
 	hints["run/output/font_size"] = PropertyInfo(Variant::INT, "run/output/font_size", PROPERTY_HINT_RANGE, "8,48,1");
 	_initial_set("run/output/always_clear_output_on_play", true);
-	_initial_set("run/output/always_open_output_on_play", true);
+	_initial_set("run/output/always_open_output_on_play", false);
 	_initial_set("run/output/always_close_output_on_stop", false);
 
 	/* Network */
@@ -686,7 +686,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	/* Extra config */
 
 	// TRANSLATORS: Project Manager here refers to the tool used to create/manage Godot projects.
-	_initial_set("project_manager/sorting_order", 0);
+	_initial_set("project_manager/sorting_order", 2);
 	hints["project_manager/sorting_order"] = PropertyInfo(Variant::INT, "project_manager/sorting_order", PROPERTY_HINT_ENUM, "Name,Path,Last Modified");
 
 	if (p_extra_config.is_valid()) {
