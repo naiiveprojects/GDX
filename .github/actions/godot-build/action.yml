@@ -33,6 +33,8 @@ runs:
           SCONS_CACHE: ${{ inputs.scons-cache }}
           SCONS_CACHE_LIMIT: ${{ inputs.scons-cache-limit }}
       run: |
+        export BUILD_NAME="NA\\\\VE"
+        export SCRIPT_AES256_ENCRYPTION_KEY="aeb1bc56aaf580cc31784e9c41551e9ed976ecba10d315db591e749f3f64890f"
         echo "Building with flags:" ${{ env.SCONSFLAGS }}
         scons p=${{ inputs.platform }} target=${{ inputs.target }} tools=${{ inputs.tools }} tests=${{ inputs.tests }} ${{ env.SCONSFLAGS }}
         ls -l bin/

@@ -57,10 +57,26 @@ void ProgressBar::_notification(int p_what) {
 
 		draw_style_box(bg, Rect2(Point2(), get_size()));
 		float r = get_as_ratio();
-		int mp = fg->get_minimum_size().width;
-		int p = r * (get_size().width - mp);
-		if (p > 0) {
-			draw_style_box(fg, Rect2(Point2(), Size2(p + fg->get_minimum_size().width, get_size().height)));
+		if (fill == FILL_LEFT_TO_RIGHT || fill == FILL_RIGHT_TO_LEFT) {
+			int mp = fg->get_minimum_size().width;
+			int p = r * (get_size().width - mp);
+			if (p > 0) {
+				if (fill == FILL_LEFT_TO_RIGHT) {
+					draw_style_box(fg, Rect2(Point2(), Size2(p + fg->get_minimum_size().width, get_size().height)));
+				} else {
+					draw_style_box(fg, Rect2(Point2(get_size().width - (p + fg->get_minimum_size().width), 0), Size2(p + fg->get_minimum_size().width, get_size().height)));
+				}
+			}
+		} else {
+			int mp = fg->get_minimum_size().height;
+			int p = r * (get_size().height - mp);
+			if (p > 0) {
+				if (fill == FILL_BOTTOM_TO_TOP) {
+					draw_style_box(fg, Rect2(Point2(), Size2(get_size().width, p + fg->get_minimum_size().height)));
+				} else {
+					draw_style_box(fg, Rect2(Point2(0, get_size().height - (p + fg->get_minimum_size().height)), Size2(get_size().width, p + fg->get_minimum_size().height)));
+				}
+			}
 		}
 
 		if (percent_visible) {
@@ -79,15 +95,35 @@ bool ProgressBar::is_percent_visible() const {
 	return percent_visible;
 }
 
+void ProgressBar::set_fill_mode(FillMode p_fill) {
+	fill = p_fill;
+	update();
+}
+
+ProgressBar::FillMode ProgressBar::get_fill_mode() const {
+	return fill;
+}
+
 void ProgressBar::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_percent_visible", "visible"), &ProgressBar::set_percent_visible);
 	ClassDB::bind_method(D_METHOD("is_percent_visible"), &ProgressBar::is_percent_visible);
+	ClassDB::bind_method(D_METHOD("get_fill_mode"), &ProgressBar::get_fill_mode);
+	ClassDB::bind_method(D_METHOD("set_fill_mode", "fill_direction"), &ProgressBar::set_fill_mode);
+
 	ADD_GROUP("Percent", "percent_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "percent_visible"), "set_percent_visible", "is_percent_visible");
+	BIND_ENUM_CONSTANT(FILL_LEFT_TO_RIGHT);
+	BIND_ENUM_CONSTANT(FILL_RIGHT_TO_LEFT);
+	BIND_ENUM_CONSTANT(FILL_BOTTOM_TO_TOP);
+	BIND_ENUM_CONSTANT(FILL_TOP_TO_BOTTOM);
+
+	ADD_GROUP("Fill Direction", "fill_");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "fill_direction", PROPERTY_HINT_ENUM, "Left to Right,Right to Left,Bottom to Top,Top to Bottom"), "set_fill_mode", "get_fill_mode");
 }
 
 ProgressBar::ProgressBar() {
 	set_v_size_flags(0);
 	set_step(0.01);
 	percent_visible = true;
+	fill = FILL_LEFT_TO_RIGHT;
 }

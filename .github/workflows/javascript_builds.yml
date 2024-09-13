@@ -48,6 +48,14 @@ jobs:
           target: release
           tools: false
 
+      - name: Compilation (Thread)
+        uses: ./.github/actions/godot-build
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} threads_enabled=yes
+          platform: javascript
+          target: release
+          tools: false
+
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
         continue-on-error: true
