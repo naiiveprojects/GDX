@@ -1530,6 +1530,13 @@ Error OS_Windows::initialize(const VideoMode &p_desired, int p_video_driver, int
 			MessageBoxW(NULL, L"Window Creation Error.", L"ERROR", MB_OK | MB_ICONEXCLAMATION);
 			return ERR_UNAVAILABLE;
 		}
+		if (!video_mode.fullscreen) {
+			// Use Dark Mode and extend window frame into client area
+			BOOL dark_mode = TRUE;
+			DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_mode, sizeof(dark_mode));
+			MARGINS margins = {-1};
+			DwmExtendFrameIntoClientArea(hWnd, &margins);
+		}
 	};
 
 	if (video_mode.always_on_top) {
