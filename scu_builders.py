@@ -303,7 +303,6 @@ def generate_scu_files(verbose, is_release_build):
 
     process_folder(["modules/bullet"])
     process_folder(["modules/navigation"])
-    process_folder(["modules/visual_script"])
     process_folder(["modules/webrtc"])
     process_folder(["modules/webxr"])
     process_folder(["modules/websocket"])
