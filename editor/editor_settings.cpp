@@ -663,8 +663,8 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("run/output/font_size", 13);
 	hints["run/output/font_size"] = PropertyInfo(Variant::INT, "run/output/font_size", PROPERTY_HINT_RANGE, "8,48,1");
 	_initial_set("run/output/always_clear_output_on_play", true);
-	_initial_set("run/output/always_open_output_on_play", false);
-	_initial_set("run/output/always_close_output_on_stop", false);
+	_initial_set("run/output/always_open_output_on_play", true);
+	_initial_set("run/output/always_close_output_on_stop", true);
 
 	/* Network */
 
