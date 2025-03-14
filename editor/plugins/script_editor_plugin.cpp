@@ -963,13 +963,27 @@ Array ScriptEditor::_get_open_scripts() const {
 }
 
 bool ScriptEditor::toggle_scripts_panel() {
-	list_split->set_visible(!list_split->is_visible());
-	EditorSettings::get_singleton()->set_project_metadata("scripts_panel", "show_scripts_panel", list_split->is_visible());
-	return list_split->is_visible();
+	if (list_split_dock->is_inside_tree()) {
+		list_split->get_parent()->remove_child(list_split);
+		script_split->add_child(list_split);
+		script_split->move_child(list_split, 0);
+		list_split->set_h_size_flags(SIZE_FILL);
+		EditorNode::get_singleton()->remove_control_from_dock(list_split_dock);
+	} else {
+		script_split->remove_child(list_split);
+		list_split_dock->add_child(list_split);
+		list_split->set_h_size_flags(SIZE_EXPAND_FILL);
+		EditorNode::get_singleton()->add_control_to_dock(EditorNode::DOCK_SLOT_LEFT_BR, list_split_dock);
+		TabContainer* tb = dynamic_cast<TabContainer*>(list_split_dock->get_parent());
+		tb->set_current_tab(list_split_dock->get_index());
+	}
+	list_split->set_v_size_flags(SIZE_EXPAND_FILL);
+	EditorSettings::get_singleton()->set_project_metadata("scripts_panel", "show_scripts_panel", list_split_dock->is_inside_tree());
+	return list_split_dock->is_inside_tree();
 }
 
 bool ScriptEditor::is_scripts_panel_toggled() {
-	return list_split->is_visible();
+	return list_split_dock->is_inside_tree();
 }
 
 void ScriptEditor::_menu_option(int p_option) {
@@ -1457,6 +1471,7 @@ void ScriptEditor::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_EXIT_TREE: {
+			list_split_dock->queue_delete();
 			editor->disconnect("play_pressed", this, "_editor_play");
 			editor->disconnect("pause_pressed", this, "_editor_pause");
 			editor->disconnect("stop_pressed", this, "_editor_stop");
@@ -1470,6 +1485,10 @@ void ScriptEditor::_notification(int p_what) {
 		case CanvasItem::NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
 				find_in_files_button->show();
+				if (list_split_dock->is_inside_tree()) {
+					TabContainer* tb = dynamic_cast<TabContainer*>(list_split_dock->get_parent());
+					tb->set_current_tab(list_split_dock->get_index());
+				}
 			} else {
 				if (find_in_files->is_visible_in_tree()) {
 					editor->hide_bottom_panel();
@@ -3267,6 +3286,11 @@ ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	main_container->add_child(script_split);
 	script_split->set_v_size_flags(SIZE_EXPAND_FILL);
 
+	list_split_dock = memnew(MarginContainer);
+	list_split_dock->set_v_size_flags(SIZE_EXPAND_FILL);
+	list_split_dock->set_h_size_flags(SIZE_EXPAND_FILL);
+	list_split_dock->set_name(TTR("Script"));
+
 	list_split = memnew(VSplitContainer);
 	script_split->add_child(list_split);
 	list_split->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -3301,7 +3325,9 @@ ScriptEditor::ScriptEditor(EditorNode *p_editor) {
 	overview_vbox->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	list_split->add_child(overview_vbox);
-	list_split->set_visible(EditorSettings::get_singleton()->get_project_metadata("scripts_panel", "show_scripts_panel", true));
+	if (EditorSettings::get_singleton()->get_project_metadata("scripts_panel", "show_scripts_panel", true)) {
+		toggle_scripts_panel();
+	}
 	buttons_hbox = memnew(HBoxContainer);
 	overview_vbox->add_child(buttons_hbox);
 
