@@ -385,6 +385,7 @@ private:
 	HBoxContainer *tabbar_container;
 	ToolButton *distraction_free;
 	ToolButton *scene_tab_add;
+	ToolButton *button_close;
 
 	bool scene_distraction;
 	bool script_distraction;
@@ -441,7 +442,6 @@ private:
 	HBoxContainer *bottom_panel_hb;
 	HBoxContainer *bottom_panel_hb_editors;
 	VBoxContainer *bottom_panel_vb;
-	LinkButton *version_btn;
 	ToolButton *bottom_panel_raise;
 
 	Tree *disk_changed_list;
@@ -473,6 +473,8 @@ private:
 	void _request_screenshot();
 	void _screenshot(bool p_use_utc = false);
 	void _save_screenshot(NodePath p_path);
+	void _borderless(bool p_pressed);
+	void _bottom_panel_visible(bool p_pressed);
 
 	void _tool_menu_option(int p_idx);
 	void _update_debug_options();
@@ -498,7 +500,6 @@ private:
 	void _close_messages();
 	void _show_messages();
 	void _vp_resized();
-	void _version_button_pressed();
 
 	int _save_external_resources();
 
