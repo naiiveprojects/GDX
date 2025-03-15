@@ -301,6 +301,30 @@ void FileSystemDock::_update_tree(const Vector<String> &p_uncollapsed_paths, boo
 
 void FileSystemDock::set_display_mode(DisplayMode p_display_mode) {
 	display_mode = p_display_mode;
+	// Implemented almost like the plugin on https://github.com/naiiveprojects/nv.gd.file_system
+	if (old_display_mode != p_display_mode) {
+		switch (p_display_mode) {
+			case DISPLAY_MODE_TREE_ONLY:
+				if (!this->get_parent()->is_class("TabContainer")) {
+					editor->remove_bottom_panel_item(this);
+					dock_panel->add_child(this);
+					dock_panel->move_child(this, 0);
+					dock_panel->set_current_tab(this->get_index());
+					this->set_custom_minimum_size(Size2i(0, 0));
+				};
+				break;
+			case DISPLAY_MODE_SPLIT:
+				if (this->get_parent()->is_class("TabContainer")) {
+					dock_panel = dynamic_cast<TabContainer*>(this->get_parent());
+					editor->remove_control_from_dock(this);
+					button_bottom_panel = dynamic_cast<ToolButton*>(editor->add_bottom_panel_item("FileSystem", this));
+					button_bottom_panel->get_parent()->move_child(button_bottom_panel, 0);
+					button_bottom_panel->set_pressed(true);
+					this->set_custom_minimum_size(Size2i(320, 320));
+				};
+				break;
+		}
+	}
 	_update_display_mode(false);
 }
 
@@ -370,7 +394,7 @@ void FileSystemDock::_notification(int p_what) {
 
 			always_show_folders = bool(EditorSettings::get_singleton()->get("docks/filesystem/always_show_folders"));
 
-			set_file_list_display_mode(FileSystemDock::FILE_LIST_DISPLAY_LIST);
+			set_file_list_display_mode(FileSystemDock::FILE_LIST_DISPLAY_THUMBNAILS);
 
 			_update_display_mode();
 
@@ -2829,7 +2853,7 @@ FileSystemDock::FileSystemDock(EditorNode *p_editor) {
 	tree_popup->set_hide_on_window_lose_focus(true);
 	add_child(tree_popup);
 
-	split_box = memnew(VSplitContainer);
+	split_box = memnew(HSplitContainer);
 	split_box->set_v_size_flags(SIZE_EXPAND_FILL);
 	add_child(split_box);
 
@@ -2840,6 +2864,8 @@ FileSystemDock::FileSystemDock(EditorNode *p_editor) {
 	tree->set_allow_rmb_select(true);
 	tree->set_select_mode(Tree::SELECT_MULTI);
 	tree->set_custom_minimum_size(Size2(0, 15 * EDSCALE));
+	tree->set_h_size_flags(SIZE_EXPAND_FILL);
+	tree->set_stretch_ratio(0.2);
 	split_box->add_child(tree);
 
 	tree->connect("item_activated", this, "_tree_activate_file");
@@ -2850,7 +2876,7 @@ FileSystemDock::FileSystemDock(EditorNode *p_editor) {
 	tree->connect("gui_input", this, "_tree_gui_input");
 
 	file_list_vb = memnew(VBoxContainer);
-	file_list_vb->set_v_size_flags(SIZE_EXPAND_FILL);
+	file_list_vb->set_h_size_flags(SIZE_EXPAND_FILL);
 	split_box->add_child(file_list_vb);
 
 	path_hb = memnew(HBoxContainer);
@@ -2966,7 +2992,7 @@ FileSystemDock::FileSystemDock(EditorNode *p_editor) {
 
 	display_mode = DISPLAY_MODE_TREE_ONLY;
 	old_display_mode = DISPLAY_MODE_TREE_ONLY;
-	file_list_display_mode = FILE_LIST_DISPLAY_THUMBNAILS;
+	file_list_display_mode = FILE_LIST_DISPLAY_LIST;
 
 	always_show_folders = false;
 }
