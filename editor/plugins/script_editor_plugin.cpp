@@ -1227,8 +1227,10 @@ void ScriptEditor::_menu_option(int p_option) {
 					FileSystemDock *file_system_dock = EditorNode::get_singleton()->get_filesystem_dock();
 					file_system_dock->navigate_to_path(path);
 					// Ensure that the FileSystem dock is visible.
-					TabContainer *tab_container = (TabContainer *)file_system_dock->get_parent_control();
-					tab_container->set_current_tab(file_system_dock->get_position_in_parent());
+					if (file_system_dock->get_parent_control()->is_class("TabContainer")) {
+						TabContainer *tab_container = (TabContainer *)file_system_dock->get_parent_control();
+						tab_container->set_current_tab(file_system_dock->get_position_in_parent());
+					}
 				}
 			} break;
 			case CLOSE_DOCS: {
