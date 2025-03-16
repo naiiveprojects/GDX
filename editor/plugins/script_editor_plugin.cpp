@@ -2722,6 +2722,10 @@ void ScriptEditor::_script_list_gui_input(const Ref<InputEvent> &ev) {
 			case BUTTON_RIGHT: {
 				_make_script_list_context_menu();
 			} break;
+
+			case BUTTON_LEFT: {
+				EditorNode::get_singleton()->set_visible_editor(EditorNode::EDITOR_SCRIPT);
+			} break;
 		}
 	}
 }
