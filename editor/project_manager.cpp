@@ -468,31 +468,13 @@ private:
 						initial_settings["rendering/vram_compression/import_etc"] = true;
 					}
 					initial_settings["application/config/name"] = project_name->get_text().strip_edges();
-					initial_settings["application/config/icon"] = "res://icon.png";
-					initial_settings["rendering/environment/default_environment"] = "res://default_env.tres";
 					initial_settings["physics/common/enable_pause_aware_picking"] = true;
 					initial_settings["gui/common/drop_mouse_on_gui_input_disabled"] = true;
 
 					if (ProjectSettings::get_singleton()->save_custom(dir.plus_file("project.godot"), initial_settings, Vector<String>(), false) != OK) {
 						set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-					} else {
-						ResourceSaver::save(dir.plus_file("icon.png"), create_unscaled_default_project_icon());
-
-						FileAccess *f = FileAccess::open(dir.plus_file("default_env.tres"), FileAccess::WRITE);
-						if (!f) {
-							set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
-						} else {
-							f->store_line("[gd_resource type=\"Environment\" load_steps=2 format=2]");
-							f->store_line("");
-							f->store_line("[sub_resource type=\"ProceduralSky\" id=1]");
-							f->store_line("");
-							f->store_line("[resource]");
-							f->store_line("background_mode = 2");
-							f->store_line("background_sky = SubResource( 1 )");
-							memdelete(f);
-						}
 					}
-
+				
 				} else if (mode == MODE_INSTALL) {
 					if (project_path->get_text().ends_with(".zip")) {
 						dir = install_path->get_text();
