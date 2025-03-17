@@ -227,7 +227,7 @@ private:
 
 	Viewport *scene_root; //root of the scene being edited
 
-	PanelContainer *scene_root_parent;
+	MarginContainer *scene_root_parent;
 	Control *theme_base;
 	Control *gui_base;
 	VBoxContainer *main_vbox;
@@ -619,7 +619,7 @@ private:
 	void _load_docks_from_config(Ref<ConfigFile> p_layout, const String &p_section);
 	void _update_dock_slots_visibility(bool p_keep_selected_tabs = false);
 	void _dock_tab_changed(int p_tab);
-
+	void _set_dock_icon(Node *p_node);
 	bool restoring_scenes;
 	void _save_open_scenes_to_config(Ref<ConfigFile> p_layout, const String &p_section);
 	void _load_open_scenes_from_config(Ref<ConfigFile> p_layout, const String &p_section);
