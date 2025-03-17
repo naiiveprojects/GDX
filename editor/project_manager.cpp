@@ -51,6 +51,7 @@
 #include "scene/gui/separator.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/tool_button.h"
+#include "scene/gui/flow_container.h"
 #include "servers/navigation_server.h"
 
 // Used to test for GLES3 support.
@@ -1047,7 +1048,7 @@ private:
 	ProjectListFilter::FilterOption _order_option;
 	Set<String> _selected_project_keys;
 	String _last_clicked; // Project key
-	VBoxContainer *_scroll_children;
+	HFlowContainer *_scroll_children;
 	int _icon_load_index;
 
 	Vector<Item> _projects;
@@ -1078,8 +1079,9 @@ struct ProjectListComparator {
 ProjectList::ProjectList() {
 	_order_option = ProjectListFilter::FILTER_MODIFIED;
 
-	_scroll_children = memnew(VBoxContainer);
+	_scroll_children = memnew(HFlowContainer);
 	_scroll_children->set_h_size_flags(SIZE_EXPAND_FILL);
+	_scroll_children->set_v_size_flags(SIZE_EXPAND_FILL);
 	add_child(_scroll_children);
 
 	_icon_load_index = 0;
@@ -1282,22 +1284,9 @@ void ProjectList::create_project_item_control(int p_index) {
 	ProjectListItemControl *hb = memnew(ProjectListItemControl);
 	hb->connect("draw", this, "_panel_draw", varray(hb));
 	hb->connect("gui_input", this, "_panel_input", varray(hb));
+	hb->set_custom_minimum_size(Size2(512, 0));
 	hb->add_constant_override("separation", 10 * EDSCALE);
 	hb->set_tooltip(item.description);
-
-	VBoxContainer *favorite_box = memnew(VBoxContainer);
-	favorite_box->set_name("FavoriteBox");
-	TextureButton *favorite = memnew(TextureButton);
-	favorite->set_name("FavoriteButton");
-	favorite->set_normal_texture(favorite_icon);
-	// This makes the project's "hover" style display correctly when hovering the favorite icon
-	favorite->set_mouse_filter(MOUSE_FILTER_PASS);
-	favorite->connect("pressed", this, "_favorite_pressed", varray(hb));
-	favorite_box->add_child(favorite);
-	favorite_box->set_alignment(BoxContainer::ALIGN_CENTER);
-	hb->add_child(favorite_box);
-	hb->favorite_button = favorite;
-	hb->set_is_favorite(item.favorite);
 
 	TextureRect *tf = memnew(TextureRect);
 	// The project icon may not be loaded by the time the control is displayed,
@@ -1310,12 +1299,32 @@ void ProjectList::create_project_item_control(int p_index) {
 	hb->add_child(tf);
 	hb->icon = tf;
 
+	VBoxContainer *favorite_box = memnew(VBoxContainer);
+	favorite_box->set_name("FavoriteBox");
+
+	TextureButton *favorite = memnew(TextureButton);
+	favorite->set_name("FavoriteButton");
+	favorite->set_normal_texture(favorite_icon);
+	favorite->set_stretch_mode(TextureButton::STRETCH_KEEP_ASPECT_CENTERED);
+	favorite->set_h_size_flags(TextureButton::SIZE_EXPAND_FILL);
+	favorite->set_v_size_flags(TextureButton::SIZE_EXPAND_FILL);
+	// This makes the project's "hover" style display correctly when hovering the favorite icon
+	favorite->set_mouse_filter(MOUSE_FILTER_PASS);
+	favorite->connect("pressed", this, "_favorite_pressed", varray(hb));
+	favorite_box->add_child(favorite);
+	favorite_box->set_alignment(BoxContainer::ALIGN_CENTER);
+	tf->add_child(favorite_box);
+	hb->favorite_button = favorite;
+	hb->set_is_favorite(item.favorite);
+
 	VBoxContainer *vb = memnew(VBoxContainer);
 	if (item.grayed) {
 		vb->set_modulate(Color(1, 1, 1, 0.5));
 	}
 	vb->set_h_size_flags(SIZE_EXPAND_FILL);
+	vb->set_v_size_flags(SIZE_SHRINK_CENTER);
 	hb->add_child(vb);
+
 	Control *ec = memnew(Control);
 	ec->set_custom_minimum_size(Size2(0, 1));
 	ec->set_mouse_filter(MOUSE_FILTER_PASS);
@@ -1330,9 +1339,10 @@ void ProjectList::create_project_item_control(int p_index) {
 	path_hb->set_h_size_flags(SIZE_EXPAND_FILL);
 	vb->add_child(path_hb);
 
-	Button *show = memnew(Button);
+	TextureButton *show = memnew(TextureButton);
 	// Display a folder icon if the project directory can be opened, or a "broken file" icon if it can't.
-	show->set_icon(get_icon(!item.missing ? "Load" : "FileBroken", "EditorIcons"));
+	show->set_normal_texture(get_icon(!item.missing ? "Load" : "FileBroken", "EditorIcons"));
+	show->set_stretch_mode(TextureButton::STRETCH_KEEP_ASPECT_CENTERED);
 	if (!item.grayed) {
 		// Don't make the icon less prominent if the parent is already grayed out.
 		show->set_modulate(Color(1, 1, 1, 0.5));
@@ -1353,6 +1363,7 @@ void ProjectList::create_project_item_control(int p_index) {
 	fpath->add_color_override("font_color", font_color);
 	fpath->set_clip_text(true);
 
+	hb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	_scroll_children->add_child(hb);
 	item.control = hb;
 }
@@ -1763,11 +1774,11 @@ void ProjectManager::_notification(int p_what) {
 				real_t size = get_size().x / EDSCALE;
 				// Adjust names of tabs to fit the new size.
 				if (size < 650) {
-					local_projects_hb->set_name(TTR("Local"));
-					asset_library->set_name(TTR("Asset Library"));
+					local_projects_hb->set_name(TTR("Projects"));
+					asset_library->set_name(TTR("AssetLib"));
 				} else {
-					local_projects_hb->set_name(TTR("Local Projects"));
-					asset_library->set_name(TTR("Asset Library Projects"));
+					local_projects_hb->set_name(TTR("Projects"));
+					asset_library->set_name(TTR("AssetLib"));
 				}
 			}
 		} break;
@@ -1781,7 +1792,7 @@ void ProjectManager::_notification(int p_what) {
 #endif
 
 			if (asset_library) {
-				// Suggest browsing asset library to get templates/demos.
+				// Suggest browsing AssetLib to get templates/demos.
 				if (open_templates && _project_list->get_project_count() == 0) {
 					open_templates->popup_centered_minsize();
 				}
@@ -1792,9 +1803,6 @@ void ProjectManager::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_WM_QUIT_REQUEST: {
 			_dim_window();
-		} break;
-		case NOTIFICATION_WM_ABOUT: {
-			_show_about();
 		} break;
 	}
 }
@@ -2219,10 +2227,6 @@ void ProjectManager::_erase_missing_projects() {
 	erase_missing_ask->popup_centered_minsize();
 }
 
-void ProjectManager::_show_about() {
-	about->popup_centered(Size2(780, 500) * EDSCALE);
-}
-
 void ProjectManager::_language_selected(int p_id) {
 	String lang = language_btn->get_item_metadata(p_id);
 	EditorSettings::get_singleton()->set("interface/editor/editor_language", lang);
@@ -2345,8 +2349,6 @@ void ProjectManager::_bind_methods() {
 	ClassDB::bind_method("_erase_missing_projects", &ProjectManager::_erase_missing_projects);
 	ClassDB::bind_method("_erase_project_confirm", &ProjectManager::_erase_project_confirm);
 	ClassDB::bind_method("_erase_missing_projects_confirm", &ProjectManager::_erase_missing_projects_confirm);
-	ClassDB::bind_method("_show_about", &ProjectManager::_show_about);
-	ClassDB::bind_method("_version_button_pressed", &ProjectManager::_version_button_pressed);
 	ClassDB::bind_method("_language_selected", &ProjectManager::_language_selected);
 	ClassDB::bind_method("_restart_confirm", &ProjectManager::_restart_confirm);
 	ClassDB::bind_method("_on_order_option_changed", &ProjectManager::_on_order_option_changed);
@@ -2366,10 +2368,6 @@ void ProjectManager::_bind_methods() {
 void ProjectManager::_open_asset_library() {
 	asset_library->disable_community_support();
 	tabs->set_current_tab(1);
-}
-
-void ProjectManager::_version_button_pressed() {
-	OS::get_singleton()->set_clipboard(version_btn->get_text());
 }
 
 ProjectManager::ProjectManager() {
@@ -2446,7 +2444,7 @@ ProjectManager::ProjectManager() {
 	String cp;
 	cp += 0xA9;
 	// TRANSLATORS: This refers to the application where users manage their Godot projects.
-	OS::get_singleton()->set_window_title(VERSION_NAME + String(" - ") + TTR("Project Manager", "Application"));
+	OS::get_singleton()->set_window_title(TTR("Project Manager ", "Application"));
 
 	Control *center_box = memnew(Control);
 	center_box->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -2459,14 +2457,18 @@ ProjectManager::ProjectManager() {
 	tabs->connect("tab_changed", this, "_on_tab_changed");
 
 	local_projects_hb = memnew(HBoxContainer);
-	local_projects_hb->set_name(TTR("Local Projects"));
+	local_projects_hb->set_name(TTR("Projects"));
 	tabs->add_child(local_projects_hb);
+	tabs->set_tab_icon(0, gui_base->get_icon("JoyAxis", "EditorIcons"));
 
 	VBoxContainer *search_tree_vb = memnew(VBoxContainer);
 	local_projects_hb->add_child(search_tree_vb);
 	search_tree_vb->set_h_size_flags(SIZE_EXPAND_FILL);
 
 	HBoxContainer *sort_filters = memnew(HBoxContainer);
+
+	HBoxContainer *tree_vb = memnew(HBoxContainer);
+	sort_filters->add_child(tree_vb);
 
 	project_filter = memnew(ProjectListFilter);
 	project_filter->add_search_box();
@@ -2510,33 +2512,49 @@ ProjectManager::ProjectManager() {
 	pc->add_child(_project_list);
 	_project_list->set_enable_h_scroll(false);
 
-	VBoxContainer *tree_vb = memnew(VBoxContainer);
-	tree_vb->set_custom_minimum_size(Size2(120, 120));
-	local_projects_hb->add_child(tree_vb);
+	Button *import = memnew(Button);
+	import->set_tooltip(TTR("Import"));
+	import->set_icon(gui_base->get_icon("ArrowDown", "EditorIcons"));
+	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
+	tree_vb->add_child(import);
+	import->set_flat(true);
+	import->connect("pressed", this, "_import_project");
+
+	Button *create = memnew(Button);
+	create->set_text(TTR("Create"));
+	create->set_icon(gui_base->get_icon("New", "EditorIcons"));
+	create->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KEY_MASK_CMD | KEY_N));
+	tree_vb->add_child(create);
+	create->set_flat(true);
+	create->connect("pressed", this, "_new_project");
+
+	Button *scan = memnew(Button);
+	scan->set_tooltip(TTR("Scan"));
+	scan->set_icon(gui_base->get_icon("Load", "EditorIcons"));
+	scan->set_shortcut(ED_SHORTCUT("project_manager/scan_projects", TTR("Scan Projects"), KEY_MASK_CMD | KEY_S));
+	tree_vb->add_child(scan);
+	scan->set_flat(true);
+	scan->connect("pressed", this, "_scan_projects");
+
+	tree_vb->add_child(memnew(VSeparator));
 
 	Button *open = memnew(Button);
 	open->set_text(TTR("Edit"));
+	open->set_icon(gui_base->get_icon("Edit", "EditorIcons"));
 	open->set_shortcut(ED_SHORTCUT("project_manager/edit_project", TTR("Edit Project"), KEY_MASK_CMD | KEY_E));
 	tree_vb->add_child(open);
 	open->connect("pressed", this, "_open_selected_projects_ask");
+	open->set_flat(true);
 	open_btn = open;
 
 	Button *run = memnew(Button);
-	run->set_text(TTR("Run"));
+	run->set_tooltip(TTR("Run"));
+	run->set_icon(gui_base->get_icon("Play", "EditorIcons"));
 	run->set_shortcut(ED_SHORTCUT("project_manager/run_project", TTR("Run Project"), KEY_MASK_CMD | KEY_R));
 	tree_vb->add_child(run);
 	run->connect("pressed", this, "_run_project");
+	run->set_flat(true);
 	run_btn = run;
-
-	tree_vb->add_child(memnew(HSeparator));
-
-	Button *scan = memnew(Button);
-	scan->set_text(TTR("Scan"));
-	scan->set_shortcut(ED_SHORTCUT("project_manager/scan_projects", TTR("Scan Projects"), KEY_MASK_CMD | KEY_S));
-	tree_vb->add_child(scan);
-	scan->connect("pressed", this, "_scan_projects");
-
-	tree_vb->add_child(memnew(HSeparator));
 
 	scan_dir = memnew(FileDialog);
 	scan_dir->set_access(FileDialog::ACCESS_FILESYSTEM);
@@ -2546,83 +2564,54 @@ ProjectManager::ProjectManager() {
 	gui_base->add_child(scan_dir);
 	scan_dir->connect("dir_selected", this, "_scan_begin");
 
-	Button *create = memnew(Button);
-	create->set_text(TTR("New Project"));
-	create->set_shortcut(ED_SHORTCUT("project_manager/new_project", TTR("New Project"), KEY_MASK_CMD | KEY_N));
-	tree_vb->add_child(create);
-	create->connect("pressed", this, "_new_project");
-
-	Button *import = memnew(Button);
-	import->set_text(TTR("Import"));
-	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
-	tree_vb->add_child(import);
-	import->connect("pressed", this, "_import_project");
-
 	Button *rename = memnew(Button);
-	rename->set_text(TTR("Rename"));
+	rename->set_tooltip(TTR("Rename"));
+	rename->set_icon(gui_base->get_icon("Rename", "EditorIcons"));
 	// The F2 shortcut isn't overridden with Enter on macOS as Enter is already used to edit a project.
 	rename->set_shortcut(ED_SHORTCUT("project_manager/rename_project", TTR("Rename Project"), KEY_F2));
 	tree_vb->add_child(rename);
+	rename->set_flat(true);
 	rename->connect("pressed", this, "_rename_project");
 	rename_btn = rename;
 
+	tree_vb->add_child(memnew(VSeparator));
+
 	Button *erase = memnew(Button);
-	erase->set_text(TTR("Remove"));
+	erase->set_tooltip(TTR("Remove"));
+	erase->set_icon(gui_base->get_icon("Remove", "EditorIcons"));
 	erase->set_shortcut(ED_SHORTCUT("project_manager/remove_project", TTR("Remove Project"), KEY_DELETE));
+	erase->set_flat(true);
 	tree_vb->add_child(erase);
 	erase->connect("pressed", this, "_erase_project");
 	erase_btn = erase;
 
 	Button *erase_missing = memnew(Button);
-	erase_missing->set_text(TTR("Remove Missing"));
+	erase_missing->set_tooltip(TTR("Remove Missing"));
+	erase_missing->set_icon(gui_base->get_icon("Clear", "EditorIcons"));
+	erase_missing->set_flat(true);
 	tree_vb->add_child(erase_missing);
 	erase_missing->connect("pressed", this, "_erase_missing_projects");
 	erase_missing_btn = erase_missing;
 
-	tree_vb->add_spacer();
-
-	about_btn = memnew(Button);
-	about_btn->set_text(TTR("About"));
-	about_btn->connect("pressed", this, "_show_about");
-	tree_vb->add_child(about_btn);
+	tree_vb->add_child(memnew(VSeparator));
 
 	if (AssetLibraryEditorPlugin::is_available()) {
 		asset_library = memnew(EditorAssetLibrary(true));
-		asset_library->set_name(TTR("Asset Library Projects"));
+		asset_library->set_name(TTR("AssetLib"));
 		tabs->add_child(asset_library);
+		tabs->set_tab_icon(1, gui_base->get_icon("AssetLib", "EditorIcons"));
 		asset_library->connect("install_asset", this, "_install_project");
 	} else {
-		print_verbose("Asset Library not available (due to using Web editor, or SSL support disabled).");
+		print_verbose("AssetLib not available (due to using Web editor, or SSL support disabled).");
 	}
 
 	HBoxContainer *settings_hb = memnew(HBoxContainer);
 	settings_hb->set_alignment(BoxContainer::ALIGN_END);
 	settings_hb->set_h_grow_direction(Control::GROW_DIRECTION_BEGIN);
 
-	// A VBoxContainer that contains a dummy Control node to adjust the LinkButton's vertical position.
-	VBoxContainer *spacer_vb = memnew(VBoxContainer);
-	settings_hb->add_child(spacer_vb);
-
-	Control *v_spacer = memnew(Control);
-	spacer_vb->add_child(v_spacer);
-
-	version_btn = memnew(LinkButton);
-	String hash = String(VERSION_HASH);
-	if (hash.length() != 0) {
-		hash = " " + vformat("[%s]", hash.left(9));
-	}
-	version_btn->set_text("v" VERSION_FULL_BUILD + hash);
-	// Fade the version label to be less prominent, but still readable.
-	version_btn->set_self_modulate(Color(1, 1, 1, 0.6));
-	version_btn->set_underline_mode(LinkButton::UNDERLINE_MODE_ON_HOVER);
-	version_btn->set_tooltip(TTR("Click to copy."));
-	version_btn->connect("pressed", this, "_version_button_pressed");
-	spacer_vb->add_child(version_btn);
-
-	// Add a small horizontal spacer between the version and language buttons
-	// to distinguish them.
-	Control *h_spacer = memnew(Control);
-	settings_hb->add_child(h_spacer);
+	Label *center_label = memnew(Label);
+	center_label->set_text(VERSION_FULL_NAME);
+	settings_hb->add_child(center_label);
 
 	language_btn = memnew(OptionButton);
 	language_btn->set_flat(true);
@@ -2766,14 +2755,11 @@ ProjectManager::ProjectManager() {
 
 	if (asset_library) {
 		open_templates = memnew(ConfirmationDialog);
-		open_templates->set_text(TTR("You currently don't have any projects.\nWould you like to explore official example projects in the Asset Library?"));
-		open_templates->get_ok()->set_text(TTR("Open Asset Library"));
+		open_templates->set_text(TTR("You currently don't have any projects.\nWould you like to explore official example projects in the AssetLib?"));
+		open_templates->get_ok()->set_text(TTR("Open AssetLib"));
 		open_templates->connect("confirmed", this, "_open_asset_library");
 		add_child(open_templates);
 	}
-
-	about = memnew(EditorAbout);
-	add_child(about);
 
 	OS::get_singleton()->benchmark_end_measure("project_manager");
 }
