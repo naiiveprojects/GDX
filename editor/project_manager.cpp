@@ -1284,7 +1284,7 @@ void ProjectList::create_project_item_control(int p_index) {
 	ProjectListItemControl *hb = memnew(ProjectListItemControl);
 	hb->connect("draw", this, "_panel_draw", varray(hb));
 	hb->connect("gui_input", this, "_panel_input", varray(hb));
-	hb->set_custom_minimum_size(Size2(512, 0));
+	hb->set_custom_minimum_size(Size2(448, 0));
 	hb->add_constant_override("separation", 10 * EDSCALE);
 	hb->set_tooltip(item.description);
 
@@ -2512,14 +2512,6 @@ ProjectManager::ProjectManager() {
 	pc->add_child(_project_list);
 	_project_list->set_enable_h_scroll(false);
 
-	Button *import = memnew(Button);
-	import->set_tooltip(TTR("Import"));
-	import->set_icon(gui_base->get_icon("ArrowDown", "EditorIcons"));
-	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
-	tree_vb->add_child(import);
-	import->set_flat(true);
-	import->connect("pressed", this, "_import_project");
-
 	Button *create = memnew(Button);
 	create->set_text(TTR("Create"));
 	create->set_icon(gui_base->get_icon("New", "EditorIcons"));
@@ -2527,6 +2519,14 @@ ProjectManager::ProjectManager() {
 	tree_vb->add_child(create);
 	create->set_flat(true);
 	create->connect("pressed", this, "_new_project");
+
+	Button *import = memnew(Button);
+	import->set_tooltip(TTR("Import"));
+	import->set_icon(gui_base->get_icon("ArrowDown", "EditorIcons"));
+	import->set_shortcut(ED_SHORTCUT("project_manager/import_project", TTR("Import Project"), KEY_MASK_CMD | KEY_I));
+	tree_vb->add_child(import);
+	import->set_flat(true);
+	import->connect("pressed", this, "_import_project");
 
 	Button *scan = memnew(Button);
 	scan->set_tooltip(TTR("Scan"));
