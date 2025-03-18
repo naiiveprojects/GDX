@@ -48,12 +48,6 @@ jobs:
         id: sha
         run: echo "sha7=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
-      - name: Archive Source
-        run: |
-          git archive --format=zip HEAD -o GDX-source.zip
-          mkdir -p artifacts/processed
-          mv GDX-source.zip artifacts/processed/
-      
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -84,10 +78,16 @@ jobs:
             fi
           done
           
+      - name: Create Tag
+        run: |
+          git tag "v${{ steps.sha.outputs.sha7 }}"
+          git push origin "v${{ steps.sha.outputs.sha7 }}"
+          
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.sha.outputs.sha7 }}
+          tag_name: v${{ steps.sha.outputs.sha7 }}
           draft: true
           files: artifacts/processed/GDX-*.zip
         env:
