@@ -475,7 +475,7 @@ private:
 					if (ProjectSettings::get_singleton()->save_custom(dir.plus_file("project.godot"), initial_settings, Vector<String>(), false) != OK) {
 						set_message(TTR("Couldn't create project.godot in project path."), MESSAGE_ERROR);
 					}
-				
+
 				} else if (mode == MODE_INSTALL) {
 					if (project_path->get_text().ends_with(".zip")) {
 						dir = install_path->get_text();

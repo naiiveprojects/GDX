@@ -5879,7 +5879,7 @@ void EditorNode::_borderless(bool p_pressed) {
 	if (!maximized) {
 		OS::get_singleton()->center_window();
 	}
-	
+
 	button_close->set_visible(p_pressed);
 }
 
@@ -6372,7 +6372,7 @@ EditorNode::EditorNode() {
 	file_menu->set_switch_on_hover(true);
 	file_menu->set_icon(gui_base->get_icon("PackedScene", "EditorIcons"));
 	file_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-	
+
 	prev_scene = memnew(ToolButton);
 	prev_scene->set_icon(gui_base->get_icon("PrevScene", "EditorIcons"));
 	prev_scene->set_tooltip(TTR("Go to previously opened scene."));

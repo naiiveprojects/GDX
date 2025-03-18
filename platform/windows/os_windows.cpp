@@ -406,7 +406,7 @@ LRESULT OS_Windows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
             }
             break;
-		
+
 		case WM_PAINT:
 
 			Main::force_redraw();
@@ -1488,7 +1488,7 @@ Error OS_Windows::initialize(const VideoMode &p_desired, int p_video_driver, int
 
 	if (video_mode.fullscreen) {
 		dwExStyle = WS_EX_APPWINDOW;
-		dwStyle = WS_POPUP;	
+		dwStyle = WS_POPUP;
 	} else if (video_mode.borderless_window && video_mode.resizable) {
 		dwExStyle = WS_EX_APPWINDOW;
 		dwStyle = WS_SYSMENU | WS_POPUP | WS_MAXIMIZEBOX;
