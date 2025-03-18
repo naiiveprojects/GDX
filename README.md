@@ -3,9 +3,8 @@
 A custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x). See the [**changelog**](CHANGELOG_GDX.md) for details.  
 
 <center>  
-<img src="ss_2d.png" width="49%">  
-<img src="ss_3d.png" width="49%">  
-<img src="ss_pm.png" width="98%">  
+<img src="ss_editor.png" width="100%">
+<img src="ss_pm.png" width="100%">
 </center>  
 
 ## Usage  
