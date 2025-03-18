@@ -43,6 +43,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Get SHA
+        id: sha
+        run: echo "sha7=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
       - name: Archive Source
         run: |
@@ -58,7 +62,7 @@ jobs:
       - name: List artifacts
         run: ls -R artifacts/
           
-      - name: Process and Compress artifacts
+      - name: Process and Archive artifacts
         run: |
           cd artifacts
           mkdir -p processed
@@ -83,7 +87,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.sha | slice(0, 7) }}
+          name: Release ${{ steps.sha.outputs.sha7 }}
           draft: true
           files: artifacts/processed/GDX-*.zip
         env:
