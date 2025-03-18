@@ -1,6 +1,6 @@
 # 3XC0
 
-mostly refine / reimplement 3XB branch to get rid some issue it has.
+A refined and reimplemented version of the 3XB branch, addressing various issues and improvement.
 
 ## Added
 
@@ -85,7 +85,8 @@ mostly refine / reimplement 3XB branch to get rid some issue it has.
 
 - `ScriptEditor` Fix Crash When calling `Show In FileSystem`
 
-## Known Issue
+## Misc
 
-- Editor
-  - Top Bar Panel container theme doesn't update when changing color in setting ( require restart the editor )
+`FileSystemDock`, and `ScriptEditorDock` switch
+
+<img src="ss_misc.png" width="20%"> 
