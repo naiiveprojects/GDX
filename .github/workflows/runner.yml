@@ -46,12 +46,37 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: List artifacts structure
+        run: ls -R artifacts/
+          
+      - name: Process and zip artifacts
+        run: |
+          cd artifacts
+          mkdir -p processed
+          
+          for platform in android ios javascript linux macos windows; do
+            if [ -d "$platform" ]; then
+              # Rename
+              find "$platform" -type f -name "godot*" -exec sh -c '
+                new_name=$(echo "{}" | sed "s/godot/gdx/g")
+                mv "{}" "$new_name"
+              ' \;
+              
+              # Compress
+              if [ ! -f "$platform"/*.zip ] && [ -n "$(ls -A $platform)" ]; then
+                zip -r "processed/GDX-${platform^}.zip" "$platform"/*
+              elif [ -f "$platform"/*.zip ]; then
+                find "$platform" -name "*.zip" -exec cp {} "processed/GDX-${platform^}.zip" \;
+              fi
+            fi
+          done
           
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.sha }}
+          name: Release ${{ github.sha::7 }}
           draft: true
-          files: artifacts/**/*
+          files: artifacts/processed/GDX-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
