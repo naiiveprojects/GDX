@@ -41,16 +41,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
-      - name: Download all artifacts
+      - name: Archive Source
+        run: |
+          git archive --format=zip HEAD -o GDX-source.zip
+          mkdir -p artifacts/processed
+          mv GDX-source.zip artifacts/processed/
+      
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: List artifacts structure
+      - name: List artifacts
         run: ls -R artifacts/
           
-      - name: Process and zip artifacts
+      - name: Process and Compress artifacts
         run: |
           cd artifacts
           mkdir -p processed
@@ -75,7 +83,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.sha::7 }}
+          name: Release ${{ github.sha | slice(0, 7) }}
           draft: true
           files: artifacts/processed/GDX-*.zip
         env:
