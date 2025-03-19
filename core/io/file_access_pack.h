@@ -38,8 +38,8 @@
 #include "core/print_string.h"
 #include "core/set.h"
 
-// Godot's packed file magic header ("GDPC" in ASCII).
-#define PACK_HEADER_MAGIC 0x43504447
+// Godot's packed file magic header.
+#define PACK_HEADER_MAGIC 0x37009367
 // The current packed file format version number.
 #define PACK_FORMAT_VERSION 1
 

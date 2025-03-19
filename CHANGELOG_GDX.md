@@ -1,6 +1,4 @@
-# 3XC0
-
-A refined and reimplemented version of the 3XB branch, addressing various issues and improvement.
+# 3XC
 
 ## Added
 
@@ -28,6 +26,7 @@ A refined and reimplemented version of the 3XB branch, addressing various issues
   - custom build script ( custom.py ) [`868bd17`](https://github.com/naiiveprojects/GDX/commit/868bd17d97ba37efdecfc81534585ba2d31f5349)
 
 ## Changed
+- change header ( prevent the package from being decompiled with tools like Gdsdecomp (in its unmodified form))
 - Update Assets [`2ff2237`](https://github.com/naiiveprojects/GDX/commit/2ff22373e77d6ef6645eb167f8ca5e0c0a29d04c)
 - main
   - boot_splash_bg_color = Color(0, 0, 0)
