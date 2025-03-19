@@ -7,7 +7,7 @@ on:
         description: 'manual'
 
 concurrency:
-  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-runner
+  group: ci-${{github.actor}}-${{github.run_number}}-runner
   cancel-in-progress: true
 
 jobs:
@@ -46,7 +46,14 @@ jobs:
 
       - name: Get SHA
         id: sha
-        run: echo "sha7=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
+      
+      - name: Setup directories
+        run: mkdir -p artifacts/processed
+      
+      - name: Archive Source
+        run: |
+          git archive --format=zip HEAD -o artifacts/processed/GDX-source.zip
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -59,24 +66,43 @@ jobs:
       - name: Process and Archive artifacts
         run: |
           cd artifacts
-          mkdir -p processed
-          
-          for platform in android ios javascript linux macos windows; do
+          process_artifacts() {
+            local platform=$1
             if [ -d "$platform" ]; then
-              # Rename
-              find "$platform" -type f -name "godot*" -exec sh -c '
-                new_name=$(echo "{}" | sed "s/godot/gdx/g")
-                mv "{}" "$new_name"
-              ' \;
-              
-              # Compress
-              if [ ! -f "$platform"/*.zip ] && [ -n "$(ls -A $platform)" ]; then
-                zip -r "processed/GDX-${platform^}.zip" "$platform"/*
-              elif [ -f "$platform"/*.zip ]; then
-                find "$platform" -name "*.zip" -exec cp {} "processed/GDX-${platform^}.zip" \;
-              fi
+              rename_files "$platform"
+              compress_files "$platform"
             fi
+          }
+
+          rename_files() {
+              if [ $(find "$platform" -maxdepth 1 -name "*.zip" | wc -l) -eq 0 ] && [ -n "$(ls -A $platform)" ]; then
+            # Rename files
+            find "$platform" -type f -name "godot*" -exec sh -c '
+              new_name=$(echo "{}" | sed "s/godot/gdx/g")
+              mv "{}" "$new_name"
+            ' \;
+          }
+
+          compress_files() {
+            local platform=$1
+            # Compress files
+            if [ ! -f "$platform"/*.zip ] && [ -n "$(ls -A $platform)" ]; then
+              zip -r "processed/GDX-${platform^}.zip" "$platform"/*
+            elif [ -f "$platform"/*.zip ]; then
+              for zipfile in "$platform"/*.zip; do
+                cp "$zipfile" "processed/GDX-${platform^}-$(basename "$zipfile")"
+              done
+            fi
+          }
+
+          for platform in android ios javascript linux macos windows; do
+            process_artifacts "$platform"
           done
+
+      - name: Verify artifacts
+        run: |
+          echo "Available files for release:"
+          ls -la artifacts/processed/
           
       - name: Create Tag
         run: |
@@ -89,6 +115,6 @@ jobs:
           name: Release ${{ steps.sha.outputs.sha7 }}
           tag_name: v${{ steps.sha.outputs.sha7 }}
           draft: true
-          files: artifacts/processed/GDX-*.zip
+          files: ./artifacts/processed/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
