@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       compile:
-        description: 'manual'
+        description: 'build'
+      release:
+        description: 'Release'
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-runner
@@ -37,6 +41,7 @@ jobs:
 
   release:
     name: 🔥 Release
+    if: github.event_name == 'workflow_dispatch' && inputs.release
     needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build]
     runs-on: ubuntu-latest
     steps:
