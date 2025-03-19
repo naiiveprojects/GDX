@@ -50,6 +50,17 @@ jobs:
       - name: Get date
         id: date
         run: echo "date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+
+      - name: GDX
+        run: |
+          cd artifacts
+          for d in */; do
+            cd "$d"
+            for f in godot*; do
+              [ -f "$f" ] && mv "$f" "${f/godot/gdx}"
+            done
+            cd ..
+          done
           
       - name: Compress
         run: |
@@ -62,8 +73,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.ref_name }} @ ${{ steps.date.outputs.date }}
-          tag_name: release-${{ github.ref_name }}-${{ steps.date.outputs.date }}
+          name: ${{ github.ref_name }} ${{ steps.date.outputs.date }}
+          tag_name: ${{ github.ref_name }}-${{ steps.date.outputs.date }}
           draft: true
           files: artifacts/*.zip
         env:
