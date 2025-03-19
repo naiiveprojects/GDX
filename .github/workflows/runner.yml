@@ -66,37 +66,21 @@ jobs:
       - name: Process and Archive artifacts
         run: |
           cd artifacts
-          process_artifacts() {
-            local platform=$1
-            if [ -d "$platform" ]; then
-              rename_files "$platform"
-              compress_files "$platform"
-            fi
-          }
-
-          rename_files() {
-              if [ $(find "$platform" -maxdepth 1 -name "*.zip" | wc -l) -eq 0 ] && [ -n "$(ls -A $platform)" ]; then
-            # Rename files
-            find "$platform" -type f -name "godot*" -exec sh -c '
-              new_name=$(echo "{}" | sed "s/godot/gdx/g")
-              mv "{}" "$new_name"
-            ' \;
-          }
-
-          compress_files() {
-            local platform=$1
-            # Compress files
-            if [ ! -f "$platform"/*.zip ] && [ -n "$(ls -A $platform)" ]; then
-              zip -r "processed/GDX-${platform^}.zip" "$platform"/*
-            elif [ -f "$platform"/*.zip ]; then
-              for zipfile in "$platform"/*.zip; do
-                cp "$zipfile" "processed/GDX-${platform^}-$(basename "$zipfile")"
-              done
-            fi
-          }
-
           for platform in android ios javascript linux macos windows; do
-            process_artifacts "$platform"
+            if [ -d "$platform" ]; then
+              # Rename godot files to gdx
+              find "$platform" -type f -name "godot*" -exec sh -c '
+                new_name=$(echo "{}" | sed "s/godot/gdx/g")
+                mv "{}" "$new_name"
+              ' \;
+              
+              # Create or copy zip files
+              if [ ! -f "$platform"/*.zip ] && [ -n "$(ls -A $platform)" ]; then
+                zip -r "processed/GDX-${platform^}.zip" "$platform"/*
+              elif [ -f "$platform"/*.zip ]; then
+                find "$platform" -name "*.zip" -exec cp {} "processed/GDX-${platform^}.zip" \;
+              fi
+            fi
           done
 
       - name: Verify artifacts
