@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
     inputs:
       compile:
-        description: 'build'
-      release:
         description: 'Release'
         type: boolean
         default: false
@@ -41,7 +39,7 @@ jobs:
 
   release:
     name: 🔥 Release
-    if: github.event_name == 'workflow_dispatch' && inputs.release
+    if: github.event_name == 'workflow_dispatch' && inputs.compile
     needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build]
     runs-on: ubuntu-latest
     steps:
