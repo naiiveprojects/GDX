@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       compile:
-        description: 'manual trigger'
+        description: 'Release'
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-runner
@@ -34,3 +36,49 @@ jobs:
   windows-build:
     name: 🟦 Windows
     uses: ./.github/workflows/windows_builds.yml
+
+  release:
+    name: 🔥 Release
+    if: github.event_name == 'workflow_dispatch' && inputs.compile
+    needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Get date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+
+      - name: GDX
+        run: |
+          cd artifacts
+          for d in */; do
+            cd "$d"
+            for f in godot*; do
+              [ -f "$f" ] && mv "$f" "${f/godot/gdx}"
+            done
+            cd ..
+          done
+          
+      - name: Compress
+        run: |
+          cd artifacts
+          for d in */; do
+            zip -r "${d%/}.zip" "$d"
+            rm -rf "$d"
+          done
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }} ${{ steps.date.outputs.date }}
+          tag_name: ${{ github.ref_name }}-${{ steps.date.outputs.date }}
+          draft: true
+          files: artifacts/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
