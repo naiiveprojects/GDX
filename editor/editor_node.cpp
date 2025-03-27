@@ -2300,6 +2300,8 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 	stop_button->set_disabled(false);
 
 	_playing_edited = p_current;
+
+	_borderless(button_borderless->is_pressed());
 }
 
 void EditorNode::_android_build_source_selected(const String &p_file) {
@@ -2673,6 +2675,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 				}
 			}
 			emit_signal("stop_pressed");
+			_borderless(button_borderless->is_pressed());
 
 		} break;
 
@@ -5873,14 +5876,30 @@ int EditorNode::execute_and_show_output(const String &p_title, const String &p_p
 
 void EditorNode::_borderless(bool p_pressed) {
 	bool maximized = OS::get_singleton()->is_window_maximized();
-	OS::get_singleton()->set_borderless_window(p_pressed);
-	OS::get_singleton()->set_window_maximized(maximized);
+	bool playing = is_run_playing();
 
+	if (playing && p_pressed && maximized) {
+		button_borderless->set_disabled(true);
+		button_borderless->set_clip_text(maximized);
+		OS::get_singleton()->set_borderless_window(false);
+
+	} else if (button_borderless->is_disabled()) {
+		button_borderless->set_disabled(false);
+		maximized = button_borderless->get_clip_text();
+		OS::get_singleton()->set_borderless_window(p_pressed);
+
+	} else {
+		OS::get_singleton()->set_borderless_window(p_pressed);
+		OS::get_singleton()->set_window_maximized(maximized);
+	}
+
+	OS::get_singleton()->set_window_maximized(maximized);
 	if (!maximized) {
 		OS::get_singleton()->center_window();
 	}
 
-	button_close->set_visible(p_pressed);
+	button_borderless->set_pressed(p_pressed);
+	button_close->set_visible(p_pressed && !playing);
 }
 
 void EditorNode::_bottom_panel_visible(bool p_pressed) {
@@ -6781,7 +6800,7 @@ EditorNode::EditorNode() {
 	button_panel_bottom->connect("toggled", this, "_bottom_panel_visible");
 	right_menu_hb->add_child(button_panel_bottom);
 
-	ToolButton *button_borderless = memnew(ToolButton);
+	button_borderless = memnew(ToolButton);
 	button_borderless->set_tooltip("Borderless Mode");
 	button_borderless->set_icon(gui_base->get_icon("PanelTop", "EditorIcons"));
 	button_borderless->set_toggle_mode(true);

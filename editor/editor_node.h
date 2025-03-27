@@ -386,6 +386,7 @@ private:
 	ToolButton *distraction_free;
 	ToolButton *scene_tab_add;
 	ToolButton *button_close;
+	ToolButton *button_borderless;
 
 	bool scene_distraction;
 	bool script_distraction;
