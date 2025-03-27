@@ -44,7 +44,7 @@ jobs:
   release:
     name: 📦 Release
     if: github.event_name == 'workflow_dispatch' && inputs.compile
-    needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build]
+    needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build, server-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
