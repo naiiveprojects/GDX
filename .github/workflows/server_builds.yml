@@ -22,12 +22,12 @@ jobs:
       matrix:
         include:
           - name: Linux Headless (target=release_debug, tools=yes)
-            cache-name: server-editor-mono
+            cache-name: server-editor
             target: release_debug
             tools: true
 
           - name: Linux Server (target=release, tools=no)
-            cache-name: server-template-mono
+            cache-name: server-template
             target: release
             tools: false
 
