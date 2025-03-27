@@ -23,9 +23,6 @@ inputs:
     # actions/cache has 10 GiB limit, and GitHub runners have a 14 GiB disk.
     # Limit to 7 GiB to avoid having the extracted cache fill the disk.
     default: 7168
-  encryption-key:
-    description: 'AES-256 encryption key (64 hex characters)'
-    required: true
 runs:
   using: "composite"
   steps:
@@ -37,7 +34,7 @@ runs:
           SCONS_CACHE_LIMIT: ${{ inputs.scons-cache-limit }}
       run: |
         export BUILD_NAME="$(date +'%y%m%d%H')"
-        export SCRIPT_AES256_ENCRYPTION_KEY="${{ inputs.encryption-key }}"
+        export SCRIPT_AES256_ENCRYPTION_KEY="defdeadc0dedeadc0dedeadc0dedeadc0dedeadc0dedeadc0dedeadc0dec0ded"
         echo "Building with flags:" ${{ env.SCONSFLAGS }}
         scons p=${{ inputs.platform }} target=${{ inputs.target }} tools=${{ inputs.tools }} tests=${{ inputs.tests }} ${{ env.SCONSFLAGS }}
         ls -l bin/

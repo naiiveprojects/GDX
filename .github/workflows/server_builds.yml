@@ -60,7 +60,6 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }}
           platform: server
-          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 
