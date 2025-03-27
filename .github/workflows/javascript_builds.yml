@@ -43,6 +43,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }}
           platform: javascript
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: release
           tools: false
 
@@ -51,6 +52,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} threads_enabled=yes
           platform: javascript
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: release
           tools: false
 

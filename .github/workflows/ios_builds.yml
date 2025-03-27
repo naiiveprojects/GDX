@@ -32,6 +32,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }}
           platform: iphone
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: release
           tools: false
 

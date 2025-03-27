@@ -75,6 +75,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }}
           platform: linuxbsd
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 
@@ -97,6 +98,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }} mono_glue=yes
           platform: linuxbsd
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 

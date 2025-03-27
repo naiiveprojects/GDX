@@ -54,6 +54,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }}
           platform: windows
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 

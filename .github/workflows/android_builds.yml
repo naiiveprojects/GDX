@@ -38,6 +38,7 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} android_arch=armv7
           platform: android
+          encryption-key: ${{ secrets.ENCRYPTION_KEY }}
           target: release
           tools: false
 

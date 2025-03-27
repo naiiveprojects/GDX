@@ -37,8 +37,12 @@ jobs:
     name: 🟦 Windows
     uses: ./.github/workflows/windows_builds.yml
 
+  server-build:
+    name: ☁ Server
+    uses: ./.github/workflows/server_builds.yml
+
   release:
-    name: 🔥 Release
+    name: 📦 Release
     if: github.event_name == 'workflow_dispatch' && inputs.compile
     needs: [android-build, ios-build, javascript-build, linux-build, macos-build, windows-build]
     runs-on: ubuntu-latest
