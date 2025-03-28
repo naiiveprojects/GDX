@@ -68,9 +68,19 @@ jobs:
           cd platform/android/java
           ./gradlew generateGodotTemplates
           cd ../../..
-          ls -l bin/
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p bin/android
+          if [ -d "platform/android/java/lib/build/outputs/aar" ]; then
+            cp platform/android/java/lib/build/outputs/aar/* bin/android/
+          fi
+          if [ -d "platform/android/java/app/build/outputs/apk" ]; then
+            cp platform/android/java/app/build/outputs/apk/*/* bin/android/
+          fi
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}
+          path: bin/android/
