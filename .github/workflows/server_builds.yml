@@ -6,7 +6,7 @@ on:
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.x
-  SCONSFLAGS: verbose=yes warnings=all werror=yes debug_symbols=no
+  SCONSFLAGS: warnings=all werror=yes debug_symbols=no
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-server
@@ -22,12 +22,12 @@ jobs:
       matrix:
         include:
           - name: Linux Headless (target=release_debug, tools=yes)
-            cache-name: server-editor
+            cache-name: editor-server
             target: release_debug
             tools: true
 
           - name: Linux Server (target=release, tools=no)
-            cache-name: server-template
+            cache-name: template-server
             target: release
             tools: false
 

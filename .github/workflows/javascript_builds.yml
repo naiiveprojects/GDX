@@ -6,7 +6,7 @@ on:
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.x
-  SCONSFLAGS: verbose=yes warnings=all werror=yes debug_symbols=no
+  SCONSFLAGS: warnings=all werror=yes debug_symbols=no
   EM_VERSION: 3.1.39
 
 concurrency:
@@ -14,10 +14,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  javascript-template:
+  build-javascript:
     runs-on: "ubuntu-24.04"
-    name: Template (target=release, tools=no)
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Template
+            cache-name: template-web
+            sconsflags: threads_enabled=no
+            target: release
+            tools: false
 
+          - name: Template (Threads)
+            cache-name: template-web-threads
+            sconsflags: threads_enabled=yes
+            target: release
+            tools: false
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -33,6 +48,8 @@ jobs:
 
       - name: Restore Godot build cache
         uses: ./.github/actions/godot-cache-restore
+        with:
+          cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
 
       - name: Setup python and scons
@@ -41,22 +58,18 @@ jobs:
       - name: Compilation
         uses: ./.github/actions/godot-build
         with:
-          sconsflags: ${{ env.SCONSFLAGS }}
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }}
           platform: javascript
-          target: release
-          tools: false
-
-      - name: Compilation (Thread)
-        uses: ./.github/actions/godot-build
-        with:
-          sconsflags: ${{ env.SCONSFLAGS }} threads_enabled=yes
-          platform: javascript
-          target: release
-          tools: false
+          target: ${{ matrix.target }}
+          tools: ${{ matrix.tools }}
 
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
+        with:
+          cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}
