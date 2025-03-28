@@ -61,12 +61,19 @@ jobs:
         with:
           cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
-
-      - name: Generate Godot templates
-        if: ${{ !matrix.tools }}
+      
+      - name: Generate Editor
+        if: ${{ matrix.tools }}
         run: |
           cd platform/android/java
           ./gradlew generateGodotEditor
+          cd ../../..
+          ls -l bin/
+
+      - name: Generate templates
+        if: ${{ !matrix.tools }}
+        run: |
+          cd platform/android/java
           ./gradlew generateGodotTemplates
           cd ../../..
           ls -l bin/
