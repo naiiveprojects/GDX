@@ -66,32 +66,12 @@ jobs:
         if: ${{ !matrix.tools }}
         run: |
           cd platform/android/java
+          ./gradlew generateGodotEditor
           ./gradlew generateGodotTemplates
           cd ../../..
-
-      - name: Prepare artifact
-        run: |
-          mkdir -p bin/android
-          if [ "${{ matrix.tools }}" = "true" ]; then
-            # Editor build
-            if [ -d "platform/android/java/app/build/outputs/apk" ]; then
-              find platform/android/java/app/build/outputs/apk -name "*.apk" -exec cp {} bin/android/ \;
-            fi
-            if [ -d "platform/android/java/lib/build/outputs/aar" ]; then
-              find platform/android/java/lib/build/outputs/aar -name "*.aar" -exec cp {} bin/android/ \;
-            fi
-          else
-            # Template build
-            if [ -d "bin" ]; then
-              find bin -name "android_*.apk" -exec cp {} bin/android/ \;
-              find bin -name "android_*.aar" -exec cp {} bin/android/ \;
-            fi
-          fi
-          ls -la bin/android/
+          ls -l bin/
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}
-          path: bin/android/
-          if-no-files-found: error
