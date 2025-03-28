@@ -13,9 +13,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  android-template:
+  android-builds:
     runs-on: "ubuntu-24.04"
-    name: Template (target=release, tools=no)
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Editor (target=release_debug, tools=yes)
+            cache-name: android-editor
+            target: release_debug
+            tools: true
+
+          - name: Template (target=release, tools=no)
+            cache-name: android-template
+            target: release
+            tools: false
 
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +41,8 @@ jobs:
 
       - name: Restore Godot build cache
         uses: ./.github/actions/godot-cache-restore
+        with:
+          cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
 
       - name: Setup python and scons
@@ -38,14 +53,17 @@ jobs:
         with:
           sconsflags: ${{ env.SCONSFLAGS }} android_arch=armv7
           platform: android
-          target: release
-          tools: false
+          target: ${{ matrix.target }}
+          tools: ${{ matrix.tools }}
 
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
+        with:
+          cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
 
       - name: Generate Godot templates
+        if: ${{ !matrix.tools }}
         run: |
           cd platform/android/java
           ./gradlew generateGodotTemplates
@@ -54,3 +72,5 @@ jobs:
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ matrix.cache-name }}
