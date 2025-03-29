@@ -1,4 +1,19 @@
-# 3XC
+# 3C 250328
+
+## Changed
+
+- Github Actions
+  - remove verbose flag
+  - change prefix and sufix [`2414672`](https://github.com/naiiveprojects/GDX/commit/2414672a90cec8a6d995b359ffc3ed752b6f419b)
+  - add server build
+  - add android editor build
+  - use the artifact for release draft
+
+## Fixed
+
+- editor framedrop when playing scene on borderless mode
+
+# 3C init
 
 ## Added
 
