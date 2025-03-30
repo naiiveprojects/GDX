@@ -63,13 +63,13 @@ jobs:
       - name: Create Universal Binary
         run: |
           if [ "${{ matrix.tools }}" = "true" ]; then
-            lipo -create bin/godot.osx.opt.tools.64 bin/godot.osx.opt.tools.64.arm64 -output bin/godot.osx.opt.tools.universal
-            mv bin/godot.osx.opt.tools.universal bin/godot.osx.opt.tools.64
-            rm bin/godot.osx.opt.tools.64.arm64
+            lipo -create bin/godot.osx.opt.tools.x86_64 bin/godot.osx.opt.tools.arm64 -output bin/godot.osx.opt.tools.universal
+            rm bin/godot.osx.opt.tools.x86_64
+            rm bin/godot.osx.opt.tools.arm64
           else
-            lipo -create bin/godot.osx.opt.64 bin/godot.osx.opt.64.arm64 -output bin/godot.osx.opt.universal
-            mv bin/godot.osx.opt.universal bin/godot.osx.opt.64
-            rm bin/godot.osx.opt.64.arm64
+            lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.opt.universal
+            rm bin/godot.osx.opt.x86_64
+            rm bin/godot.osx.opt.arm64
           fi
 
       - name: Save Godot build cache
