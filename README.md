@@ -37,7 +37,7 @@ To add more platform / architectures, follow the [Godot Engine compilation guide
 
 - **Precompiled Binaries:** Available on the [Releases](https://github.com/naiiveprojects/GDX/releases/latest) page.  
 - **Latest Builds:** Check [Artifacts](https://github.com/naiiveprojects/GDX/actions) in GitHub Actions.
-- **Manual Compilation:** download this repository and Follow the [Godot Engine compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html). 
+- **Manual Compilation:** get the source code [here](https://github.com/naiiveprojects/GDX/archive/refs/heads/3.c.zip) and Follow the [Godot Engine compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html). 
 
 > [!CAUTION]
 > These builds are considered bleeding-edge. It is strongly recommended to back up your projects or use version control systems like Git.
