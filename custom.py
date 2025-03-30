@@ -1,7 +1,3 @@
-production = "yes"
-optimize = "size"
-use_lto = "full"
-deprecated = "no"
 #disable_3d = "yes" # Disable 3D nodes for a smaller binary.
 #modules_enabled_by_default = "no"
 #module_disable_advanced_gui_enabled = "no" # Disable advanced GUI nodes and behaviors such as Tree and GraphEdit.
@@ -34,7 +30,6 @@ deprecated = "no"
 #module_theora_enabled = "no" # Required to play back Ogg Theora videos in VideoPlayer.
 #module_tinyexr_enabled = "no" # Required to load EXR images.
 #module_upnp_enabled = "no" # Required to use the UPNP classes for network discovery and automatic port forwarding.
-#module_visual_script_enabled = "no" # Required to run scripts made using VisualScript.
 #module_vorbis_enabled = "no" # Required to play WebM (VP8) videos with sound in VideoPlayer. See also `ogg`.
 #module_webm_enabled = "no" # Required to play WebM (VP8 and VP9) videos in VideoPlayer. See also `ogg` and `vorbis`.
 #module_webrtc_enabled = "no" # Required to use WebRTC connections.

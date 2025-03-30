@@ -6,7 +6,7 @@ on:
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.x
-  SCONSFLAGS: warnings=all werror=yes debug_symbols=no
+  SCONSFLAGS: warnings=all werror=yes debug_symbols=no lto=full production=yes optimize=size deprecated=no
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-ios
