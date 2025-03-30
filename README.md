@@ -1,10 +1,6 @@
-<center>
-<img src="thirdparty/gdx/logo.svg" width="50%" alt="GDX"> 
-</center>
-
 # GDX
 
-GDX is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x). For detailed changes, refer to the [**changelog**](thirdparty/gdx/CHANGELOG_GDX.md). This fork continuously tracks the latest development of the 3.x branch.
+GDX is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x). For detailed changes, refer to the [**changelog**](thirdparty/gdx/CHANGELOG.md). This fork continuously tracks the latest development of the 3.x branch.
 
 <center>
 <img src="thirdparty/gdx/ss_editor.png" width="100%">  
@@ -49,7 +45,7 @@ To add more platform / architectures, follow the [Godot Engine compilation guide
 
 GDX use **custom templates** for exporting the projects.
 
-precompiled binary utilize `BUILD_NAME` for versioning using format YYMMDDHH, ex: `25033000`.
+precompiled Binaries utilize `BUILD_NAME` for versioning using format YYMMDDHH, ex: `25033000`.
 
 ---  
 
