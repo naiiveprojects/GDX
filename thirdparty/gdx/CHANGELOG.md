@@ -1,13 +1,16 @@
-# 3C 250328
+# 3C 250330
 
 ## Changed
 
 - Github Actions
   - remove verbose flag
+  - add flags from custom.py
   - change prefix and sufix [`2414672`](https://github.com/naiiveprojects/GDX/commit/2414672a90cec8a6d995b359ffc3ed752b6f419b)
   - add server build
   - add android editor build
+  - add arm64 for MacOS (now universal)
   - use the artifact for release draft
+  - rename javascript to web
 
 ## Fixed
 

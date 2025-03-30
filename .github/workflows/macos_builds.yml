@@ -6,7 +6,7 @@ on:
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.x
-  SCONSFLAGS: warnings=all werror=yes debug_symbols=no
+  SCONSFLAGS: warnings=all werror=yes debug_symbols=no lto=full production=yes optimize=size deprecated=no
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
@@ -30,6 +30,7 @@ jobs:
             cache-name: template-macos
             target: release
             tools: false
+            bin: "./bin/godot.osx.opt.64"
 
     steps:
       - uses: actions/checkout@v4
@@ -43,13 +44,33 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/godot-deps
 
-      - name: Compilation
+      - name: Compilation (x86_64)
         uses: ./.github/actions/godot-build
         with:
-          sconsflags: ${{ env.SCONSFLAGS }}
+          sconsflags: ${{ env.SCONSFLAGS }} arch=x86_64
           platform: osx
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
+
+      - name: Compilation (arm64)
+        uses: ./.github/actions/godot-build
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }} arch=arm64
+          platform: osx
+          target: ${{ matrix.target }}
+          tools: ${{ matrix.tools }}
+
+      - name: Create Universal Binary
+        run: |
+          if [ "${{ matrix.tools }}" = "true" ]; then
+            lipo -create bin/godot.osx.opt.tools.x86_64 bin/godot.osx.opt.tools.arm64 -output bin/godot.osx.opt.tools.universal
+            rm bin/godot.osx.opt.tools.x86_64
+            rm bin/godot.osx.opt.tools.arm64
+          else
+            lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.opt.universal
+            rm bin/godot.osx.opt.x86_64
+            rm bin/godot.osx.opt.arm64
+          fi
 
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
@@ -66,3 +87,4 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}
+          path: bin/godot.*
