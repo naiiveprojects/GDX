@@ -19,30 +19,37 @@ jobs:
 
   android-build:
     name: 🟢 Android
+    needs: static-checks
     uses: ./.github/workflows/android_builds.yml
 
   ios-build:
     name: ⚪ iOS
+    needs: static-checks
     uses: ./.github/workflows/ios_builds.yml
 
   linux-build:
     name: 🟨 Linux
+    needs: static-checks
     uses: ./.github/workflows/linux_builds.yml
 
   macos-build:
     name: ⬜ macOS
+    needs: static-checks
     uses: ./.github/workflows/macos_builds.yml
 
   windows-build:
     name: 🟦 Windows
+    needs: static-checks
     uses: ./.github/workflows/windows_builds.yml
 
   web-build:
     name: 🌐 Web
+    needs: static-checks
     uses: ./.github/workflows/web_builds.yml
 
   server-build:
     name: ☁ Server
+    needs: static-checks
     uses: ./.github/workflows/server_builds.yml
 
   release:
