@@ -1,25 +1,10 @@
-# 3C 250330
-
-## Changed
-
-- Github Actions
-  - remove verbose flag
-  - add flags from custom.py
-  - change prefix and sufix [`2414672`](https://github.com/naiiveprojects/GDX/commit/2414672a90cec8a6d995b359ffc3ed752b6f419b)
-  - add server build
-  - add android editor build
-  - add arm64 for MacOS (now universal)
-  - use the artifact for release draft
-  - rename javascript to web
-
-## Fixed
-
-- editor framedrop when playing scene on borderless mode
-
-# 3C init
+# 3C
 
 ## Added
 
+- Core
+  - New `PACK_HEADER` ( prevent decompilation with ( unmodified ) tools like Gdsdecomp )
+  - Add Support to open original pck `PACK_HEADER`
 - Module
   - [MiniZip](https://github.com/godotengine/godot/pull/34444) [`1c26a14`](https://github.com/naiiveprojects/GDX/commit/1c26a14a90cf0a9346d286e5fce243953c024cc9)
 - Node
@@ -33,10 +18,8 @@
   - `CanvasItemEditor` ( 2D ) colapse tool menu into the viewport [`02e44a9`](https://github.com/naiiveprojects/GDX/commit/02e44a95a9d3017e73427ab5c27a741f28d8a15e)
   - Dock Icons [`c8fd9bd`](https://github.com/naiiveprojects/GDX/commit/c8fd9bd4556fc5bfef208fd261f47e718ab50404)
 - OS Windows
-  - dark mode in window title bar ( non-client area ) [`d0d0fcc`
-](https://github.com/naiiveprojects/GDX/commit/d0d0fcc22fccc8804085c142d365dd768ac08fc3)
-  - colapse client area to non client area [`d0d0fcc`
-](https://github.com/naiiveprojects/GDX/commit/d0d0fcc22fccc8804085c142d365dd768ac08fc3)
+  - dark mode in window title bar ( non-client area ) [`d0d0fcc`](https://github.com/naiiveprojects/GDX/commit/d0d0fcc22fccc8804085c142d365dd768ac08fc3)
+  - colapse client area to non client area [`d0d0fcc`](https://github.com/naiiveprojects/GDX/commit/d0d0fcc22fccc8804085c142d365dd768ac08fc3)
   - resizable borderless window ( Call `OS.window_borderless = true` in Script ) [`56d8204`](https://github.com/naiiveprojects/GDX/commit/50d2cc5ade8bf6fe3f5d607532b263f32bcca588)
 - OS Android
   - proguard ( reduce android build size ) [`60594e4`](https://github.com/naiiveprojects/GDX/commit/60594e4e2e1aa3c7501ffa62d2ec91fa718b621c)
@@ -44,10 +27,10 @@
   - custom build script ( custom.py ) [`868bd17`](https://github.com/naiiveprojects/GDX/commit/868bd17d97ba37efdecfc81534585ba2d31f5349)
 
 ## Changed
-- change header ( prevent the package from being decompiled with tools like Gdsdecomp (in its unmodified form))
+
 - Update Assets [`2ff2237`](https://github.com/naiiveprojects/GDX/commit/2ff22373e77d6ef6645eb167f8ca5e0c0a29d04c)
 - main
-  - boot_splash_bg_color = Color(0, 0, 0)
+  - Set `boot_splash_bg_color` to `Color(0, 0, 0)`.
 - Editor
   - use project icon on project menu button
   - revamp layout
@@ -62,37 +45,43 @@
     - change Output Text to `VERSION_FULL_BUILD`
   - default editor settings [`449d8e1`](https://github.com/naiiveprojects/GDX/commit/449d8e18ec01c341b0b65a44eee7782351e18359)  [`8cda548`](https://github.com/naiiveprojects/GDX/commit/8cda548eb0636a2bcc3f7431fb7c9ad76e4a20e5)
     - Update Default theme [`7dafa67`](https://github.com/naiiveprojects/GDX/commit/7dafa67b9485a6e0dff5950dbfcebe826594de3f)
-    - corner radius: 8
-    - Color Picker mode: HSV
-    - convert_text_resources_to_binary_on_export: true
-    - interface/theme/relationship_line_opacity: 0.15
-    - interface/theme/border_size: 0
-    - rendering/environment/default_clear_color: Color(0.2, 0.2, 0.2)
-    - editors/2d/grid_color: Color(0.5, 0.5, 0.5, 0.07)
-    - editors/2d/constrain_editor_view: false
-    - text_editor/navigation/stay_in_script_editor_on_node_selected: false
-    - text_editor/completion/add_type_hints: true
-    - text_editor/appearance/word_wrap: true
-    - text_editor/cursor/scroll_past_end_of_file: true
-    - run/output/always_open_output_on_play: true
-    - run/output/always_close_output_on_stop: true
-    - debugger/auto_switch_to_remote_scene_tree: true
+    - `color_picker_mode` HSV
+    - `convert_text_resources_to_binary_on_export` `true`
+    - `interface/theme/relationship_line_opacity` 0.15
+    - `interface/theme/border_size` 0
+    - `rendering/environment/default_clear_color` `Color(0.2, 0.2, 0.2)`
+    - `editors/2d/grid_color` `Color(0.5, 0.5, 0.5, 0.07)`
+    - `editors/2d/constrain_editor_view` `false`
+    - `text_editor/navigation/stay_in_script_editor_on_node_selected` `false`
+    - `text_editor/completion/add_type_hints` `true`
+    - `text_editor/appearance/word_wrap` `true`
+    - `text_editor/cursor/scroll_past_end_of_file` `true`
+    - `run/output/always_open_output_on_play` `true`
+    - `run/output/always_close_output_on_stop` `true`
+    - `debugger/auto_switch_to_remote_scene_tree` `true`
 - Project Manager
   - not include default icon & environment when creating project [`bf620d9`](https://github.com/naiiveprojects/GDX/commit/bf620d9ed6237fc57d91ca7fa734583e8dd1c1dd)
   - revamp
     - Simplify Window Title
     - Move all option to top section
-    - Project List : change `HBoxContainer` to `FlowContainer`
+    - Project List: change `HBoxContainer` to `FlowContainer`
     - `Favorite Button` inside project icon
     - *`& More`*  [`13d592f`](https://github.com/naiiveprojects/GDX/commit/13d592f7bda839f4f041eb3ce6611837c85e8741) [`d25314c`](https://github.com/naiiveprojects/GDX/commit/d25314ca6ce7df9dea2d82b7c55ff53c5a5f3284)
   - default project manager
     - `sorting_order` Last modified [`449d8e1`](https://github.com/naiiveprojects/GDX/commit/449d8e18ec01c341b0b65a44eee7782351e18359)
 - Github Actions [`3694fc2`](https://github.com/naiiveprojects/GDX/commit/3694fc26b28c787758fd7253d8c9742335307074)
-  - Add Manual Trigger
+  - Add Manual run
+  - Create release using artifact (manual)
+  - Add server build
+  - Add android editor build
+  - Add arm64 for MacOS (now universal)
   - Remove Static checks
+  - Remove verbose flag
+  - Rename javascript to web
   - Android: remove arm64v8
-  - JavaScript : Compiling `Thread`
+  - Web: Compiling `Thread`
   - Linux: Compiling Template & Editor, remove minimal template
+  - Change prefix and sufix [`2414672`](https://github.com/naiiveprojects/GDX/commit/2414672a90cec8a6d995b359ffc3ed752b6f419b)
 
 ## Removed
 
@@ -106,4 +95,4 @@
 
 `FileSystemDock`, and `ScriptEditorDock` switch
 
-<img src="ss_misc.png" width="20%"> 
+<img src="ss_misc.png" width="20%">
