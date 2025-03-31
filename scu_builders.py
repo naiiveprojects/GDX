@@ -1,6 +1,4 @@
-"""Functions used to generate scu build source files during build time
-
-"""
+"""Functions used to generate scu build source files during build time"""
 
 import glob, os
 import math
