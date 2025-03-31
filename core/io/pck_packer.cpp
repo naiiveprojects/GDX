@@ -70,7 +70,7 @@ Error PCKPacker::pck_start(const String &p_file, int p_alignment) {
 
 	alignment = p_alignment;
 
-	file->store_32(PACK_HEADER_MAGIC);
+	file->store_32(PACK_HEADER_MAGIC_ALT);
 	file->store_32(PACK_FORMAT_VERSION);
 	file->store_32(VERSION_MAJOR);
 	file->store_32(VERSION_MINOR);
