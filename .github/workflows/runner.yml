@@ -13,6 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  static-checks:
+    name: 🧐 Static
+    uses: ./.github/workflows/static_checks.yml
+
   android-build:
     name: 🟢 Android
     uses: ./.github/workflows/android_builds.yml
@@ -48,12 +52,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          
+
       - name: Get date
         id: date
         run: echo "date=$(date +'%y%m%d%H')" >> $GITHUB_OUTPUT
@@ -68,7 +72,7 @@ jobs:
             done
             cd ..
           done
-          
+
       - name: Compress
         run: |
           cd artifacts
@@ -76,7 +80,7 @@ jobs:
             zip -r "${d%/}.zip" "$d"
             rm -rf "$d"
           done
-          
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
