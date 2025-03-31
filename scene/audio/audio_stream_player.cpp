@@ -252,7 +252,6 @@ void AudioStreamPlayer::set_volume_balance(float p_balance) {
 	volume_scale.r = MIN(2.0, MAX(0.0, 1.0 + p_balance));
 }
 
-
 void AudioStreamPlayer::set_pitch_scale(float p_pitch_scale) {
 	ERR_FAIL_COND(!(p_pitch_scale > 0.0));
 	pitch_scale = p_pitch_scale;

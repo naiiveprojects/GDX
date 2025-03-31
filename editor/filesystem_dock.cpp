@@ -315,9 +315,9 @@ void FileSystemDock::set_display_mode(DisplayMode p_display_mode) {
 				break;
 			case DISPLAY_MODE_SPLIT:
 				if (this->get_parent()->is_class("TabContainer")) {
-					dock_panel = dynamic_cast<TabContainer*>(this->get_parent());
+					dock_panel = dynamic_cast<TabContainer *>(this->get_parent());
 					editor->remove_control_from_dock(this);
-					button_bottom_panel = dynamic_cast<ToolButton*>(editor->add_bottom_panel_item("FileSystem", this));
+					button_bottom_panel = dynamic_cast<ToolButton *>(editor->add_bottom_panel_item("FileSystem", this));
 					button_bottom_panel->get_parent()->move_child(button_bottom_panel, 0);
 					button_bottom_panel->set_pressed(true);
 					this->set_custom_minimum_size(Size2i(320, 320));

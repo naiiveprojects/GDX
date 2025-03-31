@@ -3240,7 +3240,6 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 		singleton->main_editor_buttons.push_back(tb);
 		singleton->main_editor_button_vb->add_child(tb);
 		singleton->editor_table.push_back(p_editor);
-
 	}
 	singleton->editor_data.add_editor_plugin(p_editor);
 	singleton->add_child(p_editor);
@@ -5097,7 +5096,7 @@ void EditorNode::_scene_tab_changed(int p_tab) {
 ToolButton *EditorNode::add_bottom_panel_item(String p_text, Control *p_item) {
 	ToolButton *tb = memnew(ToolButton);
 	tb->connect("toggled", this, "_bottom_panel_switch", varray(bottom_panel_items.size()));
-		tb->set_text(p_text);
+	tb->set_text(p_text);
 	tb->set_toggle_mode(true);
 	tb->set_focus_mode(Control::FOCUS_NONE);
 	bottom_panel_vb->add_child(p_item);
@@ -5903,9 +5902,8 @@ void EditorNode::_borderless(bool p_pressed) {
 }
 
 void EditorNode::_bottom_panel_visible(bool p_pressed) {
-    bottom_panel->set_visible(!p_pressed);
+	bottom_panel->set_visible(!p_pressed);
 }
-
 
 EditorNode::EditorNode() {
 	OS::get_singleton()->benchmark_begin_measure("editor");

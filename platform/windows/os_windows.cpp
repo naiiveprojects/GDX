@@ -398,14 +398,14 @@ LRESULT OS_Windows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			if (wParam == TRUE) {
 				// Retrieve the current window style.
 				LONG style = GetWindowLong(hWnd, GWL_STYLE);
-                if (IsMaximized(hWnd) && !(style & WS_CAPTION)) {
-				// Adjust the client area to fill the entire window, minus the taskbar.
-				NCCALCSIZE_PARAMS* pParams = (NCCALCSIZE_PARAMS*)lParam;
-				SystemParametersInfo(SPI_GETWORKAREA, 0, &pParams->rgrc[1], 0);
-				return 0;
-                }
-            }
-            break;
+				if (IsMaximized(hWnd) && !(style & WS_CAPTION)) {
+					// Adjust the client area to fill the entire window, minus the taskbar.
+					NCCALCSIZE_PARAMS *pParams = (NCCALCSIZE_PARAMS *)lParam;
+					SystemParametersInfo(SPI_GETWORKAREA, 0, &pParams->rgrc[1], 0);
+					return 0;
+				}
+			}
+			break;
 
 		case WM_PAINT:
 
@@ -1050,11 +1050,11 @@ LRESULT OS_Windows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			}
 
 			if (wParam == SIZE_MAXIMIZED) {
-                RECT workArea;
-                SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
-                SetWindowPos(hWnd, NULL, workArea.left, workArea.top,
-                             workArea.right - workArea.left, workArea.bottom - workArea.top,
-                             SWP_NOZORDER | SWP_NOACTIVATE);
+				RECT workArea;
+				SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+				SetWindowPos(hWnd, NULL, workArea.left, workArea.top,
+						workArea.right - workArea.left, workArea.bottom - workArea.top,
+						SWP_NOZORDER | SWP_NOACTIVATE);
 				maximized = true;
 				minimized = false;
 			} else if (wParam == SIZE_MINIMIZED) {
@@ -1557,7 +1557,7 @@ Error OS_Windows::initialize(const VideoMode &p_desired, int p_video_driver, int
 			// Use Dark Mode and extend window frame into client area
 			BOOL dark_mode = TRUE;
 			DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_mode, sizeof(dark_mode));
-			MARGINS margins = {-1};
+			MARGINS margins = { -1 };
 			DwmExtendFrameIntoClientArea(hWnd, &margins);
 		}
 	};
