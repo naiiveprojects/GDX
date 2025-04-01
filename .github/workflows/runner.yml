@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   static-checks:
-    name: 🧐 Static
+    name: 🔎 Static
     uses: ./.github/workflows/static_checks.yml
 
   android-build:
