@@ -32,7 +32,7 @@ jobs:
             sconsflags: threads_enabled=yes
             target: release
             tools: false
-    
+
     steps:
       - uses: actions/checkout@v4
 

@@ -5899,7 +5899,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	editor->call_deferred("connect", "stop_pressed", this, "_update_override_camera_button", make_binds(false));
 
 	PanelContainer *main_flow_bg = memnew(PanelContainer);
-	main_flow_bg->add_style_override("panel",EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
+	main_flow_bg->add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
 	main_flow_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	// A fluid container for all toolbars.
 	HBoxContainer *main_flow = memnew(HBoxContainer);

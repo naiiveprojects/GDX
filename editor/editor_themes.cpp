@@ -611,7 +611,6 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_scene_tab_unselected->set_bg_color(dark_color_1);
 	style_scene_tab_unselected->set_border_color(dark_color_2);
 
-
 	// Editor background
 	Color background_color_opaque = background_color;
 	background_color_opaque.a = 1.0;

@@ -45,13 +45,13 @@
 #include "editor_themes.h"
 #include "main/main.h"
 #include "scene/gui/center_container.h"
+#include "scene/gui/flow_container.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/margin_container.h"
 #include "scene/gui/panel_container.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/tool_button.h"
-#include "scene/gui/flow_container.h"
 #include "servers/navigation_server.h"
 
 // Used to test for GLES3 support.

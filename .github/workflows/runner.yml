@@ -13,32 +13,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  static-checks:
+    name: 🔎 Static
+    uses: ./.github/workflows/static_checks.yml
+
   android-build:
     name: 🟢 Android
+    needs: static-checks
     uses: ./.github/workflows/android_builds.yml
 
   ios-build:
     name: ⚪ iOS
+    needs: static-checks
     uses: ./.github/workflows/ios_builds.yml
 
   linux-build:
     name: 🟨 Linux
+    needs: static-checks
     uses: ./.github/workflows/linux_builds.yml
 
   macos-build:
     name: ⬜ macOS
+    needs: static-checks
     uses: ./.github/workflows/macos_builds.yml
 
   windows-build:
     name: 🟦 Windows
+    needs: static-checks
     uses: ./.github/workflows/windows_builds.yml
 
   web-build:
     name: 🌐 Web
+    needs: static-checks
     uses: ./.github/workflows/web_builds.yml
 
   server-build:
     name: ☁ Server
+    needs: static-checks
     uses: ./.github/workflows/server_builds.yml
 
   release:
@@ -48,12 +59,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          
+
       - name: Get date
         id: date
         run: echo "date=$(date +'%y%m%d%H')" >> $GITHUB_OUTPUT
@@ -68,7 +79,7 @@ jobs:
             done
             cd ..
           done
-          
+
       - name: Compress
         run: |
           cd artifacts
@@ -76,7 +87,7 @@ jobs:
             zip -r "${d%/}.zip" "$d"
             rm -rf "$d"
           done
-          
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:

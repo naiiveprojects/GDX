@@ -974,7 +974,7 @@ bool ScriptEditor::toggle_scripts_panel() {
 		list_split_dock->add_child(list_split);
 		list_split->set_h_size_flags(SIZE_EXPAND_FILL);
 		EditorNode::get_singleton()->add_control_to_dock(EditorNode::DOCK_SLOT_LEFT_BR, list_split_dock);
-		TabContainer* tb = dynamic_cast<TabContainer*>(list_split_dock->get_parent());
+		TabContainer *tb = dynamic_cast<TabContainer *>(list_split_dock->get_parent());
 		tb->set_current_tab(list_split_dock->get_index());
 	}
 	list_split->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -1488,7 +1488,7 @@ void ScriptEditor::_notification(int p_what) {
 			if (is_visible()) {
 				find_in_files_button->show();
 				if (list_split_dock->is_inside_tree()) {
-					TabContainer* tb = dynamic_cast<TabContainer*>(list_split_dock->get_parent());
+					TabContainer *tb = dynamic_cast<TabContainer *>(list_split_dock->get_parent());
 					tb->set_current_tab(list_split_dock->get_index());
 				}
 			} else {
