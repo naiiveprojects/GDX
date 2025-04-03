@@ -112,8 +112,10 @@ private:
 
 	VBoxContainer *scanning_vb;
 	ProgressBar *scanning_progress;
-	VSplitContainer *split_box;
+	HSplitContainer *split_box;
 	VBoxContainer *file_list_vb;
+	TabContainer *dock_panel;
+	ToolButton *button_bottom_panel;
 
 	EditorNode *editor;
 	Set<String> favorites;
