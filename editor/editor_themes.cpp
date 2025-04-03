@@ -321,7 +321,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	OS::get_singleton()->benchmark_begin_measure("create_editor_theme");
 	Ref<Theme> theme = Ref<Theme>(memnew(Theme));
 
-	const float default_contrast = 0.25;
+	const float default_contrast = 0.5;
 
 	//Theme settings
 	Color accent_color = EDITOR_GET("interface/theme/accent_color");
@@ -377,8 +377,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_base_color = Color(0.99, 0.96, 0.89);
 		preset_contrast = 0.06;
 	} else { // Default
-		preset_accent_color = Color(0.41, 0.61, 0.91);
-		preset_base_color = Color(0.2, 0.23, 0.31);
+		preset_accent_color = Color(0.4, 0.6, 0.9);
+		preset_base_color = Color(0.11, 0.11, 0.12);
 		preset_contrast = default_contrast;
 	}
 
@@ -506,12 +506,14 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	const int default_margin_size = 4;
 	const int margin_size_extra = default_margin_size + CLAMP(border_size, 0, 3);
+	const int default_corner_radius = 8;
 
 	// styleboxes
 	// this is the most commonly used stylebox, variations should be made as duplicate of this
 	Ref<StyleBoxFlat> style_default = make_flat_stylebox(base_color, default_margin_size, default_margin_size, default_margin_size, default_margin_size);
 	style_default->set_border_width_all(border_width);
 	style_default->set_border_color(base_color);
+	style_default->set_corner_radius_all(default_corner_radius);
 	style_default->set_draw_center(true);
 
 	// Button and widgets
@@ -579,7 +581,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_tab_selected->set_border_width_all(border_width);
 	style_tab_selected->set_border_width(MARGIN_BOTTOM, 0);
 	style_tab_selected->set_border_color(dark_color_3);
-	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, border_width);
+	style_tab_selected->set_corner_radius_individual(default_corner_radius, default_corner_radius, 0, 0);
+	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, border_width + default_corner_radius + extra_spacing);
 	style_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
@@ -594,6 +597,20 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_tab_disabled->set_bg_color(color_disabled_bg);
 	style_tab_disabled->set_border_color(color_disabled);
 
+	Ref<StyleBoxFlat> style_scene_tab_selected = style_widget->duplicate();
+
+	style_scene_tab_selected->set_border_width_all(border_width);
+	style_scene_tab_selected->set_border_color(dark_color_3);
+	style_scene_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
+	style_scene_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
+	style_scene_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
+	style_scene_tab_selected->set_default_margin(MARGIN_TOP, tab_default_margin_vertical);
+	style_scene_tab_selected->set_bg_color(tab_color);
+
+	Ref<StyleBoxFlat> style_scene_tab_unselected = style_scene_tab_selected->duplicate();
+	style_scene_tab_unselected->set_bg_color(dark_color_1);
+	style_scene_tab_unselected->set_border_color(dark_color_2);
+
 	// Editor background
 	Color background_color_opaque = background_color;
 	background_color_opaque.a = 1.0;
@@ -603,6 +620,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	Ref<StyleBoxFlat> style_focus = style_default->duplicate();
 	style_focus->set_draw_center(false);
 	style_focus->set_border_color(contrast_color_2);
+	style_focus->set_border_blend(true);
+	style_focus->set_expand_margin_size_all(1.0);
 	theme->set_stylebox("Focus", "EditorStyles", style_focus);
 
 	// Menu
@@ -649,6 +668,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	theme->set_stylebox("normal", "ToolButton", style_menu);
 	theme->set_stylebox("hover", "ToolButton", style_menu);
+	theme->set_stylebox("hover_pressed", "ToolButton", style_menu);
 	theme->set_stylebox("pressed", "ToolButton", style_menu);
 	theme->set_stylebox("focus", "ToolButton", style_menu);
 	theme->set_stylebox("disabled", "ToolButton", style_menu);
@@ -711,7 +731,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color", "CheckButton", font_color);
 	theme->set_color("font_color_hover", "CheckButton", font_color_hl);
 	theme->set_color("font_color_focus", "CheckButton", font_color_focus);
-	theme->set_color("font_color_pressed", "CheckButton", accent_color);
+	theme->set_color("font_color_pressed", "CheckButton", font_color);
 	theme->set_color("font_color_disabled", "CheckButton", font_color_disabled);
 	theme->set_color("icon_color_hover", "CheckButton", icon_color_hover);
 
@@ -741,7 +761,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color", "CheckBox", font_color);
 	theme->set_color("font_color_hover", "CheckBox", font_color_hl);
 	theme->set_color("font_color_focus", "CheckBox", font_color_focus);
-	theme->set_color("font_color_pressed", "CheckBox", accent_color);
+	theme->set_color("font_color_pressed", "CheckBox", font_color);
 	theme->set_color("font_color_disabled", "CheckBox", font_color_disabled);
 	theme->set_color("icon_color_hover", "CheckBox", icon_color_hover);
 
@@ -825,8 +845,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Tree & ItemList background
 	Ref<StyleBoxFlat> style_tree_bg = style_default->duplicate();
-	style_tree_bg->set_bg_color(dark_color_1);
-	style_tree_bg->set_border_color(dark_color_3);
+	style_tree_bg->set_bg_color(base_color);
+	style_tree_bg->set_border_color(base_color);
 	theme->set_stylebox("bg", "Tree", style_tree_bg);
 
 	const Color guide_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.05);
@@ -933,10 +953,10 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_color("font_color_bg", "TabContainer", font_color_disabled);
 	theme->set_color("font_color_fg", "Tabs", font_color);
 	theme->set_color("font_color_bg", "Tabs", font_color_disabled);
-	theme->set_icon("menu", "TabContainer", theme->get_icon("GuiTabMenu", "EditorIcons"));
-	theme->set_icon("menu_highlight", "TabContainer", theme->get_icon("GuiTabMenuHl", "EditorIcons"));
-	theme->set_stylebox("SceneTabFG", "EditorStyles", style_tab_selected);
-	theme->set_stylebox("SceneTabBG", "EditorStyles", style_tab_unselected);
+	theme->set_icon("menu", "TabContainer", theme->get_icon("TripleBar", "EditorIcons"));
+	theme->set_icon("menu_highlight", "TabContainer", theme->get_icon("TripleBar", "EditorIcons"));
+	theme->set_stylebox("SceneTabFG", "EditorStyles", style_scene_tab_selected);
+	theme->set_stylebox("SceneTabBG", "EditorStyles", style_scene_tab_unselected);
 	theme->set_icon("close", "Tabs", theme->get_icon("GuiClose", "EditorIcons"));
 	theme->set_stylebox("button_pressed", "Tabs", style_menu);
 	theme->set_stylebox("button", "Tabs", style_menu);
@@ -987,8 +1007,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("ThemeEditorPreviewBG", "EditorStyles", style_theme_preview_bg_tab);
 
 	// Separators
-	theme->set_stylebox("separator", "HSeparator", make_line_stylebox(separator_color, border_width));
-	theme->set_stylebox("separator", "VSeparator", make_line_stylebox(separator_color, border_width, 0, 0, true));
+	theme->set_stylebox("separator", "HSeparator", make_line_stylebox(separator_color, 1));
+	theme->set_stylebox("separator", "VSeparator", make_line_stylebox(separator_color, 1, 0, 0, true));
 
 	// Debugger
 
@@ -1383,8 +1403,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const Color comment_color = dim_color;
 	const Color string_color = (dark_theme ? Color(1.0, 0.85, 0.26) : Color(1.0, 0.82, 0.09)).linear_interpolate(mono_color, dark_theme ? 0.5 : 0.3);
 
-	const Color te_background_color = dark_theme ? background_color : base_color;
-	const Color completion_background_color = dark_theme ? base_color : background_color;
+	const Color te_background_color = dark_theme ? base_color : background_color;
+	const Color completion_background_color = dark_theme ? background_color : base_color;
 	const Color completion_selected_color = alpha1;
 	const Color completion_existing_color = alpha2;
 	const Color completion_scroll_color = Color(mono_value, mono_value, mono_value, 0.29);
@@ -1398,7 +1418,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const Color selection_color = accent_color * Color(1, 1, 1, 0.35);
 	const Color brace_mismatch_color = error_color;
 	const Color current_line_color = alpha1;
-	const Color line_length_guideline_color = dark_theme ? base_color : background_color;
+	const Color line_length_guideline_color = dark_theme ? background_color : base_color;
 	const Color word_highlighted_color = alpha1;
 	const Color number_color = basetype_color.linear_interpolate(mono_color, dark_theme ? 0.5 : 0.3);
 	const Color function_color = main_color;
