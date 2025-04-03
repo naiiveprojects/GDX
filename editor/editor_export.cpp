@@ -1108,7 +1108,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, c
 
 	int64_t pck_start_pos = f->get_position();
 
-	f->store_32(PACK_HEADER_MAGIC);
+	f->store_32(PACK_HEADER_MAGIC_ALT);
 	f->store_32(PACK_FORMAT_VERSION);
 	f->store_32(VERSION_MAJOR);
 	f->store_32(VERSION_MINOR);
@@ -1188,7 +1188,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, c
 
 		uint64_t pck_size = f->get_position() - pck_start_pos;
 		f->store_64(pck_size);
-		f->store_32(PACK_HEADER_MAGIC);
+		f->store_32(PACK_HEADER_MAGIC_ALT);
 
 		if (r_embedded_size) {
 			*r_embedded_size = f->get_position() - embed_pos;
@@ -2007,5 +2007,5 @@ void EditorExportTextSceneToBinaryPlugin::_export_file(const String &p_path, con
 }
 
 EditorExportTextSceneToBinaryPlugin::EditorExportTextSceneToBinaryPlugin() {
-	GLOBAL_DEF("editor/convert_text_resources_to_binary_on_export", false);
+	GLOBAL_DEF("editor/convert_text_resources_to_binary_on_export", true);
 }
