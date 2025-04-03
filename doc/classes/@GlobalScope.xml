@@ -89,9 +89,6 @@
 		<member name="TranslationServer" type="TranslationServer" setter="" getter="">
 			The [TranslationServer] singleton.
 		</member>
-		<member name="VisualScriptEditor" type="VisualScriptEditor" setter="" getter="">
-			The [VisualScriptEditor] singleton.
-		</member>
 		<member name="VisualServer" type="VisualServer" setter="" getter="">
 			The [VisualServer] singleton.
 		</member>
