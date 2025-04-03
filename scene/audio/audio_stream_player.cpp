@@ -83,7 +83,7 @@ void AudioStreamPlayer::_mix_internal(bool p_fadeout) {
 	float vol_inc = (Math::db2linear(target_volume) - vol) / float(buffer_size);
 
 	for (int i = 0; i < buffer_size; i++) {
-		buffer[i] *= vol;
+		buffer[i] *= vol * volume_scale;
 		vol += vol_inc;
 	}
 
@@ -190,7 +190,7 @@ void AudioStreamPlayer::set_stream(Ref<AudioStream> p_stream) {
 		float vol_inc = (Math::db2linear(target_volume) - vol) / float(buffer_size);
 
 		for (int i = 0; i < buffer_size; i++) {
-			buffer[i] *= vol;
+			buffer[i] *= vol * volume_scale;
 			vol += vol_inc;
 		}
 
@@ -228,6 +228,28 @@ void AudioStreamPlayer::set_volume_db(float p_volume) {
 }
 float AudioStreamPlayer::get_volume_db() const {
 	return volume_db;
+}
+
+void AudioStreamPlayer::set_volume_scale_left(float p_volume) {
+	volume_scale.l = p_volume;
+}
+float AudioStreamPlayer::get_volume_scale_left() const {
+	return volume_scale.l;
+}
+
+void AudioStreamPlayer::set_volume_scale_right(float p_volume) {
+	volume_scale.r = p_volume;
+}
+float AudioStreamPlayer::get_volume_scale_right() const {
+	return volume_scale.r;
+}
+
+void AudioStreamPlayer::set_volume_balance(float p_balance) {
+	// the 2.0 on left/right is critical to preserving loudness.
+	// a balance of 0.0 ought to be a no-op, which means a scale of 1.0,1.0
+	// therefore, left/right need to be scaled to 2.0 to compensate.
+	volume_scale.l = MIN(2.0, MAX(0.0, 1.0 - p_balance));
+	volume_scale.r = MIN(2.0, MAX(0.0, 1.0 + p_balance));
 }
 
 void AudioStreamPlayer::set_pitch_scale(float p_pitch_scale) {
@@ -363,6 +385,14 @@ void AudioStreamPlayer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_volume_db", "volume_db"), &AudioStreamPlayer::set_volume_db);
 	ClassDB::bind_method(D_METHOD("get_volume_db"), &AudioStreamPlayer::get_volume_db);
 
+	ClassDB::bind_method(D_METHOD("set_volume_scale_left", "volume_scale_left"), &AudioStreamPlayer::set_volume_scale_left);
+	ClassDB::bind_method(D_METHOD("get_volume_scale_left"), &AudioStreamPlayer::get_volume_scale_left);
+
+	ClassDB::bind_method(D_METHOD("set_volume_scale_right", "volume_scale_right"), &AudioStreamPlayer::set_volume_scale_right);
+	ClassDB::bind_method(D_METHOD("get_volume_scale_right"), &AudioStreamPlayer::get_volume_scale_right);
+
+	ClassDB::bind_method(D_METHOD("set_volume_balance", "balance"), &AudioStreamPlayer::set_volume_balance);
+
 	ClassDB::bind_method(D_METHOD("set_pitch_scale", "pitch_scale"), &AudioStreamPlayer::set_pitch_scale);
 	ClassDB::bind_method(D_METHOD("get_pitch_scale"), &AudioStreamPlayer::get_pitch_scale);
 
@@ -395,6 +425,8 @@ void AudioStreamPlayer::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"), "set_stream", "get_stream");
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "volume_db", PROPERTY_HINT_RANGE, "-80,24"), "set_volume_db", "get_volume_db");
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "pitch_scale", PROPERTY_HINT_RANGE, "0.01,4,0.01,or_greater"), "set_pitch_scale", "get_pitch_scale");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "volume_scale_left", PROPERTY_HINT_RANGE, "0.0,1.0"), "set_volume_scale_left", "get_volume_scale_left");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "volume_scale_right", PROPERTY_HINT_RANGE, "0.0,1.0"), "set_volume_scale_right", "get_volume_scale_right");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "playing", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "_set_playing", "is_playing");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autoplay"), "set_autoplay", "is_autoplay_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "stream_paused", PROPERTY_HINT_NONE, ""), "set_stream_paused", "get_stream_paused");
@@ -412,6 +444,7 @@ AudioStreamPlayer::AudioStreamPlayer() {
 	mix_volume_db = 0;
 	pitch_scale = 1.0;
 	volume_db = 0;
+	volume_scale = AudioFrame(1.0, 1.0);
 	autoplay = false;
 	setseek.set(-1);
 	stream_paused = false;

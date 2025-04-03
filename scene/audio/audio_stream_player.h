@@ -60,6 +60,7 @@ private:
 	float mix_volume_db;
 	float pitch_scale;
 	float volume_db;
+	AudioFrame volume_scale;
 	bool autoplay;
 	bool stream_paused;
 	bool stream_paused_fade;
@@ -88,6 +89,14 @@ public:
 
 	void set_volume_db(float p_volume);
 	float get_volume_db() const;
+
+	void set_volume_scale_left(float p_volume);
+	float get_volume_scale_left() const;
+
+	void set_volume_scale_right(float p_volume);
+	float get_volume_scale_right() const;
+
+	void set_volume_balance(float p_balance);
 
 	void set_pitch_scale(float p_pitch_scale);
 	float get_pitch_scale() const;
