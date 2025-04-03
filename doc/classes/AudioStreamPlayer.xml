@@ -5,7 +5,7 @@
 	</brief_description>
 	<description>
 		Plays an audio stream non-positionally.
-		To play audio positionally, use [AudioStreamPlayer2D] or [AudioStreamPlayer3D] instead of [AudioStreamPlayer].
+		To play audio positionally, use [AudioStreamPlayer2D] or [AudioStreamPlayer3D] instead of [AudioStreamPlayer]. [AudioStreamPlayer] only provides manual stereo panning using the [member volume_scale_left] and [member volume_scale_right] properties.
 	</description>
 	<tutorials>
 		<link title="Audio streams">$DOCS_URL/tutorials/audio/audio_streams.html</link>
@@ -42,6 +42,13 @@
 				Sets the position from which audio will be played, in seconds.
 			</description>
 		</method>
+		<method name="set_volume_balance">
+			<return type="void" />
+			<argument index="0" name="balance" type="float" />
+			<description>
+				Sets the [code]volume_scale_left[/code] and [code]volume_scale_right[/code] values to achieve a given balanced (loudness-preserving) pan. Balance is measured from -1.0 (left) to 1.0 (right).
+			</description>
+		</method>
 		<method name="stop">
 			<return type="void" />
 			<description>
@@ -73,7 +80,13 @@
 			If [code]true[/code], the playback is paused. You can resume it by setting [code]stream_paused[/code] to [code]false[/code].
 		</member>
 		<member name="volume_db" type="float" setter="set_volume_db" getter="get_volume_db" default="0.0">
-			Volume of sound, in dB.
+			Volume of sound, in dB. If you have a linear scale value and wish to convert it to dB, use [method @GDScript.linear2db].
+		</member>
+		<member name="volume_scale_left" type="float" setter="set_volume_scale_left" getter="get_volume_scale_left" default="1.0">
+			Volume scale for left channel in linear (0.0 is silent, 1.0 is full volume) form. Can be used to forcefully globally pan sounds without relying on the camera.
+		</member>
+		<member name="volume_scale_right" type="float" setter="set_volume_scale_right" getter="get_volume_scale_right" default="1.0">
+			Volume scale for right channel in linear (0.0 is silent, 1.0 is full volume) form. Can be used to forcefully globally pan sounds without relying on the camera.
 		</member>
 	</members>
 	<signals>
