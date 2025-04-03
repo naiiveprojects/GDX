@@ -227,7 +227,7 @@ private:
 
 	Viewport *scene_root; //root of the scene being edited
 
-	PanelContainer *scene_root_parent;
+	MarginContainer *scene_root_parent;
 	Control *theme_base;
 	Control *gui_base;
 	VBoxContainer *main_vbox;
@@ -385,6 +385,8 @@ private:
 	HBoxContainer *tabbar_container;
 	ToolButton *distraction_free;
 	ToolButton *scene_tab_add;
+	ToolButton *button_close;
+	ToolButton *button_borderless;
 
 	bool scene_distraction;
 	bool script_distraction;
@@ -441,7 +443,6 @@ private:
 	HBoxContainer *bottom_panel_hb;
 	HBoxContainer *bottom_panel_hb_editors;
 	VBoxContainer *bottom_panel_vb;
-	LinkButton *version_btn;
 	ToolButton *bottom_panel_raise;
 
 	Tree *disk_changed_list;
@@ -473,6 +474,8 @@ private:
 	void _request_screenshot();
 	void _screenshot(bool p_use_utc = false);
 	void _save_screenshot(NodePath p_path);
+	void _borderless(bool p_pressed);
+	void _bottom_panel_visible(bool p_pressed);
 
 	void _tool_menu_option(int p_idx);
 	void _update_debug_options();
@@ -498,7 +501,6 @@ private:
 	void _close_messages();
 	void _show_messages();
 	void _vp_resized();
-	void _version_button_pressed();
 
 	int _save_external_resources();
 
@@ -618,7 +620,7 @@ private:
 	void _load_docks_from_config(Ref<ConfigFile> p_layout, const String &p_section);
 	void _update_dock_slots_visibility(bool p_keep_selected_tabs = false);
 	void _dock_tab_changed(int p_tab);
-
+	void _set_dock_icon(Node *p_node);
 	bool restoring_scenes;
 	void _save_open_scenes_to_config(Ref<ConfigFile> p_layout, const String &p_section);
 	void _load_open_scenes_from_config(Ref<ConfigFile> p_layout, const String &p_section);
