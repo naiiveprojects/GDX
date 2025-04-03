@@ -394,6 +394,19 @@ LRESULT OS_Windows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 				break;
 			}
 		}
+		case WM_NCCALCSIZE:
+			if (wParam == TRUE) {
+				// Retrieve the current window style.
+				LONG style = GetWindowLong(hWnd, GWL_STYLE);
+				if (IsMaximized(hWnd) && !(style & WS_CAPTION)) {
+					// Adjust the client area to fill the entire window, minus the taskbar.
+					NCCALCSIZE_PARAMS *pParams = (NCCALCSIZE_PARAMS *)lParam;
+					SystemParametersInfo(SPI_GETWORKAREA, 0, &pParams->rgrc[1], 0);
+					return 0;
+				}
+			}
+			break;
+
 		case WM_PAINT:
 
 			Main::force_redraw();
@@ -1037,6 +1050,11 @@ LRESULT OS_Windows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			}
 
 			if (wParam == SIZE_MAXIMIZED) {
+				RECT workArea;
+				SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+				SetWindowPos(hWnd, NULL, workArea.left, workArea.top,
+						workArea.right - workArea.left, workArea.bottom - workArea.top,
+						SWP_NOZORDER | SWP_NOACTIVATE);
 				maximized = true;
 				minimized = false;
 			} else if (wParam == SIZE_MINIMIZED) {
@@ -1468,10 +1486,15 @@ Error OS_Windows::initialize(const VideoMode &p_desired, int p_video_driver, int
 	DWORD dwExStyle;
 	DWORD dwStyle;
 
-	if (video_mode.fullscreen || video_mode.borderless_window) {
+	if (video_mode.fullscreen) {
 		dwExStyle = WS_EX_APPWINDOW;
 		dwStyle = WS_POPUP;
-
+	} else if (video_mode.borderless_window && video_mode.resizable) {
+		dwExStyle = WS_EX_APPWINDOW;
+		dwStyle = WS_SYSMENU | WS_POPUP | WS_MAXIMIZEBOX;
+		if (!maximized) {
+			dwStyle &= ~WS_THICKFRAME;
+		}
 	} else {
 		dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 		dwStyle = WS_OVERLAPPEDWINDOW;
@@ -2385,8 +2408,10 @@ bool OS_Windows::get_borderless_window() {
 }
 
 void OS_Windows::_update_window_style(bool p_repaint, bool p_maximized) {
-	if (video_mode.fullscreen || video_mode.borderless_window) {
+	if (video_mode.fullscreen) {
 		SetWindowLongPtr(hWnd, GWL_STYLE, WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+	} else if (video_mode.borderless_window) {
+		SetWindowLongPtr(hWnd, GWL_STYLE, WS_SYSMENU | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_VISIBLE);
 	} else {
 		if (video_mode.resizable) {
 			if (p_maximized) {
