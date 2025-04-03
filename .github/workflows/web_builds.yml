@@ -1,4 +1,4 @@
-name: 🟢 Android Builds
+name: 🌐 JavaScript Builds
 on:
   workflow_call:
 
@@ -7,37 +7,44 @@ env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.x
   SCONSFLAGS: warnings=all werror=yes debug_symbols=no lto=full production=yes optimize=size deprecated=no
+  EM_VERSION: 3.1.39
 
 concurrency:
-  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-android
+  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-web
   cancel-in-progress: true
 
 jobs:
-  android-builds:
+  build-web:
     runs-on: "ubuntu-24.04"
     name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Editor (target=release_debug, tools=yes)
-            cache-name: editor-android
-            target: release_debug
-            tools: true
+          - name: Template
+            cache-name: template-web
+            sconsflags: threads_enabled=no
+            target: release
+            tools: false
 
-          - name: Template (target=release, tools=no)
-            cache-name: template-android
+          - name: Template (Threads)
+            cache-name: template-web-threads
+            sconsflags: threads_enabled=yes
             target: release
             tools: false
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - name: Set up Emscripten latest
+        uses: mymindstorm/setup-emsdk@v14
         with:
-          distribution: temurin
-          java-version: 17
+          version: ${{env.EM_VERSION}}
+          no-cache: true
+
+      - name: Verify Emscripten setup
+        run: |
+          emcc -v
 
       - name: Restore Godot build cache
         uses: ./.github/actions/godot-cache-restore
@@ -48,11 +55,11 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/godot-deps
 
-      - name: Compilation (armv7)
+      - name: Compilation
         uses: ./.github/actions/godot-build
         with:
-          sconsflags: ${{ env.SCONSFLAGS }} android_arch=armv7
-          platform: android
+          sconsflags: ${{ env.SCONSFLAGS }} ${{ matrix.sconsflags }}
+          platform: javascript
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 
@@ -61,22 +68,6 @@ jobs:
         with:
           cache-name: ${{ matrix.cache-name }}
         continue-on-error: true
-
-      - name: Generate Editor
-        if: ${{ matrix.tools }}
-        run: |
-          cd platform/android/java
-          ./gradlew generateGodotEditor
-          cd ../../..
-          ls -l bin/
-
-      - name: Generate templates
-        if: ${{ !matrix.tools }}
-        run: |
-          cd platform/android/java
-          ./gradlew generateGodotTemplates
-          cd ../../..
-          ls -l bin/
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact

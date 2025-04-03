@@ -1,5 +1,12 @@
-name: 🔗 GHA
-on: [push, pull_request]
+name: 🎬 Action
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      compile:
+        description: 'Release'
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-runner
@@ -7,40 +14,86 @@ concurrency:
 
 jobs:
   static-checks:
-    name: 📊 Static
+    name: 🔎 Static
     uses: ./.github/workflows/static_checks.yml
 
   android-build:
-    name: 🤖 Android
+    name: 🟢 Android
     needs: static-checks
     uses: ./.github/workflows/android_builds.yml
 
   ios-build:
-    name: 🍏 iOS
+    name: ⚪ iOS
     needs: static-checks
     uses: ./.github/workflows/ios_builds.yml
 
-  javascript-build:
-    name: 🌐 JavaScript
-    needs: static-checks
-    uses: ./.github/workflows/javascript_builds.yml
-
   linux-build:
-    name: 🐧 Linux
+    name: 🟨 Linux
     needs: static-checks
     uses: ./.github/workflows/linux_builds.yml
 
   macos-build:
-    name: 🍎 macOS
+    name: ⬜ macOS
     needs: static-checks
     uses: ./.github/workflows/macos_builds.yml
+
+  windows-build:
+    name: 🟦 Windows
+    needs: static-checks
+    uses: ./.github/workflows/windows_builds.yml
+
+  web-build:
+    name: 🌐 Web
+    needs: static-checks
+    uses: ./.github/workflows/web_builds.yml
 
   server-build:
     name: ☁ Server
     needs: static-checks
     uses: ./.github/workflows/server_builds.yml
 
-  windows-build:
-    name: 🏁 Windows
-    needs: static-checks
-    uses: ./.github/workflows/windows_builds.yml
+  release:
+    name: 📦 Release
+    if: github.event_name == 'workflow_dispatch' && inputs.compile
+    needs: [android-build, ios-build, linux-build, macos-build, windows-build, web-build, server-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Get date
+        id: date
+        run: echo "date=$(date +'%y%m%d%H')" >> $GITHUB_OUTPUT
+
+      - name: GDX
+        run: |
+          cd artifacts
+          for d in */; do
+            cd "$d"
+            for f in godot*; do
+              [ -f "$f" ] && mv "$f" "${f/godot/gdx}"
+            done
+            cd ..
+          done
+
+      - name: Compress
+        run: |
+          cd artifacts
+          for d in */; do
+            zip -r "${d%/}.zip" "$d"
+            rm -rf "$d"
+          done
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }} ${{ steps.date.outputs.date }}
+          tag_name: ${{ github.ref_name }}-${{ steps.date.outputs.date }}
+          draft: true
+          files: artifacts/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
