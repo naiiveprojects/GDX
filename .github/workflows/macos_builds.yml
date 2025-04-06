@@ -24,13 +24,13 @@ jobs:
             cache-name: editor-macos
             target: release_debug
             tools: true
-            bin: "./bin/godot.osx.opt.tools.64"
+            bin: "./bin/gdx.osx.opt.tools.64"
 
           - name: Template (target=release, tools=no)
             cache-name: template-macos
             target: release
             tools: false
-            bin: "./bin/godot.osx.opt.64"
+            bin: "./bin/gdx.osx.opt.64"
 
     steps:
       - uses: actions/checkout@v4
@@ -60,18 +60,6 @@ jobs:
           target: ${{ matrix.target }}
           tools: ${{ matrix.tools }}
 
-      - name: Create Universal Binary
-        run: |
-          if [ "${{ matrix.tools }}" = "true" ]; then
-            lipo -create bin/godot.osx.opt.tools.x86_64 bin/godot.osx.opt.tools.arm64 -output bin/godot.osx.opt.tools.universal
-            rm bin/godot.osx.opt.tools.x86_64
-            rm bin/godot.osx.opt.tools.arm64
-          else
-            lipo -create bin/godot.osx.opt.x86_64 bin/godot.osx.opt.arm64 -output bin/godot.osx.opt.universal
-            rm bin/godot.osx.opt.x86_64
-            rm bin/godot.osx.opt.arm64
-          fi
-
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
         with:
@@ -80,8 +68,20 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          strip bin/godot.*
-          chmod +x bin/godot.*
+          strip bin/gdx.*
+          chmod +x bin/gdx.*
+
+      - name: Create Universal Binary
+        run: |
+          if [ "${{ matrix.tools }}" = "true" ]; then
+            lipo -create bin/gdx.osx.opt.tools.x86_64 bin/gdx.osx.opt.tools.arm64 -output bin/gdx.osx.opt.tools.universal
+            rm bin/gdx.osx.opt.tools.x86_64
+            rm bin/gdx.osx.opt.tools.arm64
+          else
+            lipo -create bin/gdx.osx.opt.x86_64 bin/gdx.osx.opt.arm64 -output bin/gdx.osx.opt.universal
+            rm bin/gdx.osx.opt.x86_64
+            rm bin/gdx.osx.opt.arm64
+          fi
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact

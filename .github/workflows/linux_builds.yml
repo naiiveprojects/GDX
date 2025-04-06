@@ -132,8 +132,8 @@ jobs:
       - name: Prepare artifact
         if: ${{ matrix.artifact }}
         run: |
-          strip bin/godot.*
-          chmod +x bin/godot.*
+          strip bin/gdx.*
+          chmod +x bin/gdx.*
 
       - name: Upload artifact
         uses: ./.github/actions/upload-artifact
