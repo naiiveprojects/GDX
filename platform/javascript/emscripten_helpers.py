@@ -38,7 +38,7 @@ def create_engine_file(env, target, source, externs):
 
 
 def create_template_zip(env, js, wasm, extra):
-    binary_name = "godot.tools" if env["tools"] else "godot"
+    binary_name = "gdx.tools" if env["tools"] else "gdx"
     zip_dir = env.Dir("#bin/.javascript_zip")
     in_files = [
         js,
@@ -63,23 +63,23 @@ def create_template_zip(env, js, wasm, extra):
         # HTML
         html = "#misc/dist/html/editor.html"
         cache = [
-            "godot.tools.html",
+            "gdx.tools.html",
             "offline.html",
-            "godot.tools.js",
-            "godot.tools.worker.js",
-            "godot.tools.audio.worklet.js",
+            "gdx.tools.js",
+            "gdx.tools.worker.js",
+            "gdx.tools.audio.worklet.js",
             "logo.svg",
             "favicon.png",
         ]
-        opt_cache = ["godot.tools.wasm"]
+        opt_cache = ["gdx.tools.wasm"]
         subst_dict = {
             "@GODOT_VERSION@": get_build_version(),
-            "@GODOT_NAME@": "GodotEngine",
+            "@GODOT_NAME@": "Gdx",
             "@GODOT_CACHE@": json.dumps(cache),
             "@GODOT_OPT_CACHE@": json.dumps(opt_cache),
             "@GODOT_OFFLINE_PAGE@": "offline.html",
         }
-        html = env.Substfile(target="#bin/godot${PROGSUFFIX}.html", source=html, SUBST_DICT=subst_dict)
+        html = env.Substfile(target="#bin/gdx${PROGSUFFIX}.html", source=html, SUBST_DICT=subst_dict)
         in_files.append(html)
         out_files.append(zip_dir.File(binary_name + ".html"))
         # And logo/favicon
@@ -89,7 +89,7 @@ def create_template_zip(env, js, wasm, extra):
         out_files.append(zip_dir.File("favicon.png"))
         # PWA
         service_worker = env.Substfile(
-            target="#bin/godot${PROGSUFFIX}.service.worker.js", source=service_worker, SUBST_DICT=subst_dict
+            target="#bin/gdx${PROGSUFFIX}.service.worker.js", source=service_worker, SUBST_DICT=subst_dict
         )
         in_files.append(service_worker)
         out_files.append(zip_dir.File("service.worker.js"))
@@ -104,7 +104,7 @@ def create_template_zip(env, js, wasm, extra):
         in_files.append(service_worker)
         out_files.append(zip_dir.File(binary_name + ".service.worker.js"))
         in_files.append("#misc/dist/html/offline-export.html")
-        out_files.append(zip_dir.File("godot.offline.html"))
+        out_files.append(zip_dir.File("gdx.offline.html"))
 
     zip_files = env.InstallAs(out_files, in_files)
     env.Zip(

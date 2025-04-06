@@ -79,7 +79,7 @@ private:
 		if (regen) {
 			key = p_crypto->generate_rsa(2048);
 			key->save(key_path);
-			cert = p_crypto->generate_self_signed_certificate(key, "CN=godot-debug.local,O=A Game Dev,C=XXA", "20140101000000", "20340101000000");
+			cert = p_crypto->generate_self_signed_certificate(key, "CN=gdx-debug.local,O=A Game Dev,C=XXA", "20140101000000", "20340101000000");
 			cert->save(crt_path);
 		}
 	}
@@ -383,7 +383,7 @@ Error EditorExportPlatformJavaScript::_extract_template(const String &p_template
 		}
 
 		// Skip service worker and offline page if not exporting pwa.
-		if (!pwa && (file == "godot.service.worker.js" || file == "godot.offline.html")) {
+		if (!pwa && (file == "gdx.service.worker.js" || file == "gdx.offline.html")) {
 			continue;
 		}
 		Vector<uint8_t> data;
@@ -395,7 +395,7 @@ Error EditorExportPlatformJavaScript::_extract_template(const String &p_template
 		unzCloseCurrentFile(pkg);
 
 		//write
-		String dst = p_dir.plus_file(file.replace("godot", p_name));
+		String dst = p_dir.plus_file(file.replace("gdx", p_name));
 		FileAccess *f = FileAccess::open(dst, FileAccess::WRITE);
 		if (!f) {
 			add_message(EXPORT_MESSAGE_ERROR, TTR("Prepare Templates"), vformat(TTR("Could not write file: \"%s\"."), dst));
@@ -517,7 +517,7 @@ Error EditorExportPlatformJavaScript::_add_manifest_icon(const String &p_path, c
 Error EditorExportPlatformJavaScript::_build_pwa(const Ref<EditorExportPreset> &p_preset, const String p_path, const Vector<SharedObject> &p_shared_objects) {
 	String proj_name = ProjectSettings::get_singleton()->get_setting("application/config/name");
 	if (proj_name.empty()) {
-		proj_name = "Godot Game";
+		proj_name = "Gdx Software";
 	}
 
 	// Service worker
