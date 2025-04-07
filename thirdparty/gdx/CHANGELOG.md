@@ -73,15 +73,11 @@
   - Add Manual run
   - Create release using artifact (manual)
   - Add server build
-  - Add android editor build
-  - Add arm64 for MacOS (now universal)
-  - Remove Static checks
-  - Remove verbose flag
+  - android: editor, armv7
+  - MacOS: universal
   - Rename javascript to web
-  - Android: remove arm64v8
   - Web: Compiling `Thread`
-  - Linux: Compiling Template & Editor, remove minimal template
-  - Change prefix and sufix
+  - Change prefix and suffix
 
 ## Removed
 

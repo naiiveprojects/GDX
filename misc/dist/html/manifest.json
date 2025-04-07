@@ -1,9 +1,9 @@
 {
-  "name": "Godot Engine Web Editor",
-  "short_name": "Godot",
-  "description": "Multi-platform 2D and 3D game engine with a feature-rich editor (Web edition)",
+  "name": "Gdx Web Editor",
+  "short_name": "gdx",
+  "description": "Multi-platform 2D and 3D game engine editor",
   "lang": "en",
-  "start_url": "./godot.tools.html",
+  "start_url": "./gdx.tools.html",
   "display": "standalone",
   "theme_color": "#202531",
   "icons": [
