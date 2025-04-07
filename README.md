@@ -1,9 +1,9 @@
 # <img src="thirdparty/gdx/icon.svg" width="32"> GDX
 
 [![release](https://badges.ws/github/release/naiiveprojects/gdx?color=green)](https://github.com/naiiveprojects/GDX/releases/latest)
-[![GitHub commits since latest release](https://img.shields.io/github/commits-since/naiiveprojects/GDX/latest?style=flat&logo=2c2c2e&label=commit%20since%20release&labelColor=2c2c2e&color=e6653d)](https://github.com/naiiveprojects/GDX/commits/3.x/)
-![repo](https://badges.ws/github/repo-size/naiiveprojects/gdx)
-![lang](https://badges.ws/github/lang-size/naiiveprojects/gdx)
+[![GitHub commits since latest release](https://img.shields.io/github/commits-since/naiiveprojects/GDX/latest?style=flat&logo=2c2c2e&label=commit%20since%20release&labelColor=2c2c2e&color=e6653d)](https://github.com/naiiveprojects/GDX/commits/3.x)
+[![repo](https://badges.ws/github/repo-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
+[![lang](https://badges.ws/github/lang-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 
 GDX is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x). For more detail, refer to [**this changelog**](thirdparty/gdx/CHANGELOG.md). This fork continuously tracks the latest development of the [`3.x branch`](https://github.com/godotengine/godot/tree/3.x).
 

@@ -28,7 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-package org.godotengine.editor
+package com.naiive.gdx
 
 /**
  * Drives the 'run project' window of the Godot Editor.

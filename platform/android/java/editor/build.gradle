@@ -81,11 +81,11 @@ android {
     buildToolsVersion versions.buildTools
     ndkVersion versions.ndkVersion
 
-    namespace = "org.godotengine.editor"
+    namespace = "com.naiive.gdx"
 
     defaultConfig {
         // The 'applicationId' suffix allows to install Godot 3.x(v3) and 4.x(v4) on the same device
-        applicationId "org.godotengine.editor.v3"
+        applicationId "com.naiive.gdx.v3"
         versionCode generateVersionCode()
         versionName generateVersionName()
         minSdkVersion versions.minSdk
