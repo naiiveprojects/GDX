@@ -18,7 +18,7 @@ def run_closure_compiler(target, source, env, for_signature):
 def get_build_version():
     import version
 
-    name = "custom_build"
+    name = "custom"
     if os.getenv("BUILD_NAME") != None:
         name = os.getenv("BUILD_NAME")
     v = "%d.%d" % (version.major, version.minor)
@@ -108,7 +108,7 @@ def create_template_zip(env, js, wasm, extra):
 
     zip_files = env.InstallAs(out_files, in_files)
     env.Zip(
-        "#bin/godot",
+        "#bin/gdx",
         zip_files,
         ZIPROOT=zip_dir,
         ZIPSUFFIX="${PROGSUFFIX}${ZIPSUFFIX}",
