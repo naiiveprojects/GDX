@@ -87,4 +87,4 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ matrix.cache-name }}
-          path: bin/godot.*
+          path: bin/gdx.*
