@@ -1659,11 +1659,18 @@ void TextEdit::_notification(int p_what) {
 			drawer.flush();
 
 			bool completion_below = false;
+			bool completion_options_updated = false;
 			if (completion_active && is_cursor_visible && completion_options.size() > 0) {
 				// Completion panel
 
-				if (unfiltered_completion_options_cache.size() == 0) {
+				if (completion_current_kind_filter != -1) {
+					if (!completion_options_updated && unfiltered_completion_options_cache.size() == 0) {
+						unfiltered_completion_options_cache = completion_options;
+						completion_options_updated = true;
+					}
+				} else {
 					unfiltered_completion_options_cache = completion_options;
+					completion_options_updated = true;
 				}
 
 				Vector<int> kinds;
