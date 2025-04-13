@@ -978,6 +978,8 @@ void ScriptTextEditor::_lookup_symbol(const String &p_symbol, int p_row, int p_c
 				EditorNode::get_singleton()->load_resource(path);
 			}
 		}
+	} else {
+		OS::get_singleton()->shell_open(p_symbol);
 	}
 }
 
