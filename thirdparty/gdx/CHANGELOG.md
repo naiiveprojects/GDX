@@ -1,5 +1,3 @@
-# 3C
-
 ## Added
 
 - Core
@@ -10,6 +8,7 @@
 - Node
   - `ProgressBar` [Fill Direction](https://github.com/godotengine/godot/pull/36593)
   - `AudioStreamPlayer` [Control Left and Right Volume](https://github.com/godotengine/godot/pull/51666)
+  - `TextEdit` [Code completion filter](https://github.com/godotengine/godot/pull/38449)
 - Editor
   - borderless mode switch ( This Also Fix known Nvidia Jitter/Clipping Issue )
   - bottom panel visibility switch
@@ -82,13 +81,3 @@
 ## Removed
 
 - `VisualScript`
-
-## Fixed
-
-- `ScriptEditor` Fix Crash When calling `Show In FileSystem`
-
-## Misc
-
-`FileSystem`, and `ScriptEditor` **`Dock`** switch
-
-<img src="ss_misc.png" width="20%">

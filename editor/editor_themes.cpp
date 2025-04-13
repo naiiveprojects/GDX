@@ -1042,6 +1042,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("normal", "TextEdit", style_widget);
 	theme->set_stylebox("focus", "TextEdit", style_widget_hover);
 	theme->set_stylebox("read_only", "TextEdit", style_widget_disabled);
+	theme->set_stylebox("completion", "TextEdit", make_flat_stylebox(dark_theme ? background_color : base_color, 0, 0, 0, 0));
 	theme->set_constant("side_margin", "TabContainer", 0);
 	theme->set_icon("tab", "TextEdit", theme->get_icon("GuiTab", "EditorIcons"));
 	theme->set_icon("space", "TextEdit", theme->get_icon("GuiSpace", "EditorIcons"));

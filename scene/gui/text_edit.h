@@ -31,10 +31,12 @@
 #ifndef TEXT_EDIT_H
 #define TEXT_EDIT_H
 
+#include "core/ordered_hash_map.h"
 #include "scene/gui/control.h"
 #include "scene/gui/popup_menu.h"
 #include "scene/gui/scroll_bar.h"
 #include "scene/main/timer.h"
+#include "scene/resources/texture.h"
 
 class SyntaxHighlighter;
 
@@ -338,6 +340,12 @@ private:
 	int completion_line_ofs;
 	String completion_hint;
 	int completion_hint_offset;
+	bool completion_clicked;
+
+	Vector<ScriptCodeCompletionOption> unfiltered_completion_options_cache;
+	int completion_current_kind_filter;
+	OrderedHashMap<int, Rect2> completion_kind_filter_rect_map;
+	Rect2i completion_filter_rect;
 
 	bool setting_text;
 
@@ -549,6 +557,9 @@ private:
 	void _cancel_code_hint();
 	void _confirm_completion();
 	void _update_completion_candidates();
+
+	Ref<Texture> _get_completion_option_kind_icon(int kind);
+	String _get_completion_option_kind_display(int kind);
 
 	int _calculate_spaces_till_next_left_indent(int column);
 	int _calculate_spaces_till_next_right_indent(int column);

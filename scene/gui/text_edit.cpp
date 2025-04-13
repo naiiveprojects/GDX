@@ -1659,8 +1659,51 @@ void TextEdit::_notification(int p_what) {
 			drawer.flush();
 
 			bool completion_below = false;
+			bool completion_options_updated = false;
 			if (completion_active && is_cursor_visible && completion_options.size() > 0) {
 				// Completion panel
+
+				if (completion_current_kind_filter != -1) {
+					if (!completion_options_updated && unfiltered_completion_options_cache.size() == 0) {
+						unfiltered_completion_options_cache = completion_options;
+						completion_options_updated = true;
+					}
+				} else {
+					unfiltered_completion_options_cache = completion_options;
+					completion_options_updated = true;
+				}
+
+				Vector<int> kinds;
+				kinds.push_back(-1);
+
+				for (int i = 0; i < unfiltered_completion_options_cache.size(); i++) {
+					if (kinds.find(unfiltered_completion_options_cache[i].kind) == -1) {
+						kinds.push_back(unfiltered_completion_options_cache[i].kind);
+					}
+				}
+				kinds.sort();
+				if (completion_current_kind_filter != -1 && kinds.find(completion_current_kind_filter) == -1) {
+					// Log or handle the case explicitly
+					WARN_PRINT("completion_current_kind_filter is valid but not found in kinds. Resetting to -1.");
+					completion_current_kind_filter = -1;
+				}
+				// If selected filter doesnt exist in kinds list, reset it back to 'all'
+				if (completion_current_kind_filter != -1 && kinds.find(completion_current_kind_filter) == -1)
+					completion_current_kind_filter = -1;
+
+				if (completion_current_kind_filter != -1) {
+					Vector<ScriptCodeCompletionOption> filtered_options;
+
+					for (int i = 0; i < unfiltered_completion_options_cache.size(); i++) {
+						if (unfiltered_completion_options_cache[i].kind == completion_current_kind_filter) {
+							filtered_options.push_back(unfiltered_completion_options_cache[i]);
+						}
+					}
+
+					completion_options = filtered_options;
+				} else {
+					completion_options = unfiltered_completion_options_cache;
+				}
 
 				const Ref<StyleBox> csb = get_stylebox("completion");
 				const int maxlines = get_constant("completion_lines");
@@ -1694,6 +1737,10 @@ void TextEdit::_notification(int p_what) {
 				const int icon_hsep = get_constant("hseparation", "ItemList");
 				const Size2 icon_area_size(row_height, row_height);
 				const int icon_area_width = icon_area_size.width + icon_hsep;
+
+				int min_size_for_filters = 11 * icon_area_size.width + icon_hsep + cache.font->get_string_size(_get_completion_option_kind_display(completion_current_kind_filter)).width;
+				width = width < min_size_for_filters ? min_size_for_filters : width;
+
 				width += icon_area_size.width + icon_hsep;
 
 				const int line_from = CLAMP((completion_force_item_center < 0 ? completion_index : completion_force_item_center) - row_count / 2, 0, completion_options_size - row_count);
@@ -1737,6 +1784,46 @@ void TextEdit::_notification(int p_what) {
 				}
 				VisualServer::get_singleton()->canvas_item_add_rect(ci, Rect2(Point2(completion_rect.position.x, completion_rect.position.y + (completion_index - line_from) * get_row_height()), Size2(completion_rect.size.width, get_row_height())), cache.completion_selected_color);
 				draw_rect(Rect2(completion_rect.position + Vector2(icon_area_size.x + icon_hsep, 0), Size2(MIN(completion_base_width, completion_rect.size.width - (icon_area_size.x + icon_hsep)), completion_rect.size.height)), cache.completion_existing_color);
+
+				int filter_rect_height_offset = 0;
+				float filter_separation_size = 1.0;
+
+				if (!completion_below) {
+					filter_rect_height_offset = -1 * (completion_rect.size.height + icon_area_size.height + filter_separation_size);
+				}
+
+				// Draw filter rect which goes under the results list
+				completion_filter_rect = Rect2i(completion_rect.position + Point2(0, completion_rect.size.y + filter_rect_height_offset), Size2(completion_rect.size.x + csb->get_minimum_size().x + scroll_rectangle_width, icon_area_size.y));
+				draw_rect(completion_filter_rect, cache.completion_background_color);
+
+				// Draw kind icons for the filter
+				for (int i = 0; i < kinds.size(); i++) {
+					Ref<Texture> icon = _get_completion_option_kind_icon(kinds[i]);
+					if (icon.is_valid()) {
+						const real_t max_scale = 0.7f;
+						const real_t side = max_scale * icon_area_size.width;
+						real_t scale = MIN(side / icon->get_width(), side / icon->get_height());
+						Size2 icon_size = icon->get_size() * scale;
+
+						int x_offset = icon_area_size.x * i + (icon_area_size.x - icon_size.x) / 2;
+						int y_offset = completion_filter_rect.size.height + (icon_area_size.y - icon_size.y) / 2;
+						Rect2 icon_rect = Rect2(completion_filter_rect.position + Vector2(x_offset, y_offset - icon_area_size.y), icon_size);
+						draw_texture_rect(icon, icon_rect);
+
+						Rect2 click_rect = Rect2(completion_filter_rect.position + Vector2(icon_area_size.x * i, 0), icon_area_size);
+						completion_kind_filter_rect_map.insert(kinds[i], click_rect);
+					}
+				}
+
+				// Draw kind filter highlight rect
+				int kind_index = kinds.find(completion_current_kind_filter);
+				draw_rect(Rect2(completion_filter_rect.position + Vector2(icon_area_size.x * kind_index, 0), icon_area_size), cache.completion_existing_color);
+
+				// Draw kind text
+				String kind_filter_text = _get_completion_option_kind_display(completion_current_kind_filter);
+				int kind_yofs = (get_row_height() - cache.font->get_height()) / 2;
+				Point2 filter_text_pos(completion_filter_rect.position.x + completion_filter_rect.size.x - cache.font->get_string_size(kind_filter_text).x - icon_hsep, completion_filter_rect.position.y + cache.font->get_ascent() + kind_yofs);
+				draw_string(cache.font, filter_text_pos, kind_filter_text, cache.completion_font_color, completion_filter_rect.size.width);
 
 				for (int i = 0; i < row_count; i++) {
 					int l = line_from + i;
@@ -2417,8 +2504,11 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 	if (mb.is_valid()) {
 		if (completion_active && completion_rect.has_point(mb->get_position())) {
 			if (!mb->is_pressed()) {
+				completion_clicked = false;
 				return;
 			}
+
+			completion_clicked = true;
 
 			if (mb->get_button_index() == BUTTON_WHEEL_UP) {
 				if (completion_index > 0) {
@@ -2450,9 +2540,30 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 				}
 			}
 			return;
+		} else if (completion_active && completion_filter_rect.has_point(mb->get_position())) {
+			if (!mb->is_pressed() || mb->get_button_index() != BUTTON_LEFT) {
+				completion_clicked = false;
+				return;
+			}
+
+			completion_clicked = true;
+
+			for (OrderedHashMap<int, Rect2>::Element E = completion_kind_filter_rect_map.front(); E; E = E.next()) {
+				Rect2 rect = E.get();
+				if (rect.has_point(mb->get_position())) {
+					completion_current_kind_filter = E.key();
+					completion_index = 0;
+					update();
+					return;
+				}
+			}
+			return;
 		} else {
-			_cancel_completion();
-			_cancel_code_hint();
+			if (mb->is_pressed()) {
+				completion_clicked = false;
+				_cancel_completion();
+				_cancel_code_hint();
+			}
 		}
 
 		if (mb->is_pressed()) {
@@ -2948,6 +3059,68 @@ void TextEdit::_gui_input(const Ref<InputEvent> &p_gui_input) {
 					_update_completion_candidates();
 					accept_event();
 
+					return;
+				}
+
+				if (k->get_alt() || k->get_scancode() == KEY_ALT) {
+					if (k->get_scancode() == KEY_PAGEDOWN) {
+						if (completion_current_kind_filter != completion_kind_filter_rect_map.front().key()) {
+							completion_current_kind_filter = completion_kind_filter_rect_map.find(completion_current_kind_filter).prev().key();
+						}
+						return;
+					}
+					if (k->get_scancode() == KEY_PAGEUP) {
+						if (completion_current_kind_filter != completion_kind_filter_rect_map.back().key()) {
+							completion_current_kind_filter = completion_kind_filter_rect_map.find(completion_current_kind_filter).next().key();
+						}
+						return;
+					}
+
+					// Alt + Letter shortcuts for filters
+					if (k->get_scancode() == KEY_A) {
+						completion_current_kind_filter = -1;
+						return;
+					}
+					if (k->get_scancode() == KEY_O) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_CLASS;
+						return;
+					}
+					if (k->get_scancode() == KEY_F) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_FUNCTION;
+						return;
+					}
+					if (k->get_scancode() == KEY_S) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_SIGNAL;
+						return;
+					}
+					if (k->get_scancode() == KEY_V) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_VARIABLE;
+						return;
+					}
+					if (k->get_scancode() == KEY_M) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_MEMBER;
+						return;
+					}
+					if (k->get_scancode() == KEY_E) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_ENUM;
+						return;
+					}
+					if (k->get_scancode() == KEY_C) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_CONSTANT;
+						return;
+					}
+					if (k->get_scancode() == KEY_N) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_NODE_PATH;
+						return;
+					}
+					if (k->get_scancode() == KEY_P) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_FILE_PATH;
+						return;
+					}
+					if (k->get_scancode() == KEY_T) {
+						completion_current_kind_filter = ScriptCodeCompletionOption::KIND_PLAIN_TEXT;
+						return;
+					}
 					return;
 				}
 			}
@@ -5242,6 +5415,64 @@ Control::CursorShape TextEdit::get_cursor_shape(const Point2 &p_pos) const {
 	return get_default_cursor_shape();
 }
 
+Ref<Texture> TextEdit::_get_completion_option_kind_icon(int kind) {
+	switch (kind) {
+		case -1:
+			return get_icon("GuiChecked", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_CLASS:
+			return get_icon("Object", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_FUNCTION:
+			return get_icon("MemberMethod", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_SIGNAL:
+			return get_icon("MemberSignal", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_VARIABLE:
+			return get_icon("Variant", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_MEMBER:
+			return get_icon("MemberProperty", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_ENUM:
+			return get_icon("Enum", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_CONSTANT:
+			return get_icon("MemberConstant", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_NODE_PATH:
+			return get_icon("NodePath", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_FILE_PATH:
+			return get_icon("File", "EditorIcons");
+		case ScriptCodeCompletionOption::KIND_PLAIN_TEXT:
+			return get_icon("CubeMesh", "EditorIcons");
+		default:
+			return get_icon("StatusError", "EditorIcons");
+	}
+}
+
+String TextEdit::_get_completion_option_kind_display(int kind) {
+	switch (kind) {
+		case -1:
+			return TTR("All Results");
+		case ScriptCodeCompletionOption::KIND_CLASS:
+			return TTR("Classes");
+		case ScriptCodeCompletionOption::KIND_FUNCTION:
+			return TTR("Functions");
+		case ScriptCodeCompletionOption::KIND_SIGNAL:
+			return TTR("Signals");
+		case ScriptCodeCompletionOption::KIND_VARIABLE:
+			return TTR("Variables");
+		case ScriptCodeCompletionOption::KIND_MEMBER:
+			return TTR("Members");
+		case ScriptCodeCompletionOption::KIND_ENUM:
+			return TTR("Enums");
+		case ScriptCodeCompletionOption::KIND_CONSTANT:
+			return TTR("Constants");
+		case ScriptCodeCompletionOption::KIND_NODE_PATH:
+			return TTR("Node Paths");
+		case ScriptCodeCompletionOption::KIND_FILE_PATH:
+			return TTR("File Paths");
+		case ScriptCodeCompletionOption::KIND_PLAIN_TEXT:
+			return TTR("Plain Text");
+		default:
+			return TTR("Unknown");
+	}
+}
+
 void TextEdit::set_text(String p_text) {
 	setting_text = true;
 	if (!undo_enabled) {
@@ -7054,6 +7285,9 @@ void TextEdit::code_complete(const List<ScriptCodeCompletionOption> &p_strings, 
 	completion_forced = p_forced;
 	completion_current = ScriptCodeCompletionOption();
 	completion_index = 0;
+	completion_current_kind_filter = -1;
+	unfiltered_completion_options_cache.clear();
+	completion_kind_filter_rect_map.clear();
 	completion_force_item_center = -1;
 	_update_completion_candidates();
 }
