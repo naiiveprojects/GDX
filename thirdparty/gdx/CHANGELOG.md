@@ -12,10 +12,12 @@
 - Editor
   - borderless mode switch ( This Also Fix known Nvidia Jitter/Clipping Issue )
   - bottom panel visibility switch
-  - `ScriptEditor` Script Panel Dock
+  - Dock Icons
   - `FileSystem` Bottom Dock
   - `CanvasItemEditor` ( 2D ) collapse tool menu into the viewport
-  - Dock Icons
+  - `ScriptEditor`
+    - Script Panel Dock
+    - open valid URI
 - OS Windows
   - dark mode in window title bar ( non-client area )
   - collapse client area to non client area
