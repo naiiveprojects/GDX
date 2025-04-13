@@ -13,6 +13,7 @@
   - borderless mode switch ( This Also Fix known Nvidia Jitter/Clipping Issue )
   - bottom panel visibility switch
   - Dock Icons
+  - `SceneTree` [NodePath export hint](https://github.com/godotengine/godot/pull/39155)
   - `FileSystem` Bottom Dock
   - `CanvasItemEditor` ( 2D ) collapse tool menu into the viewport
   - `ScriptEditor`
