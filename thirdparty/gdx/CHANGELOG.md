@@ -81,3 +81,7 @@
 ## Removed
 
 - `VisualScript`
+
+## Fixed
+
+- [Resolve performance issues with create dialog](https://github.com/godotengine/godot/pull/39797)
