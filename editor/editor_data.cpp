@@ -901,7 +901,7 @@ StringName EditorData::script_class_get_base(const String &p_class) const {
 		return ScriptServer::get_global_class_base(p_class);
 	}
 
-	return script->get_language()->get_global_class_name(base_script->get_path());
+	return script_class_get_name(base_script->get_path());
 }
 
 Variant EditorData::script_class_instance(const String &p_class) {
@@ -923,8 +923,8 @@ Ref<Script> EditorData::script_class_load_script(const String &p_class) const {
 		return Ref<Script>();
 	}
 
-	String path = ScriptServer::get_global_class_path(p_class);
-	return ResourceLoader::load(path, "Script");
+	ERR_FAIL_COND_V_MSG(!_script_cache.has(p_class), Ref<Script>(), "Cannot find a script cached in the editor data.");
+	return _script_cache[p_class];
 }
 
 void EditorData::script_class_set_icon_path(const String &p_class, const String &p_icon_path) {
@@ -950,11 +950,11 @@ String EditorData::script_class_get_icon_path(const String &p_class) const {
 }
 
 StringName EditorData::script_class_get_name(const String &p_path) const {
-	return _script_class_file_to_path.has(p_path) ? _script_class_file_to_path[p_path] : StringName();
+	return _script_class_path_to_name.has(p_path) ? _script_class_path_to_name[p_path] : StringName();
 }
 
 void EditorData::script_class_set_name(const String &p_path, const StringName &p_class) {
-	_script_class_file_to_path[p_path] = p_class;
+	_script_class_path_to_name[p_path] = p_class;
 }
 
 void EditorData::script_class_save_icon_paths() {
@@ -1001,6 +1001,34 @@ void EditorData::script_class_load_icon_paths() {
 			String path = ScriptServer::get_global_class_path(name);
 			script_class_set_name(path, name);
 		}
+	}
+}
+
+void EditorData::script_class_update_cache() {
+	// NOTE: clearing the cache completely is not efficient, so don't clear?
+	// _script_cache.clear();
+	{
+		List<String> invalid;
+
+		const String *k = nullptr;
+		while ((k = _script_cache.next(k))) {
+			if (_script_cache[*k].is_null()) {
+				invalid.push_back(*k);
+			}
+		}
+		for (List<String>::Element *I = invalid.front(); I; I = I->next()) {
+			_script_cache.erase(I->get());
+		}
+	}
+	List<StringName> list;
+	ScriptServer::get_global_class_list(&list);
+	_script_class_path_to_name.clear();
+
+	for (List<StringName>::Element *I = list.front(); I; I = I->next()) {
+		String name = I->get();
+		String path = ScriptServer::get_global_class_path(name);
+		_script_class_path_to_name[path] = name;
+		_script_cache[name] = ResourceLoader::load(path, "Script");
 	}
 }
 
