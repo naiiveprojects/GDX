@@ -56,7 +56,9 @@ public:
 
 		PAUSE_MODE_INHERIT,
 		PAUSE_MODE_STOP,
-		PAUSE_MODE_PROCESS
+		PAUSE_MODE_PROCESS,
+		PAUSE_MODE_STOP_ALWAYS,
+		PAUSE_MODE_PROCESS_PAUSED
 	};
 
 	enum PhysicsInterpolationMode : unsigned int {

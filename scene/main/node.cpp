@@ -866,6 +866,24 @@ bool Node::can_process() const {
 				return false;
 			}
 		}
+	} else {
+		if (data.pause_mode == PAUSE_MODE_PROCESS_PAUSED) {
+			return false;
+		}
+
+		if (data.pause_mode == PAUSE_MODE_INHERIT) {
+			if (!data.pause_owner) {
+				return true;
+			}
+
+			if (data.pause_owner->data.pause_mode == PAUSE_MODE_PROCESS_PAUSED) {
+				return false;
+			}
+		}
+	}
+
+	if (data.pause_mode == PAUSE_MODE_STOP_ALWAYS || (data.pause_mode == PAUSE_MODE_INHERIT && data.pause_owner && data.pause_owner->data.pause_mode == PAUSE_MODE_STOP_ALWAYS)) {
+		return false;
 	}
 
 	return true;
@@ -3233,6 +3251,8 @@ void Node::_bind_methods() {
 	BIND_ENUM_CONSTANT(PAUSE_MODE_INHERIT);
 	BIND_ENUM_CONSTANT(PAUSE_MODE_STOP);
 	BIND_ENUM_CONSTANT(PAUSE_MODE_PROCESS);
+	BIND_ENUM_CONSTANT(PAUSE_MODE_STOP_ALWAYS);
+	BIND_ENUM_CONSTANT(PAUSE_MODE_PROCESS_PAUSED);
 
 	BIND_ENUM_CONSTANT(PHYSICS_INTERPOLATION_MODE_INHERIT);
 	BIND_ENUM_CONSTANT(PHYSICS_INTERPOLATION_MODE_OFF);
@@ -3252,7 +3272,7 @@ void Node::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("child_exiting_tree", PropertyInfo(Variant::OBJECT, "node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT, "Node")));
 	ADD_SIGNAL(MethodInfo("child_order_changed"));
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "pause_mode", PROPERTY_HINT_ENUM, "Inherit,Stop,Process"), "set_pause_mode", "get_pause_mode");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "pause_mode", PROPERTY_HINT_ENUM, "Inherit,Stop,Process,Stop Always,Process Paused"), "set_pause_mode", "get_pause_mode");
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "physics_interpolation_mode", PROPERTY_HINT_ENUM, "Inherit,Off,On"), "set_physics_interpolation_mode", "get_physics_interpolation_mode");
 
