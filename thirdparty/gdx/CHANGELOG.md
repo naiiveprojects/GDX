@@ -6,6 +6,7 @@
 - Module
   - [MiniZip](https://github.com/godotengine/godot/pull/34444)
 - Node
+  - `Node` [Backprot 4.x Pause Mode](https://github.com/godotengine/godot/pull/58519)
   - `ProgressBar` [Fill Direction](https://github.com/godotengine/godot/pull/36593)
   - `AudioStreamPlayer` [Control Left and Right Volume](https://github.com/godotengine/godot/pull/51666)
   - `TextEdit` [Code completion filter](https://github.com/godotengine/godot/pull/38449)
