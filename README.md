@@ -5,14 +5,14 @@
 [![repo](https://badges.ws/github/repo-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 [![lang](https://badges.ws/github/lang-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 
-GDX is Custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x), it aims to incorporate changes, additions, or merged features that may not be able to be merge in the official [`3.x branch`](https://github.com/godotengine/godot/tree/3.x).
-
-for detailed list of changes check [**this changelog**](thirdparty/gdx/CHANGELOG.md).
+GDX is Custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x), it aims to incorporate changes, additions, or merged features that may not be able to be merge in the official `3.x branch`.
 
 <p align="center">
     <img src="thirdparty/gdx/ss_editor.png" width="100%">
-    <img src="thirdparty/gdx/ss_pm.png" width="100%">
 </p>
+
+> [!NOTE]
+> refer to [**this changelog**](thirdparty/gdx/CHANGELOG.md) for detailed list of changes.
 
 ## Binaries
 
@@ -39,8 +39,7 @@ To minimize compilation time and binary size, builds are provided only for the f
 | Web       | -       | Default, Threads |
 | Server    | Linux Headless x64 | Linux Server x64 |
 
-> [!NOTE]
-> To add more platforms/architectures, follow the [compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html).
+To add more platforms/architectures, follow the [compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html).
 
 ### Download
 
@@ -50,17 +49,18 @@ To minimize compilation time and binary size, builds are provided only for the f
 
 GDX uses **custom templates** for exporting projects.
 
-Precompiled binaries utilize `BUILD_NAME` for versioning using the format YYMMDDHH, e.g., `25033000`.
+**Precompiled Binaries** utilize `BUILD_NAME` for versioning using the format YYMMDDHH, e.g., `25033000`.
 
 > [!CAUTION]
-> These builds are considered bleeding-edge. It is strongly recommended to back up your projects or use version control systems like Git.
+> These builds are considered *bleeding-edge*. It is strongly recommended to back up your projects or use version control systems like Git.
 
 ## Contributing
 
-Contributions are welcome!
+We appreciate contributions!
 
 - If you encounter any **bugs** or specific **issues**, please open an [Issue](https://github.com/naiiveprojects/GDX/issues).
 - For **questions**, **ideas**, or general **suggestions**, feel free to start a [Discussion](https://github.com/naiiveprojects/GDX/discussions).
+- For substantial changes or new features, its recommended to include relevant documentation directly within the PR description.
 
 ---
 
