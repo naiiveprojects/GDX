@@ -82,10 +82,11 @@
   - Web: Compiling `Thread`
   - Change prefix and suffix
 
-## Removed
-
-- `VisualScript`
-
 ## Fixed
 
 - [Resolve performance issues with create dialog](https://github.com/godotengine/godot/pull/39797)
+- [Fix incorrect notifications for MOUSE_ENTER/EXIT](https://github.com/godotengine/godot/pull/60346)
+
+## Removed
+
+- `VisualScript`
