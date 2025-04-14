@@ -142,7 +142,7 @@ private:
 		uint32_t canvas_parent_id = UINT32_MAX;
 
 		// Keep bitpacked values together to get better packing
-		PauseMode pause_mode : 2;
+		PauseMode pause_mode : 3;
 		PhysicsInterpolationMode physics_interpolation_mode : 2;
 
 		// variables used to properly sort the node when processing, ignored otherwise
