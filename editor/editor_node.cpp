@@ -610,10 +610,14 @@ void EditorNode::_notification(int p_what) {
 
 			prev_scene->set_icon(gui_base->get_icon("PrevScene", "EditorIcons"));
 			distraction_free->set_icon(gui_base->get_icon("PanelFitWidth", "EditorIcons"));
+			button_panel_bottom->set_icon(gui_base->get_icon("PanelBottom", "EditorIcons"));
+			button_borderless->set_icon(gui_base->get_icon("PanelTop", "EditorIcons"));
+			button_close->set_icon(gui_base->get_icon("Close", "EditorIcons"));
 			scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
 
 			bottom_panel_raise->set_icon(gui_base->get_icon("ExpandBottomDock", "EditorIcons"));
 
+			file_menu->set_icon(gui_base->get_icon("PackedScene", "EditorIcons"));
 			debug_menu->set_icon(gui_base->get_icon("Debug", "EditorIcons"));
 			settings_menu->set_icon(gui_base->get_icon("Tools", "EditorIcons"));
 			help_menu->set_icon(gui_base->get_icon("HelpSearch", "EditorIcons"));
@@ -6792,8 +6796,8 @@ EditorNode::EditorNode() {
 
 	right_menu_hb->add_child(distraction_free);
 
-	ToolButton *button_panel_bottom = memnew(ToolButton);
-	button_panel_bottom->set_tooltip("Show/Hide Bottom Panel");
+	button_panel_bottom = memnew(ToolButton);
+	button_panel_bottom->set_tooltip("Visible Bottom Panel");
 	button_panel_bottom->set_icon(gui_base->get_icon("PanelBottom", "EditorIcons"));
 	button_panel_bottom->set_toggle_mode(true);
 	button_panel_bottom->connect("toggled", this, "_bottom_panel_visible");
