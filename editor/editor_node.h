@@ -385,8 +385,9 @@ private:
 	HBoxContainer *tabbar_container;
 	ToolButton *distraction_free;
 	ToolButton *scene_tab_add;
-	ToolButton *button_close;
+	ToolButton *button_panel_bottom;
 	ToolButton *button_borderless;
+	ToolButton *button_close;
 
 	bool scene_distraction;
 	bool script_distraction;

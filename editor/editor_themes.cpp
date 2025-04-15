@@ -687,6 +687,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("normal", "Button", style_widget);
 	theme->set_stylebox("hover", "Button", style_widget_hover);
 	theme->set_stylebox("pressed", "Button", style_widget_pressed);
+	theme->set_stylebox("hover_pressed", "Button", style_widget_pressed);
 	theme->set_stylebox("focus", "Button", style_widget_focus);
 	theme->set_stylebox("disabled", "Button", style_widget_disabled);
 

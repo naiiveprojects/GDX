@@ -5,26 +5,26 @@
 [![repo](https://badges.ws/github/repo-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 [![lang](https://badges.ws/github/lang-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 
-GDX is Custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x), it aims to incorporate changes, additions, or merged features that may not be able to be merge in the official `3.x branch`.
+GDX is a custom [**Godot Engine 3.x branch**](https://github.com/godotengine/godot/tree/3.x). it aims to incorporate changes, additions, or merged features that may not be merged into the official `3.x` branch.
 
-<p align="center">
-    <img src="thirdparty/gdx/ss_editor.png" width="100%">
-</p>
+<img src="thirdparty/gdx/ss_editor.png" width="100%">
 
 > [!NOTE]
-> refer to [**this changelog**](thirdparty/gdx/CHANGELOG.md) for detailed list of changes.
+> refer to [**this Changelog**](thirdparty/gdx/CHANGELOG.md) for list of changes.
 
 ## Binaries
 
-The [releases](https://github.com/naiiveprojects/GDX/releases/latest) utilize [GitHub Actions](https://github.com/naiiveprojects/GDX/actions) artifacts, with the following flags applied for all builds: `debug_symbols=no lto=full production=yes optimize=size deprecated=no`.
+The [Releases](https://github.com/naiiveprojects/GDX/releases/latest) utilize [GitHub Actions](https://github.com/naiiveprojects/GDX/actions) artifacts, with the following flags applied for all builds:
 
-Additionally, builds are compiled with the following encryption key:
+`debug_symbols=no lto=full production=yes optimize=size deprecated=no`.
+
+Additionally, it compiled with the following encryption key:
 
 ```hex
 FEE1ADDC0FFEEDEC0DEDEFDEADC0DEDECADEDEC0DEC0FFEEC0DEC0FFEEC0FFEE
 ```
 
-> [!WARNING]
+> [!IMPORTANT]
 > This encryption key is publicly accessible. If you prefer to use a more secure key for encryption, refer to the [compiling with script encryption key](https://docs.godotengine.org/en/3.6/development/compiling/compiling_with_script_encryption_key.html).
 
 To minimize compilation time and binary size, builds are provided only for the following architectures:
@@ -45,7 +45,7 @@ To add more platforms/architectures, follow the [compilation guide](https://docs
 
 - **Precompiled Binaries:** Available on the [Releases](https://github.com/naiiveprojects/GDX/releases/latest) page.
 - **Latest Builds:** Check [Artifacts](https://github.com/naiiveprojects/GDX/actions) in GitHub Actions.
-- **Manual Compilation:** Get the source code [here](https://github.com/naiiveprojects/GDX/archive/refs/heads/3.x.zip) and follow the [compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html).
+- **Manual Compilation:** Get the source code [Here](https://github.com/naiiveprojects/GDX/archive/refs/heads/3.x.zip) then follow this [compilation guide](https://docs.godotengine.org/en/3.6/development/compiling/index.html).
 
 GDX uses **custom templates** for exporting projects.
 
@@ -62,8 +62,4 @@ We appreciate contributions!
 - For **questions**, **ideas**, or general **suggestions**, feel free to start a [Discussion](https://github.com/naiiveprojects/GDX/discussions).
 - For substantial changes or new features, its recommended to include relevant documentation directly within the PR description.
 
----
-
-<p align="center">
-    <img src="thirdparty/gdx/icon.svg" width="32">
-</p>
+<img src="thirdparty/gdx/icon.svg" width="32">
