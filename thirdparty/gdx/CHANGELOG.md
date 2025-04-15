@@ -1,6 +1,6 @@
 # GDX Changelogs
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. refer to the linked Pull Requests (PRs) For more information / documentation.
 
 ## Added
 
@@ -55,8 +55,3 @@ All notable changes to this project will be documented in this file.
 
 - `VisualScript` https://github.com/naiiveprojects/GDX/pull/64
 
----
-
-> [!NOTE]
-> refer to the linked Pull Requests (PRs) For more detail.
-> For the complete history, check the [commit history](https://github.com/naiiveprojects/GDX/commits/3.x/).
