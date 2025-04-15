@@ -182,11 +182,14 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 	bool can_instance = (cpp_type && ClassDB::can_instance(p_type)) || ScriptServer::is_global_class(p_type);
 
 	TreeItem *item = search_options->create_item(parent);
+	item->set_text(0, p_type);
+	String &description = DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description);
 	if (cpp_type) {
-		item->set_text(0, p_type);
+		item->set_tooltip(0, description);
 	} else {
+		description = ScriptServer::get_global_class_path(p_type);
+		item->set_tooltip(0, vformat("%s.%s", description.get_basename(), description.get_extension()));
 		item->set_metadata(0, p_type);
-		item->set_text(0, p_type + " (" + ScriptServer::get_global_class_path(p_type).get_file() + ")");
 	}
 	if (!can_instance) {
 		item->set_custom_color(0, get_color("disabled_font_color", "Editor"));
@@ -243,9 +246,6 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 		collapse &= ((parent != p_root) || (can_instance));
 		item->set_collapsed(collapse);
 	}
-
-	const String &description = DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description);
-	item->set_tooltip(0, description);
 
 	String icon_fallback = has_icon(base_type, "EditorIcons") ? base_type : "Object";
 	item->set_icon(0, EditorNode::get_singleton()->get_class_icon(p_type, icon_fallback));
@@ -555,21 +555,9 @@ void CreateDialog::_item_selected() {
 	favorite->set_disabled(false);
 	favorite->set_pressed(favorite_list.find(name) != -1);
 
-	if (!EditorHelp::get_doc_data()->class_list.has(name)) {
-		return;
-	}
-
-	const String brief_desc = DTR(EditorHelp::get_doc_data()->class_list[name].brief_description);
-	if (!brief_desc.empty()) {
-		// Display both class name and description, since the help bit may be displayed
-		// far away from the location (especially if the dialog was resized to be taller).
-		help_bit->set_text(vformat("[b]%s[/b]: %s", name, brief_desc));
-		help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 1));
-	} else {
-		// Use nested `vformat()` as translators shouldn't interfere with BBCode tags.
-		help_bit->set_text(vformat(TTR("No description available for %s."), vformat("[b]%s[/b]", name)));
-		help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 0.5));
-	}
+	const String brief_desc = item->get_tooltip(0);
+	help_bit->set_text(vformat("[b]%s[/b]: %s", name, brief_desc));
+	help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 1));
 
 	get_ok()->set_disabled(false);
 }
