@@ -182,11 +182,14 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 	bool can_instance = (cpp_type && ClassDB::can_instance(p_type)) || ScriptServer::is_global_class(p_type);
 
 	TreeItem *item = search_options->create_item(parent);
+	item->set_text(0, p_type);
 	if (cpp_type) {
-		item->set_text(0, p_type);
+		item->set_tooltip(0, DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description));
 	} else {
+		String description = ScriptServer::get_global_class_path(p_type);
+		item->set_tooltip(0, vformat("%s.%s", description.get_basename(), description.get_extension()));
 		item->set_metadata(0, p_type);
-		item->set_text(0, p_type + " (" + ScriptServer::get_global_class_path(p_type).get_file() + ")");
+		item->add_button(0, EditorNode::get_singleton()->get_class_icon("Script"));
 	}
 	if (!can_instance) {
 		item->set_custom_color(0, get_color("disabled_font_color", "Editor"));
@@ -243,9 +246,6 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 		collapse &= ((parent != p_root) || (can_instance));
 		item->set_collapsed(collapse);
 	}
-
-	const String &description = DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description);
-	item->set_tooltip(0, description);
 
 	String icon_fallback = has_icon(base_type, "EditorIcons") ? base_type : "Object";
 	item->set_icon(0, EditorNode::get_singleton()->get_class_icon(p_type, icon_fallback));
@@ -555,23 +555,35 @@ void CreateDialog::_item_selected() {
 	favorite->set_disabled(false);
 	favorite->set_pressed(favorite_list.find(name) != -1);
 
-	if (!EditorHelp::get_doc_data()->class_list.has(name)) {
-		return;
+	const String brief_desc = item->get_tooltip(0);
+	String format;
+	if (ClassDB::class_exists(name)) {
+		format = vformat("[%s] %s", name, brief_desc);
+	} else {
+		format = vformat("[b]%s[/b] %s", name, brief_desc);
 	}
 
-	const String brief_desc = DTR(EditorHelp::get_doc_data()->class_list[name].brief_description);
-	if (!brief_desc.empty()) {
-		// Display both class name and description, since the help bit may be displayed
-		// far away from the location (especially if the dialog was resized to be taller).
-		help_bit->set_text(vformat("[b]%s[/b]: %s", name, brief_desc));
-		help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 1));
-	} else {
-		// Use nested `vformat()` as translators shouldn't interfere with BBCode tags.
-		help_bit->set_text(vformat(TTR("No description available for %s."), vformat("[b]%s[/b]", name)));
-		help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 0.5));
-	}
+	help_bit->set_text(format);
+	help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 1));
 
 	get_ok()->set_disabled(false);
+}
+
+void CreateDialog::_script_selected(const Variant &p_object, int p_column, int p_id) {
+	TreeItem *p_item = Object::cast_to<TreeItem>(p_object);
+	if (!p_item) {
+		return;
+	}
+	String script_path = p_item->get_tooltip(0);
+	if (!script_path.empty()) {
+		Ref<Script> script = ResourceLoader::load(script_path, "Script");
+		if (script.is_valid()) {
+			EditorNode::get_singleton()->edit_resource(script);
+		} else {
+			print_error("Failed to load script: " + script_path);
+		}
+	}
+	hide();
 }
 
 void CreateDialog::_favorite_toggled() {
@@ -743,6 +755,7 @@ void CreateDialog::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_confirmed"), &CreateDialog::_confirmed);
 	ClassDB::bind_method(D_METHOD("_sbox_input"), &CreateDialog::_sbox_input);
 	ClassDB::bind_method(D_METHOD("_item_selected"), &CreateDialog::_item_selected);
+	ClassDB::bind_method(D_METHOD("_script_selected"), &CreateDialog::_script_selected);
 	ClassDB::bind_method(D_METHOD("_favorite_toggled"), &CreateDialog::_favorite_toggled);
 	ClassDB::bind_method(D_METHOD("_history_selected"), &CreateDialog::_history_selected);
 	ClassDB::bind_method(D_METHOD("_favorite_selected"), &CreateDialog::_favorite_selected);
@@ -775,7 +788,7 @@ CreateDialog::CreateDialog() {
 	fav_vb->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	favorites = memnew(Tree);
-	fav_vb->add_margin_child(TTR("Favorites:"), favorites, true);
+	fav_vb->add_margin_child(TTR("Favorites"), favorites, true);
 	favorites->set_hide_root(true);
 	favorites->set_hide_folding(true);
 	favorites->set_allow_reselect(true);
@@ -784,13 +797,10 @@ CreateDialog::CreateDialog() {
 	favorites->set_drag_forwarding(this);
 	favorites->add_constant_override("draw_guides", 1);
 
-	VBoxContainer *rec_vb = memnew(VBoxContainer);
-	vsc->add_child(rec_vb);
-	rec_vb->set_custom_minimum_size(Size2(150, 100) * EDSCALE);
-	rec_vb->set_v_size_flags(SIZE_EXPAND_FILL);
-
 	recent = memnew(Tree);
-	rec_vb->add_margin_child(TTR("Recent:"), recent, true);
+	vsc->add_child(recent);
+	recent->set_v_size_flags(SIZE_EXPAND_FILL);
+	recent->set_custom_minimum_size(Size2(150, 100) * EDSCALE);
 	recent->set_hide_root(true);
 	recent->set_hide_folding(true);
 	recent->set_allow_reselect(true);
@@ -805,27 +815,30 @@ CreateDialog::CreateDialog() {
 	HBoxContainer *search_hb = memnew(HBoxContainer);
 	search_box = memnew(LineEdit);
 	search_box->set_h_size_flags(SIZE_EXPAND_FILL);
+	search_box->set_placeholder(TTR("Search"));
 	search_hb->add_child(search_box);
 	favorite = memnew(Button);
 	favorite->set_flat(true);
 	favorite->set_toggle_mode(true);
 	search_hb->add_child(favorite);
 	favorite->connect("pressed", this, "_favorite_toggled");
-	vbc->add_margin_child(TTR("Search:"), search_hb);
+	vbc->add_child(search_hb);
 	search_box->connect("text_changed", this, "_text_changed");
 	search_box->connect("gui_input", this, "_sbox_input");
 	search_options = memnew(Tree);
-	vbc->add_margin_child(TTR("Matches:"), search_options, true);
+	search_options->set_v_size_flags(SIZE_EXPAND_FILL);
+	vbc->add_child(search_options);
 	get_ok()->set_disabled(true);
 	register_text_enter(search_box);
 	set_hide_on_ok(false);
 	search_options->connect("item_activated", this, "_confirmed");
 	search_options->connect("cell_selected", this, "_item_selected");
+	search_options->connect("button_pressed", this, "_script_selected");
 	base_type = "Object";
 	preferred_search_result_type = "";
 
 	help_bit = memnew(EditorHelpBit);
-	vbc->add_margin_child(TTR("Description:"), help_bit);
+	vbc->add_child(help_bit);
 	help_bit->connect("request_hide", this, "_closed");
 
 	type_blacklist.insert("PluginScript"); // PluginScript must be initialized before use, which is not possible here

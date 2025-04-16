@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file. refer to th
 - - Default settings https://github.com/naiiveprojects/GDX/pull/71
   - Revamp https://github.com/naiiveprojects/GDX/pull/77
   - Use project icon on project menu button https://github.com/naiiveprojects/GDX/pull/77
+  - Improve class display in Create dialog https://github.com/naiiveprojects/GDX/pull/93
 - Project Manager
   - Default settings https://github.com/naiiveprojects/GDX/pull/71
   - Revamp https://github.com/naiiveprojects/GDX/pull/76
