@@ -846,8 +846,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Tree & ItemList background
 	Ref<StyleBoxFlat> style_tree_bg = style_default->duplicate();
-	style_tree_bg->set_bg_color(base_color);
-	style_tree_bg->set_border_color(base_color);
+	style_tree_bg->set_bg_color(dark_color_1);
+	style_tree_bg->set_border_color(dark_color_3);
 	theme->set_stylebox("bg", "Tree", style_tree_bg);
 
 	const Color guide_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.05);

@@ -186,7 +186,7 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 	if (cpp_type) {
 		item->set_tooltip(0, DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description));
 	} else {
-		String &description = ScriptServer::get_global_class_path(p_type);
+		String description = ScriptServer::get_global_class_path(p_type);
 		item->set_tooltip(0, vformat("%s.%s", description.get_basename(), description.get_extension()));
 		item->set_metadata(0, p_type);
 		item->add_button(0, EditorNode::get_singleton()->get_class_icon("Script"));
@@ -811,17 +811,19 @@ CreateDialog::CreateDialog() {
 	HBoxContainer *search_hb = memnew(HBoxContainer);
 	search_box = memnew(LineEdit);
 	search_box->set_h_size_flags(SIZE_EXPAND_FILL);
+	search_box->set_placeholder(TTR("Search"));
 	search_hb->add_child(search_box);
 	favorite = memnew(Button);
 	favorite->set_flat(true);
 	favorite->set_toggle_mode(true);
 	search_hb->add_child(favorite);
 	favorite->connect("pressed", this, "_favorite_toggled");
-	vbc->add_margin_child(TTR("Search:"), search_hb);
+	vbc->add_child(search_hb);
 	search_box->connect("text_changed", this, "_text_changed");
 	search_box->connect("gui_input", this, "_sbox_input");
 	search_options = memnew(Tree);
-	vbc->add_margin_child(TTR("Matches:"), search_options, true);
+	search_options->set_v_size_flags(SIZE_EXPAND_FILL);
+	vbc->add_child(search_options);
 	get_ok()->set_disabled(true);
 	register_text_enter(search_box);
 	set_hide_on_ok(false);
@@ -832,7 +834,7 @@ CreateDialog::CreateDialog() {
 	preferred_search_result_type = "";
 
 	help_bit = memnew(EditorHelpBit);
-	vbc->add_margin_child(TTR("Description:"), help_bit);
+	vbc->add_child(help_bit);
 	help_bit->connect("request_hide", this, "_closed");
 
 	type_blacklist.insert("PluginScript"); // PluginScript must be initialized before use, which is not possible here
