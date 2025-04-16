@@ -183,13 +183,13 @@ void CreateDialog::add_type(const String &p_type, HashMap<String, TreeItem *> &p
 
 	TreeItem *item = search_options->create_item(parent);
 	item->set_text(0, p_type);
-	String &description = DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description);
 	if (cpp_type) {
-		item->set_tooltip(0, description);
+		item->set_tooltip(0, DTR(EditorHelp::get_doc_data()->class_list[p_type].brief_description));
 	} else {
-		description = ScriptServer::get_global_class_path(p_type);
+		String &description = ScriptServer::get_global_class_path(p_type);
 		item->set_tooltip(0, vformat("%s.%s", description.get_basename(), description.get_extension()));
 		item->set_metadata(0, p_type);
+		item->add_button(0, EditorNode::get_singleton()->get_class_icon("Script"));
 	}
 	if (!can_instance) {
 		item->set_custom_color(0, get_color("disabled_font_color", "Editor"));
@@ -562,6 +562,23 @@ void CreateDialog::_item_selected() {
 	get_ok()->set_disabled(false);
 }
 
+void CreateDialog::_script_selected(const Variant &p_object, int p_column, int p_id) {
+	TreeItem *p_item = Object::cast_to<TreeItem>(p_object);
+	if (!p_item) {
+		return;
+	}
+	String script_path = p_item->get_tooltip(0);
+	if (!script_path.empty()) {
+		Ref<Script> script = ResourceLoader::load(script_path, "Script");
+		if (script.is_valid()) {
+			EditorNode::get_singleton()->edit_resource(script);
+		} else {
+			print_error("Failed to load script: " + script_path);
+		}
+	}
+	hide();
+}
+
 void CreateDialog::_favorite_toggled() {
 	TreeItem *item = search_options->get_selected();
 	if (!item) {
@@ -731,6 +748,7 @@ void CreateDialog::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_confirmed"), &CreateDialog::_confirmed);
 	ClassDB::bind_method(D_METHOD("_sbox_input"), &CreateDialog::_sbox_input);
 	ClassDB::bind_method(D_METHOD("_item_selected"), &CreateDialog::_item_selected);
+	ClassDB::bind_method(D_METHOD("_script_selected"), &CreateDialog::_script_selected);
 	ClassDB::bind_method(D_METHOD("_favorite_toggled"), &CreateDialog::_favorite_toggled);
 	ClassDB::bind_method(D_METHOD("_history_selected"), &CreateDialog::_history_selected);
 	ClassDB::bind_method(D_METHOD("_favorite_selected"), &CreateDialog::_favorite_selected);
@@ -809,6 +827,7 @@ CreateDialog::CreateDialog() {
 	set_hide_on_ok(false);
 	search_options->connect("item_activated", this, "_confirmed");
 	search_options->connect("cell_selected", this, "_item_selected");
+	search_options->connect("button_pressed", this, "_script_selected");
 	base_type = "Object";
 	preferred_search_result_type = "";
 
