@@ -556,7 +556,14 @@ void CreateDialog::_item_selected() {
 	favorite->set_pressed(favorite_list.find(name) != -1);
 
 	const String brief_desc = item->get_tooltip(0);
-	help_bit->set_text(vformat("[b]%s[/b]: %s", name, brief_desc));
+	String format;
+	if (ClassDB::class_exists(name)) {
+		format = vformat("[%s] %s", name, brief_desc);
+	} else {
+		format = vformat("[b]%s[/b] %s", name, brief_desc);
+	}
+
+	help_bit->set_text(format);
 	help_bit->get_rich_text()->set_self_modulate(Color(1, 1, 1, 1));
 
 	get_ok()->set_disabled(false);
@@ -781,7 +788,7 @@ CreateDialog::CreateDialog() {
 	fav_vb->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	favorites = memnew(Tree);
-	fav_vb->add_margin_child(TTR("Favorites:"), favorites, true);
+	fav_vb->add_margin_child(TTR("Favorites"), favorites, true);
 	favorites->set_hide_root(true);
 	favorites->set_hide_folding(true);
 	favorites->set_allow_reselect(true);
@@ -796,7 +803,7 @@ CreateDialog::CreateDialog() {
 	rec_vb->set_v_size_flags(SIZE_EXPAND_FILL);
 
 	recent = memnew(Tree);
-	rec_vb->add_margin_child(TTR("Recent:"), recent, true);
+	rec_vb->add_child(recent);
 	recent->set_hide_root(true);
 	recent->set_hide_folding(true);
 	recent->set_allow_reselect(true);
