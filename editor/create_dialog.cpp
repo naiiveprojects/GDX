@@ -797,13 +797,10 @@ CreateDialog::CreateDialog() {
 	favorites->set_drag_forwarding(this);
 	favorites->add_constant_override("draw_guides", 1);
 
-	VBoxContainer *rec_vb = memnew(VBoxContainer);
-	vsc->add_child(rec_vb);
-	rec_vb->set_custom_minimum_size(Size2(150, 100) * EDSCALE);
-	rec_vb->set_v_size_flags(SIZE_EXPAND_FILL);
-
 	recent = memnew(Tree);
-	rec_vb->add_child(recent);
+	vsc->add_child(recent);
+	recent->set_v_size_flags(SIZE_EXPAND_FILL);
+	recent->set_custom_minimum_size(Size2(150, 100) * EDSCALE);
 	recent->set_hide_root(true);
 	recent->set_hide_folding(true);
 	recent->set_allow_reselect(true);
