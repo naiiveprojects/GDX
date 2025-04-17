@@ -946,7 +946,7 @@ void EditorInspectorCategory::_notification(int p_what) {
 		}
 		w = MIN(w, get_size().width - hs * 2);
 
-		int ofs = (get_size().width - w) / 2;
+		int ofs = hs;
 
 		if (icon.is_valid()) {
 			draw_texture(icon, Point2(ofs, (get_size().height - icon->get_height()) / 2).floor());
@@ -1489,7 +1489,7 @@ void EditorInspector::update_tree() {
 			category->icon = EditorNode::get_singleton()->get_class_icon(type, "Object");
 			category->label = type;
 
-			category->bg_color = get_color("prop_category", "Editor");
+			category->bg_color = get_color("dark_color_1", "Editor");
 			if (use_doc_hints) {
 				StringName type2 = p.name;
 				if (!class_descr_cache.has(type2)) {
