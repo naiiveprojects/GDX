@@ -6113,7 +6113,7 @@ EditorNode::EditorNode() {
 	EDITOR_DEF_RST("interface/scene_tabs/minimum_width", 50);
 	EDITOR_DEF("run/output/always_clear_output_on_play", true);
 	EDITOR_DEF("run/output/always_open_output_on_play", true);
-	EDITOR_DEF("run/output/always_close_output_on_stop", false);
+	EDITOR_DEF("run/output/always_close_output_on_stop", true);
 	EDITOR_DEF("interface/editor/save_on_focus_loss", false);
 	EDITOR_DEF_RST("interface/editor/save_each_scene_on_quit", true);
 	EDITOR_DEF("interface/editor/quit_confirmation", true);
