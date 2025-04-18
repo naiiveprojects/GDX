@@ -505,7 +505,6 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const int border_width = CLAMP(border_size, 0, 3) * MAX(1, EDSCALE);
 
 	const int default_margin_size = 4;
-	const int margin_size_extra = default_margin_size + CLAMP(border_size, 0, 3);
 	const int default_corner_radius = 6;
 
 	// styleboxes
