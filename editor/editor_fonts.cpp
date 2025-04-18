@@ -180,14 +180,14 @@ void editor_register_fonts(Ref<Theme> p_theme) {
 	DefaultFont.instance();
 	DefaultFont->set_antialiased(font_antialiased);
 	DefaultFont->set_hinting(font_hinting);
-	DefaultFont->set_font_ptr(_font_NotoSansUI_Regular, _font_NotoSansUI_Regular_size);
+	DefaultFont->set_font_ptr(_font_Inter_Regular, _font_Inter_Regular_size);
 	DefaultFont->set_force_autohinter(true); //just looks better..i think?
 
 	Ref<DynamicFontData> DefaultFontBold;
 	DefaultFontBold.instance();
 	DefaultFontBold->set_antialiased(font_antialiased);
 	DefaultFontBold->set_hinting(font_hinting);
-	DefaultFontBold->set_font_ptr(_font_NotoSansUI_Bold, _font_NotoSansUI_Bold_size);
+	DefaultFontBold->set_font_ptr(_font_Inter_Bold, _font_Inter_Bold_size);
 	DefaultFontBold->set_force_autohinter(true); // just looks better..i think?
 
 	Ref<DynamicFontData> FontFallback;
