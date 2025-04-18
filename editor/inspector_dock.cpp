@@ -566,6 +566,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	property_name_style = EditorPropertyNameProcessor::get_default_inspector_style();
 
 	HBoxContainer *general_options_hb = memnew(HBoxContainer);
+	general_options_hb->hide();
 	add_child(general_options_hb);
 
 	resource_new_button = memnew(ToolButton);
@@ -632,6 +633,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 
 	HBoxContainer *subresource_hb = memnew(HBoxContainer);
 	add_child(subresource_hb);
+	subresource_hb->hide();
 	editor_path = memnew(EditorPath(editor->get_editor_history()));
 	editor_path->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	subresource_hb->add_child(editor_path);
