@@ -56,9 +56,9 @@ class EditorLog : public VBoxContainer {
 		Color message_color;
 	} theme_cache;
 
-	ToolButton *clearbutton;
-	ToolButton *copybutton;
-	Button *title;
+	Button *clearbutton;
+	Button *copybutton;
+	Label *title;
 	RichTextLabel *log;
 	HBoxContainer *title_hb;
 	//PaneDrag *pd;
@@ -74,7 +74,6 @@ class EditorLog : public VBoxContainer {
 	void _clear_request();
 	void _copy_request();
 	static void _undo_redo_cbk(void *p_self, const String &p_name);
-	void _log_visible();
 
 protected:
 	static void _bind_methods();

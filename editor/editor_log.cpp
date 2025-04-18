@@ -58,28 +58,23 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 }
 
 void EditorLog::_notification(int p_what) {
-	if (p_what == NOTIFICATION_ENTER_TREE || p_what == NOTIFICATION_THEME_CHANGED) {
-		if (log != nullptr) {
-			Ref<DynamicFont> df_output_code = get_font("output_source", "EditorFonts");
-			if (df_output_code.is_valid()) {
-				log->add_font_override("normal_font", get_font("output_source", "EditorFonts"));
-				log->add_color_override("selection_color", get_color("accent_color", "Editor") * Color(1, 1, 1, 0.4));
-				title->add_font_override("normal_font", get_font("output_source", "EditorFonts"));
+	switch (p_what) {
+		case NOTIFICATION_ENTER_TREE:
+		case NOTIFICATION_THEME_CHANGED: {
+			if (log != nullptr) {
+				Ref<DynamicFont> df_output_code = get_font("output_source", "EditorFonts");
+				if (df_output_code.is_valid()) {
+					log->add_font_override("normal_font", get_font("output_source", "EditorFonts"));
+					log->add_color_override("selection_color", get_color("accent_color", "Editor") * Color(1, 1, 1, 0.4));
+				}
 			}
-		}
 
-		theme_cache.error_color = get_color("error_color", "Editor");
-		theme_cache.error_icon = get_icon("Error", "EditorIcons");
-		theme_cache.warning_color = get_color("warning_color", "Editor");
-		theme_cache.warning_icon = get_icon("Warning", "EditorIcons");
-		theme_cache.message_color = get_color("font_color", "Editor") * Color(1, 1, 1, 0.6);
-
-		title->set_icon(get_icon("DefaultProjectIcon", "EditorIcons"));
-		copybutton->set_icon(get_icon("ActionCopy", "EditorIcons"));
-		clearbutton->set_icon(get_icon("Clear", "EditorIcons"));
-
-	} else if (p_what == NOTIFICATION_VISIBILITY_CHANGED) {
-		log->set_visible(true);
+			theme_cache.error_color = get_color("error_color", "Editor");
+			theme_cache.error_icon = get_icon("Error", "EditorIcons");
+			theme_cache.warning_color = get_color("warning_color", "Editor");
+			theme_cache.warning_icon = get_icon("Warning", "EditorIcons");
+			theme_cache.message_color = get_color("font_color", "Editor") * Color(1, 1, 1, 0.6);
+		} break;
 	}
 }
 
@@ -112,7 +107,6 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 	bool restore = p_type != MSG_TYPE_STD;
 	switch (p_type) {
 		case MSG_TYPE_STD: {
-			title->add_color_override("font_color", Color(1, 1, 1, 0.5));
 		} break;
 		case MSG_TYPE_ERROR: {
 			log->push_color(theme_cache.error_color);
@@ -120,7 +114,6 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 			log->add_image(icon);
 			log->add_text(" ");
 			tool_button->set_icon(icon);
-			title->add_color_override("font_color", theme_cache.error_color);
 		} break;
 		case MSG_TYPE_WARNING: {
 			log->push_color(theme_cache.warning_color);
@@ -128,18 +121,15 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 			log->add_image(icon);
 			log->add_text(" ");
 			tool_button->set_icon(icon);
-			title->add_color_override("font_color", theme_cache.warning_color);
 		} break;
 		case MSG_TYPE_EDITOR: {
 			// Distinguish editor messages from messages printed by the project
 			log->push_color(theme_cache.message_color);
-			title->add_color_override("font_color", theme_cache.message_color);
 		} break;
 	}
 
 	log->add_text(p_msg);
 	log->add_newline();
-	title->set_text(p_msg);
 
 	if (restore) {
 		log->pop();
@@ -155,16 +145,11 @@ void EditorLog::_undo_redo_cbk(void *p_self, const String &p_name) {
 	self->add_message(p_name, EditorLog::MSG_TYPE_EDITOR);
 }
 
-void EditorLog::_log_visible() {
-	log->set_visible(!log->is_visible());
-}
-
 void EditorLog::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_clear_request"), &EditorLog::_clear_request);
 	ClassDB::bind_method(D_METHOD("_copy_request"), &EditorLog::_copy_request);
 	ADD_SIGNAL(MethodInfo("clear_request"));
 	ADD_SIGNAL(MethodInfo("copy_request"));
-	ClassDB::bind_method(D_METHOD("_log_visible"), &EditorLog::_log_visible);
 }
 
 EditorLog::EditorLog() {
@@ -172,23 +157,20 @@ EditorLog::EditorLog() {
 
 	HBoxContainer *hb = memnew(HBoxContainer);
 	vb->add_child(hb);
-	title = memnew(Button);
-	hb->add_child(title);
-	title->set_expand_icon(true);
-	title->set_enabled_focus_mode(FOCUS_NONE);
+	title = memnew(Label);
 	title->set_text(VERSION_FULL_BUILD);
-	title->set_text_align(Button::ALIGN_LEFT);
 	title->set_h_size_flags(SIZE_EXPAND_FILL);
-	title->connect("pressed", this, "_log_visible");
-	title->set_tooltip(TTR("show/hide the output log."));
+	hb->add_child(title);
 
-	copybutton = memnew(ToolButton);
+	copybutton = memnew(Button);
 	hb->add_child(copybutton);
+	copybutton->set_text(TTR("Copy"));
 	copybutton->set_shortcut(ED_SHORTCUT("editor/copy_output", TTR("Copy Selection"), KEY_MASK_CMD | KEY_C));
 	copybutton->connect("pressed", this, "_copy_request");
 
-	clearbutton = memnew(ToolButton);
+	clearbutton = memnew(Button);
 	hb->add_child(clearbutton);
+	clearbutton->set_text(TTR("Clear"));
 	clearbutton->set_shortcut(ED_SHORTCUT("editor/clear_output", TTR("Clear Output"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_K));
 	clearbutton->connect("pressed", this, "_clear_request");
 
