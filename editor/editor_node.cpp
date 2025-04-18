@@ -6389,12 +6389,6 @@ EditorNode::EditorNode() {
 	HBoxContainer *left_menu_hb = memnew(HBoxContainer);
 	menu_hb->add_child(left_menu_hb);
 
-	file_menu = memnew(MenuButton);
-	file_menu->set_flat(false);
-	file_menu->set_switch_on_hover(true);
-	file_menu->set_icon(gui_base->get_icon("PackedScene", "EditorIcons"));
-	file_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-
 	prev_scene = memnew(ToolButton);
 	prev_scene->set_icon(gui_base->get_icon("PrevScene", "EditorIcons"));
 	prev_scene->set_tooltip(TTR("Go to previously opened scene."));
@@ -6450,6 +6444,9 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT("editor/filter_files", TTR("Filter Files..."), KEY_MASK_ALT + KEY_MASK_CMD + KEY_P);
 	PopupMenu *p;
 
+	file_menu = memnew(MenuButton);
+	file_menu->set_switch_on_hover(true);
+	file_menu->set_icon(gui_base->get_icon("PackedScene", "EditorIcons"));
 	file_menu->set_tooltip(TTR("Operations with scene files."));
 
 	p = file_menu->get_popup();
@@ -6521,9 +6518,11 @@ EditorNode::EditorNode() {
 		icon = gui_base->get_icon("DefaultProjectIcon", "EditorIcons");
 	}
 	project_menu->set_icon(icon);
-	project_menu->set_custom_minimum_size(Size2(16, 16) * EDSCALE);
+	project_menu->set_flat(true);
+	project_menu->set_custom_minimum_size(Size2(20, 20) * EDSCALE);
 	project_menu->set_expand_icon(true);
 	project_menu->set_icon_align(Button::ALIGN_CENTER);
+	project_menu->set_tooltip(TTR("Project"));
 
 	p = project_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
@@ -6577,10 +6576,9 @@ EditorNode::EditorNode() {
 	menu_hb->add_child(memnew(VSeparator));
 
 	debug_menu = memnew(MenuButton);
-	debug_menu->set_flat(false);
 	debug_menu->set_switch_on_hover(true);
 	debug_menu->set_icon(gui_base->get_icon("Debug", "EditorIcons"));
-	debug_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
+	debug_menu->set_tooltip(TTR("Debug"));
 
 	p = debug_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
@@ -6632,10 +6630,9 @@ EditorNode::EditorNode() {
 	p->connect("id_pressed", this, "_menu_option");
 
 	settings_menu = memnew(MenuButton);
-	settings_menu->set_flat(false);
 	settings_menu->set_switch_on_hover(true);
 	settings_menu->set_icon(gui_base->get_icon("Tools", "EditorIcons"));
-	settings_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
+	settings_menu->set_tooltip(TTR("Editor"));
 
 	p = settings_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
@@ -6686,10 +6683,9 @@ EditorNode::EditorNode() {
 
 	// Help Menu
 	help_menu = memnew(MenuButton);
-	help_menu->set_flat(false);
 	help_menu->set_switch_on_hover(true);
 	help_menu->set_icon(gui_base->get_icon("HelpSearch", "EditorIcons"));
-	help_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
+	help_menu->set_tooltip(TTR("Search Help"));
 
 	p = help_menu->get_popup();
 	p->set_hide_on_window_lose_focus(true);
