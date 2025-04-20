@@ -662,10 +662,14 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("focus", "PopupMenu", style_menu);
 	theme->set_stylebox("disabled", "PopupMenu", style_menu);
 
+	Ref<StyleBoxFlat> style_menu_accent = style_menu->duplicate();
+	style_menu_accent->set_draw_center(true);
+	style_menu_accent->set_bg_color(accent_color);
+
 	theme->set_stylebox("normal", "ToolButton", style_menu);
 	theme->set_stylebox("hover", "ToolButton", style_menu);
-	theme->set_stylebox("hover_pressed", "ToolButton", style_menu);
-	theme->set_stylebox("pressed", "ToolButton", style_menu);
+	theme->set_stylebox("hover_pressed", "ToolButton", style_menu_accent);
+	theme->set_stylebox("pressed", "ToolButton", style_menu_accent);
 	theme->set_stylebox("focus", "ToolButton", style_menu);
 	theme->set_stylebox("disabled", "ToolButton", style_menu);
 

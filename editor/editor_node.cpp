@@ -3232,16 +3232,22 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 	if (p_editor->has_main_screen()) {
 		ToolButton *tb = memnew(ToolButton);
 		tb->set_toggle_mode(true);
+		tb->set_flat(false);
+		tb->set_icon_align(ToolButton::ALIGN_CENTER);
+		tb->add_color_override("icon_color_pressed", singleton->gui_base->get_theme()->get_color("base_color", "Editor"));
+		tb->add_color_override("icon_color_hover_pressed", singleton->gui_base->get_color("base_color", "Editor"));
 		tb->connect("pressed", singleton, "_editor_select", varray(singleton->main_editor_buttons.size()));
 		tb->set_tooltip(p_editor->get_name());
-		Ref<Texture> icon = p_editor->get_icon();
 
+		Ref<Texture> icon = p_editor->get_icon();
 		if (icon.is_valid()) {
 			tb->set_icon(icon);
 		} else if (singleton->gui_base->has_icon(p_editor->get_name(), "EditorIcons")) {
 			tb->set_icon(singleton->gui_base->get_icon(p_editor->get_name(), "EditorIcons"));
+		} else {
+			tb->set_name(p_editor->get_name());
 		}
-		tb->set_name(p_editor->get_name());
+
 		singleton->main_editor_buttons.push_back(tb);
 		singleton->main_editor_button_vb->add_child(tb);
 		singleton->editor_table.push_back(p_editor);
@@ -6713,6 +6719,16 @@ EditorNode::EditorNode() {
 	left_menu_hb->add_child(settings_menu);
 	left_menu_hb->add_child(help_menu);
 
+	for (int i = 0; i < left_menu_hb->get_child_count(); i++) {
+		ToolButton *btn = Object::cast_to<ToolButton>(left_menu_hb->get_child(i));
+		if (btn) {
+			btn->set_flat(false);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("base_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("base_color", "Editor"));
+		}
+	}
+
 	HBoxContainer *play_hb = memnew(HBoxContainer);
 	menu_hb->add_child(play_hb);
 
@@ -6787,6 +6803,16 @@ EditorNode::EditorNode() {
 	play_custom_scene_button->set_shortcut(ED_SHORTCUT("editor/play_custom_scene", TTR("Play Custom Scene"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_F5));
 #endif
 
+	for (int i = 0; i < play_hb->get_child_count(); i++) {
+		ToolButton *btn = Object::cast_to<ToolButton>(play_hb->get_child(i));
+		if (btn) {
+			btn->set_flat(false);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("base_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("base_color", "Editor"));
+		}
+	}
+
 	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
 	menu_hb->add_child(right_menu_hb);
 
@@ -6821,6 +6847,16 @@ EditorNode::EditorNode() {
 	video_driver->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
 	video_driver->hide();
 	right_menu_hb->add_child(video_driver);
+
+	for (int i = 0; i < right_menu_hb->get_child_count(); i++) {
+		ToolButton *btn = Object::cast_to<ToolButton>(right_menu_hb->get_child(i));
+		if (btn) {
+			btn->set_flat(false);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("base_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("base_color", "Editor"));
+		}
+	}
 
 	String video_drivers = ProjectSettings::get_singleton()->get_custom_property_info()["rendering/quality/driver/driver_name"].hint_string;
 	String current_video_driver = OS::get_singleton()->get_video_driver_name(OS::get_singleton()->get_current_video_driver());
