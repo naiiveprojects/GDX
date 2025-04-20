@@ -1584,7 +1584,7 @@ void _OS::_bind_methods() {
 	ADD_PROPERTY_DEFAULT("vsync_via_compositor", false);
 	ADD_PROPERTY_DEFAULT("low_processor_usage_mode", false);
 	ADD_PROPERTY_DEFAULT("low_processor_usage_mode_sleep_usec", 6900);
-	ADD_PROPERTY_DEFAULT("keep_screen_on", true);
+	ADD_PROPERTY_DEFAULT("keep_screen_on", false);
 	ADD_PROPERTY_DEFAULT("min_window_size", Vector2());
 	ADD_PROPERTY_DEFAULT("max_window_size", Vector2());
 	ADD_PROPERTY_DEFAULT("screen_orientation", 0);
