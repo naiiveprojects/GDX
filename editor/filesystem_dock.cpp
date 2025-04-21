@@ -149,7 +149,7 @@ bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 				file_item->set_as_cursor(0);
 			}
 			if (main_scene == file_metadata) {
-				file_item->set_icon(0, get_icon("PlayScene", "EditorIcons"));
+				file_item->set_custom_color(0, get_color("accent_color", "Editor"));
 			}
 			Array udata;
 			udata.push_back(tree_update_id);
