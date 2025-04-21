@@ -149,7 +149,7 @@ bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 				file_item->set_as_cursor(0);
 			}
 			if (main_scene == file_metadata) {
-				file_item->set_custom_color(0, get_color("accent_color", "Editor"));
+				file_item->set_icon(0, get_icon("PlayScene", "EditorIcons"));
 			}
 			Array udata;
 			udata.push_back(tree_update_id);
@@ -926,7 +926,11 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 		}
 
 		if (fpath == main_scene) {
-			files->set_item_custom_fg_color(item_index, get_color("accent_color", "Editor"));
+			if (use_thumbnails) {
+				files->set_item_tag_icon(item_index, get_icon("PlayScene", "EditorIcons"));
+			} else {
+				files->set_item_icon(item_index, get_icon("PlayScene", "EditorIcons"));
+			}
 		}
 
 		// Generate the preview.
