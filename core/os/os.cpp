@@ -989,7 +989,7 @@ OS::OS() {
 
 	restart_on_exit = false;
 	singleton = this;
-	_keep_screen_on = true; // set default value to true, because this had been true before godot 2.0.
+	_keep_screen_on = false;
 	low_processor_usage_mode = false;
 	low_processor_usage_mode_sleep_usec = 10000;
 	_update_vital_only = false;
@@ -1003,7 +1003,7 @@ OS::OS() {
 
 	_render_thread_mode = RENDER_THREAD_SAFE;
 
-	_allow_hidpi = false;
+	_allow_hidpi = true;
 	_allow_layered = false;
 	_stack_bottom = (void *)(&stack_bottom);
 
