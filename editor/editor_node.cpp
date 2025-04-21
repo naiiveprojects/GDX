@@ -6348,16 +6348,6 @@ EditorNode::EditorNode() {
 	scene_tabs_context_menu->set_hide_on_window_lose_focus(true);
 
 	tabbar_container->add_child(scene_tabs);
-	distraction_free = memnew(ToolButton);
-#ifdef OSX_ENABLED
-	distraction_free->set_shortcut(ED_SHORTCUT("editor/distraction_free_mode", TTR("Distraction Free Mode"), KEY_MASK_CMD | KEY_MASK_CTRL | KEY_D));
-#else
-	distraction_free->set_shortcut(ED_SHORTCUT("editor/distraction_free_mode", TTR("Distraction Free Mode"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_F11));
-#endif
-	distraction_free->set_tooltip(TTR("Toggle distraction-free mode."));
-	distraction_free->connect("pressed", this, "_toggle_distraction_free_mode");
-	distraction_free->set_icon(gui_base->get_icon("PanelFitWidth", "EditorIcons"));
-	distraction_free->set_toggle_mode(true);
 
 	scene_tab_add = memnew(ToolButton);
 	tabbar_container->add_child(scene_tab_add);
@@ -6790,6 +6780,16 @@ EditorNode::EditorNode() {
 	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
 	menu_hb->add_child(right_menu_hb);
 
+	distraction_free = memnew(ToolButton);
+#ifdef OSX_ENABLED
+	distraction_free->set_shortcut(ED_SHORTCUT("editor/distraction_free_mode", TTR("Distraction Free Mode"), KEY_MASK_CMD | KEY_MASK_CTRL | KEY_D));
+#else
+	distraction_free->set_shortcut(ED_SHORTCUT("editor/distraction_free_mode", TTR("Distraction Free Mode"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_F11));
+#endif
+	distraction_free->set_tooltip(TTR("Toggle distraction-free mode."));
+	distraction_free->connect("pressed", this, "_toggle_distraction_free_mode");
+	distraction_free->set_icon(gui_base->get_icon("PanelFitWidth", "EditorIcons"));
+	distraction_free->set_toggle_mode(true);
 	right_menu_hb->add_child(distraction_free);
 
 	button_panel_bottom = memnew(ToolButton);
@@ -6800,6 +6800,11 @@ EditorNode::EditorNode() {
 	right_menu_hb->add_child(button_panel_bottom);
 
 	button_borderless = memnew(ToolButton);
+#ifdef OSX_ENABLED
+	button_borderless->set_shortcut(ED_SHORTCUT("editor/borderless_mode", TTR("Borderless Mode"), KEY_MASK_CMD | KEY_D));
+#else
+	button_borderless->set_shortcut(ED_SHORTCUT("editor/borderless_mode", TTR("Borderless Mode"), KEY_MASK_CMD | KEY_F11));
+#endif
 	button_borderless->set_tooltip("Borderless Mode");
 	button_borderless->set_icon(gui_base->get_icon("PanelTop", "EditorIcons"));
 	button_borderless->set_toggle_mode(true);
