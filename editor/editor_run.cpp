@@ -147,6 +147,7 @@ Error EditorRun::run(const String &p_scene, const String &p_custom_args, const L
 		} break;
 		case 1: { // centered
 			Vector2 pos = screen_rect.position + ((screen_rect.size - desired_size) / 2).floor();
+			pos = pos / 2; // HACK: temporary solution for window not centered when run on editor with HiDPI
 			args.push_back("--position");
 			args.push_back(itos(pos.x) + "," + itos(pos.y));
 		} break;
