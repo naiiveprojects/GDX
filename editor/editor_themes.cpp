@@ -335,6 +335,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const float gizmo_handle_scale = EDITOR_GET("interface/touchscreen/scale_gizmo_handles");
 	bool highlight_tabs = EDITOR_GET("interface/theme/highlight_tabs");
 	int border_size = EDITOR_GET("interface/theme/border_size");
+	int corner_radius = EDITOR_GET("interface/theme/corner_radius");
 
 	bool use_gn_headers = EDITOR_GET("interface/theme/use_graph_node_headers");
 
@@ -505,14 +506,13 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const int border_width = CLAMP(border_size, 0, 3) * MAX(1, EDSCALE);
 
 	const int default_margin_size = 4;
-	const int default_corner_radius = 6;
 
 	// styleboxes
 	// this is the most commonly used stylebox, variations should be made as duplicate of this
 	Ref<StyleBoxFlat> style_default = make_flat_stylebox(base_color, default_margin_size, default_margin_size, default_margin_size, default_margin_size);
 	style_default->set_border_width_all(border_width);
 	style_default->set_border_color(base_color);
-	style_default->set_corner_radius_all(default_corner_radius);
+	style_default->set_corner_radius_all(corner_radius);
 	style_default->set_draw_center(true);
 
 	// Button and widgets
@@ -578,8 +578,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	Ref<StyleBoxFlat> style_tab_selected = style_widget->duplicate();
 	style_tab_selected->set_border_width_all(0);
 	style_tab_selected->set_border_color(dark_color_3);
-	style_tab_selected->set_corner_radius_individual(default_corner_radius, default_corner_radius, 0, 0);
-	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, default_corner_radius * EDSCALE);
+	style_tab_selected->set_corner_radius_individual(corner_radius, corner_radius, 0, 0);
+	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, corner_radius * EDSCALE);
 	style_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
