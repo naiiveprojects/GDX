@@ -85,6 +85,7 @@ private:
 	bool text_is_constructor;
 
 	const int preset_column_count = 10;
+	const Size2 preset_button_size = Size2(24, 24);
 	List<Color> presets;
 
 	Color color;

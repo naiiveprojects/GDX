@@ -257,12 +257,11 @@ void ColorPicker::_update_color(bool p_update_sliders) {
 }
 
 void ColorPicker::_update_presets() {
-	// Only load preset buttons when the only child is the add-preset button.
-	int preset_size = _get_preset_size();
-	btn_add_preset->set_custom_minimum_size(Size2(preset_size, preset_size));
-	if (preset_container->get_child_count() == 1) {
+	// Only load preset buttons when no child in preset_container.
+	btn_add_preset->set_custom_minimum_size(preset_button_size);
+	if (preset_container->get_child_count() == 0) {
 		for (int i = 0; i < preset_cache.size(); i++) {
-			_add_preset_button(preset_size, preset_cache[i]);
+			_add_preset_button(preset_cache[i]);
 		}
 		_notification(NOTIFICATION_VISIBILITY_CHANGED);
 	}
@@ -288,14 +287,11 @@ Color ColorPicker::get_pick_color() const {
 	return color;
 }
 
-inline int ColorPicker::_get_preset_size() {
-	return (int(get_size().width) - (preset_container->get_constant("hseparation") * (preset_column_count - 1))) / preset_column_count;
-}
-
-void ColorPicker::_add_preset_button(int p_size, const Color &p_color) {
+void ColorPicker::_add_preset_button(const Color &p_color) {
 	ColorPresetButton *btn_preset = memnew(ColorPresetButton(p_color));
 	btn_preset->set_preset_color(p_color);
-	btn_preset->set_custom_minimum_size(Size2(p_size, p_size));
+	btn_preset->set_custom_minimum_size(preset_button_size);
+	btn_preset->set_h_size_flags(SIZE_EXPAND_FILL);
 	btn_preset->connect("gui_input", this, "_preset_input", varray(p_color));
 	btn_preset->set_tooltip(vformat(RTR("Color: #%s\nLMB: Apply color\nRMB: Remove preset"), p_color.to_html(p_color.a < 1)));
 	preset_container->add_child(btn_preset);
@@ -317,7 +313,7 @@ void ColorPicker::add_preset(const Color &p_color) {
 		presets.push_back(p_color);
 		preset_cache.push_back(p_color);
 
-		_add_preset_button(_get_preset_size(), p_color);
+		_add_preset_button(p_color);
 		_notification(NOTIFICATION_VISIBILITY_CHANGED);
 	}
 
@@ -804,6 +800,14 @@ ColorPicker::ColorPicker() :
 	presets_visible = true;
 	screen = nullptr;
 
+	Size2 sv_size = Size2(get_constant("sv_width"), get_constant("sv_height"));
+	Size2 h_width = Size2(get_constant("h_width"), 0);
+	// hack fix incorrect HiDPI size
+	if (GLOBAL_GET("gui/theme/use_hidpi")) {
+		sv_size = Size2(get_constant("sv_width"), get_constant("sv_height")) / 2;
+		h_width = Size2(get_constant("h_width"), 0) / 2;
+	}
+
 	HBoxContainer *hb_edit = memnew(HBoxContainer);
 	add_child(hb_edit);
 	hb_edit->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -814,12 +818,12 @@ ColorPicker::ColorPicker() :
 	uv_edit->set_mouse_filter(MOUSE_FILTER_PASS);
 	uv_edit->set_h_size_flags(SIZE_EXPAND_FILL);
 	uv_edit->set_v_size_flags(SIZE_EXPAND_FILL);
-	uv_edit->set_custom_minimum_size(Size2(get_constant("sv_width"), get_constant("sv_height")));
+	uv_edit->set_custom_minimum_size(sv_size);
 	uv_edit->connect("draw", this, "_hsv_draw", make_binds(0, uv_edit));
 
 	w_edit = memnew(Control);
 	hb_edit->add_child(w_edit);
-	w_edit->set_custom_minimum_size(Size2(get_constant("h_width"), 0));
+	w_edit->set_custom_minimum_size(h_width);
 	w_edit->set_h_size_flags(SIZE_FILL);
 	w_edit->set_v_size_flags(SIZE_EXPAND_FILL);
 	w_edit->connect("gui_input", this, "_w_input");
@@ -896,9 +900,6 @@ ColorPicker::ColorPicker() :
 	text_type->set_text("#");
 	text_type->set_tooltip(TTR("Switch between hexadecimal and code values."));
 	if (Engine::get_singleton()->is_editor_hint()) {
-#ifdef TOOLS_ENABLED
-		text_type->set_custom_minimum_size(Size2(28 * EDSCALE, 0)); // Adjust for the width of the "Script" icon.
-#endif
 		text_type->connect("pressed", this, "_text_type_toggled");
 	} else {
 		text_type->set_flat(true);
