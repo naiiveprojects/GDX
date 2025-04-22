@@ -33,7 +33,6 @@
 
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
-#include "scene/gui/check_button.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
@@ -71,10 +70,11 @@ private:
 	TextureRect *sample;
 	GridContainer *preset_container = memnew(GridContainer);
 	HSeparator *preset_separator;
-	Button *btn_add_preset;
+	ToolButton *btn_add_preset;
 	ToolButton *btn_pick;
-	CheckButton *btn_hsv;
-	CheckButton *btn_raw;
+	ToolButton *btn_rgb;
+	ToolButton *btn_hsv;
+	ToolButton *btn_raw;
 	HSlider *scroll[4];
 	SpinBox *values[4];
 	Label *labels[4];
@@ -85,6 +85,7 @@ private:
 	bool text_is_constructor;
 
 	const int preset_column_count = 10;
+	const Size2 preset_button_size = Size2(24, 24);
 	List<Color> presets;
 
 	Color color;
@@ -122,8 +123,7 @@ private:
 	void _focus_exit();
 	void _html_focus_exit();
 
-	inline int _get_preset_size();
-	void _add_preset_button(int p_size, const Color &p_color);
+	void _add_preset_button(const Color &p_color);
 
 protected:
 	void _notification(int);
@@ -145,6 +145,8 @@ public:
 	void erase_preset(const Color &p_color);
 	PoolColorArray get_presets() const;
 	void _update_presets();
+
+	void set_mode(bool p_enabled, int p_mode);
 
 	void set_hsv_mode(bool p_enabled);
 	bool is_hsv_mode() const;
