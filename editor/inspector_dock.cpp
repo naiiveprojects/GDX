@@ -354,10 +354,11 @@ void InspectorDock::_notification(int p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			set_theme(editor->get_gui_base()->get_theme());
 
+			options_button->set_icon(get_icon("VisualScriptComment", "EditorIcons"));
 			resource_new_button->set_icon(get_icon("New", "EditorIcons"));
 			resource_load_button->set_icon(get_icon("Load", "EditorIcons"));
 			resource_save_button->set_icon(get_icon("Save", "EditorIcons"));
-			resource_extra_button->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
+			resource_extra_button->set_icon(get_icon("EditInternal", "EditorIcons"));
 
 			PopupMenu *resource_extra_popup = resource_extra_button->get_popup();
 			resource_extra_popup->set_item_icon(resource_extra_popup->get_item_index(RESOURCE_EDIT_CLIPBOARD), get_icon("ActionPaste", "EditorIcons"));
@@ -565,9 +566,49 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 
 	property_name_style = EditorPropertyNameProcessor::get_default_inspector_style();
 
+	HBoxContainer *property_tools_hb = memnew(HBoxContainer);
+	add_child(property_tools_hb);
+
+	search = memnew(LineEdit);
+	search->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	search->set_placeholder(TTR("Filter properties"));
+	search->set_clear_button_enabled(true);
+	property_tools_hb->add_child(search);
+
+	options_button = memnew(ToolButton);
+	options_button->set_flat(true);
+	options_button->set_toggle_mode(true);
+	options_button->set_tooltip(TTR("Options"));
+	options_button->set_icon(get_icon("VisualScriptComment", "EditorIcons"));
+	property_tools_hb->add_child(options_button);
+
+	HBoxContainer *subresource_hb = memnew(HBoxContainer);
+	subresource_hb->hide();
+	add_child(subresource_hb);
+
+	editor_path = memnew(EditorPath(editor->get_editor_history()));
+	editor_path->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	subresource_hb->add_child(editor_path);
+
+	open_docs_button = memnew(Button);
+	open_docs_button->set_flat(true);
+	open_docs_button->set_disabled(true);
+	open_docs_button->set_tooltip(TTR("Open documentation for this object."));
+	open_docs_button->set_icon(get_icon("HelpSearch", "EditorIcons"));
+	open_docs_button->set_shortcut(ED_SHORTCUT("property_editor/open_help", TTR("Open Documentation")));
+	subresource_hb->add_child(open_docs_button);
+	open_docs_button->connect("pressed", this, "_menu_option", varray(OBJECT_REQUEST_HELP));
+
 	HBoxContainer *general_options_hb = memnew(HBoxContainer);
 	general_options_hb->hide();
 	add_child(general_options_hb);
+
+	object_menu = memnew(MenuButton);
+	object_menu->set_icon(get_icon("Tools", "EditorIcons"));
+	general_options_hb->add_child(object_menu);
+	object_menu->set_tooltip(TTR("Manage object properties."));
+	object_menu->get_popup()->connect("about_to_show", this, "_prepare_menu");
+	object_menu->get_popup()->connect("id_pressed", this, "_menu_option");
 
 	resource_new_button = memnew(ToolButton);
 	resource_new_button->set_tooltip(TTR("Create a new resource in memory and edit it."));
@@ -594,7 +635,7 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	resource_save_button->set_disabled(true);
 
 	resource_extra_button = memnew(MenuButton);
-	resource_extra_button->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
+	resource_extra_button->set_icon(get_icon("EditInternal", "EditorIcons"));
 	resource_extra_button->set_tooltip(TTR("Extra resource options."));
 	general_options_hb->add_child(resource_extra_button);
 	resource_extra_button->connect("about_to_show", this, "_prepare_resource_extra_popup");
@@ -631,43 +672,13 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	history_menu->connect("about_to_show", this, "_prepare_history");
 	history_menu->get_popup()->connect("id_pressed", this, "_select_history");
 
-	HBoxContainer *subresource_hb = memnew(HBoxContainer);
-	add_child(subresource_hb);
-	subresource_hb->hide();
-	editor_path = memnew(EditorPath(editor->get_editor_history()));
-	editor_path->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	subresource_hb->add_child(editor_path);
-
-	open_docs_button = memnew(Button);
-	open_docs_button->set_flat(true);
-	open_docs_button->set_disabled(true);
-	open_docs_button->set_tooltip(TTR("Open documentation for this object."));
-	open_docs_button->set_icon(get_icon("HelpSearch", "EditorIcons"));
-	open_docs_button->set_shortcut(ED_SHORTCUT("property_editor/open_help", TTR("Open Documentation")));
-	subresource_hb->add_child(open_docs_button);
-	open_docs_button->connect("pressed", this, "_menu_option", varray(OBJECT_REQUEST_HELP));
-
 	new_resource_dialog = memnew(CreateDialog);
 	editor->get_gui_base()->add_child(new_resource_dialog);
 	new_resource_dialog->set_base_type("Resource");
 	new_resource_dialog->connect("create", this, "_resource_created");
 
-	HBoxContainer *property_tools_hb = memnew(HBoxContainer);
-	add_child(property_tools_hb);
-
-	search = memnew(LineEdit);
-	search->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	search->set_placeholder(TTR("Filter properties"));
-	search->set_right_icon(get_icon("Search", "EditorIcons"));
-	search->set_clear_button_enabled(true);
-	property_tools_hb->add_child(search);
-
-	object_menu = memnew(MenuButton);
-	object_menu->set_icon(get_icon("Tools", "EditorIcons"));
-	property_tools_hb->add_child(object_menu);
-	object_menu->set_tooltip(TTR("Manage object properties."));
-	object_menu->get_popup()->connect("about_to_show", this, "_prepare_menu");
-	object_menu->get_popup()->connect("id_pressed", this, "_menu_option");
+	options_button->connect("toggled", subresource_hb, "set_visible");
+	options_button->connect("toggled", general_options_hb, "set_visible");
 
 	warning = memnew(Button);
 	add_child(warning);
