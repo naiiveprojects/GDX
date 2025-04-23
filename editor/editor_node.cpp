@@ -509,6 +509,8 @@ void EditorNode::_notification(int p_what) {
 				_initializing_addons = false;
 			}
 
+			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
+
 			VisualServer::get_singleton()->viewport_set_hide_scenario(get_scene_root()->get_viewport_rid(), true);
 			VisualServer::get_singleton()->viewport_set_hide_canvas(get_scene_root()->get_viewport_rid(), true);
 			VisualServer::get_singleton()->viewport_set_disable_environment(get_viewport()->get_viewport_rid(), true);
@@ -639,6 +641,7 @@ void EditorNode::_notification(int p_what) {
 			p->set_item_icon(p->get_item_index(HELP_ABOUT), gui_base->get_icon("Godot", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SUPPORT_GODOT_DEVELOPMENT), gui_base->get_icon("Heart", "EditorIcons"));
 			_update_update_spinner();
+			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
 		} break;
 
 		case Control::NOTIFICATION_RESIZED: {
@@ -5937,6 +5940,8 @@ void EditorNode::_borderless(bool p_pressed) {
 
 	button_borderless->set_pressed(p_pressed);
 	button_close->set_visible(p_pressed && !playing);
+
+	EditorSettings::get_singleton()->set("interface/editor/borderless_mode", p_pressed);
 }
 
 void EditorNode::_bottom_panel_visible(bool p_pressed) {
