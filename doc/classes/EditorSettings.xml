@@ -474,6 +474,9 @@
 		<member name="interface/editor/separate_distraction_mode" type="bool" setter="" getter="">
 			If [code]true[/code], the editor's Script tab will have a separate distraction mode setting from the 2D/3D/AssetLib tabs. If [code]false[/code], the distraction-free mode toggle is shared between all tabs.
 		</member>
+		<member name="interface/editor/borderless_mode" type="bool" setter="" getter="">
+			Defines whether the editor should use [code]borderless mode[/code]. This setting will aligned with the [code]borderless mode[/code] toggle in the editor.
+		</member>
 		<member name="interface/editor/unfocused_low_processor_mode_sleep_usec" type="float" setter="" getter="">
 			When the editor window is unfocused, the amount of sleeping between frames when the low-processor usage mode is enabled (in microseconds). Higher values will result in lower CPU/GPU usage, which can improve battery life on laptops (in addition to improving the running project's performance if the editor has to redraw continuously). However, higher values will result in a less responsive editor. The default value is set to limit the editor to 20 FPS when the editor window is unfocused. See also [member interface/editor/low_processor_mode_sleep_usec].
 		</member>
