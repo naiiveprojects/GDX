@@ -714,22 +714,24 @@ GroupsEditor::GroupsEditor() {
 	add_child(group_dialog);
 	group_dialog->connect("group_edited", this, "update_tree");
 
-	Button *group_dialog_button = memnew(Button);
-	group_dialog_button->set_text(TTR("Manage Groups"));
-	vbc->add_child(group_dialog_button);
-	group_dialog_button->connect("pressed", this, "_show_group_dialog");
-
 	HBoxContainer *hbc = memnew(HBoxContainer);
 	vbc->add_child(hbc);
+
+	ToolButton *group_dialog_button = memnew(ToolButton);
+	group_dialog_button->set_tooltip(TTR("Manage Groups"));
+	group_dialog_button->set_icon(EditorNode::get_singleton()->get_gui_base()->get_icon("Groups", "EditorIcons"));
+	hbc->add_child(group_dialog_button);
+	group_dialog_button->connect("pressed", this, "_show_group_dialog");
 
 	group_name = memnew(LineEdit);
 	group_name->set_h_size_flags(SIZE_EXPAND_FILL);
 	hbc->add_child(group_name);
+	group_name->set_placeholder(TTR("Add Group"));
 	group_name->connect("text_entered", this, "_add_group");
 	group_name->connect("text_changed", this, "_group_name_changed");
 
-	add = memnew(Button);
-	add->set_text(TTR("Add"));
+	add = memnew(ToolButton);
+	add->set_icon(EditorNode::get_singleton()->get_gui_base()->get_icon("Add", "EditorIcons"));
 	hbc->add_child(add);
 	add->connect("pressed", this, "_add_group", varray(String()));
 

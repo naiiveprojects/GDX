@@ -133,7 +133,7 @@ class ConnectionsDock : public VBoxContainer {
 
 	ConfirmationDialog *disconnect_all_dialog;
 	ConnectDialog *connect_dialog;
-	Button *connect_button;
+	ToolButton *connect_button;
 	PopupMenu *signal_menu;
 	PopupMenu *slot_menu;
 	UndoRedo *undo_redo;
