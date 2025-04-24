@@ -666,13 +666,16 @@ void ConnectionsDock::_disconnect_all() {
 void ConnectionsDock::_tree_item_selected() {
 	TreeItem *item = tree->get_selected();
 	if (!item) { // Unlikely. Disable button just in case.
-		connect_button->set_text(TTR("Connect..."));
+		connect_button->set_tooltip(TTR("Connect..."));
+		connect_button->set_icon(get_icon("Slot", "EditorIcons"));
 		connect_button->set_disabled(true);
 	} else if (_is_item_signal(*item)) {
-		connect_button->set_text(TTR("Connect..."));
+		connect_button->set_tooltip(TTR("Connect..."));
+		connect_button->set_icon(get_icon("Slot", "EditorIcons"));
 		connect_button->set_disabled(false);
 	} else {
-		connect_button->set_text(TTR("Disconnect"));
+		connect_button->set_tooltip(TTR("Disconnect"));
+		connect_button->set_icon(get_icon("Signal", "EditorIcons"));
 		connect_button->set_disabled(false);
 	}
 }
@@ -1066,7 +1069,8 @@ void ConnectionsDock::update_tree() {
 		}
 	}
 
-	connect_button->set_text(TTR("Connect..."));
+	connect_button->set_tooltip(TTR("Connect..."));
+	connect_button->set_icon(get_icon("Slot", "EditorIcons"));
 	connect_button->set_disabled(true);
 }
 
@@ -1076,13 +1080,20 @@ ConnectionsDock::ConnectionsDock(EditorNode *p_editor) {
 
 	VBoxContainer *vbc = this;
 
+	HBoxContainer *hbc = memnew(HBoxContainer);
+	vbc->add_child(hbc);
+
 	search_box = memnew(LineEdit);
 	search_box->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	search_box->set_placeholder(TTR("Filter signals"));
-	search_box->set_right_icon(get_icon("Search", "EditorIcons"));
+	search_box->set_right_icon(EditorNode::get_singleton()->get_gui_base()->get_icon("Search", "EditorIcons"));
 	search_box->set_clear_button_enabled(true);
 	search_box->connect("text_changed", this, "_filter_changed");
-	vbc->add_child(search_box);
+	hbc->add_child(search_box);
+
+	connect_button = memnew(ToolButton);
+	hbc->add_child(connect_button);
+	connect_button->connect("pressed", this, "_connect_pressed");
 
 	tree = memnew(ConnectionsDockTree);
 	tree->set_columns(1);
@@ -1091,13 +1102,6 @@ ConnectionsDock::ConnectionsDock(EditorNode *p_editor) {
 	vbc->add_child(tree);
 	tree->set_v_size_flags(SIZE_EXPAND_FILL);
 	tree->set_allow_rmb_select(true);
-
-	connect_button = memnew(Button);
-	HBoxContainer *hb = memnew(HBoxContainer);
-	vbc->add_child(hb);
-	hb->add_spacer();
-	hb->add_child(connect_button);
-	connect_button->connect("pressed", this, "_connect_pressed");
 
 	connect_dialog = memnew(ConnectDialog);
 	connect_dialog->set_as_toplevel(true);

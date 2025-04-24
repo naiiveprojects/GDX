@@ -136,7 +136,6 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 		set_selected(n);
 
 		NodeDock::singleton->get_parent()->call("set_current_tab", NodeDock::singleton->get_index());
-		NodeDock::singleton->show_connections();
 
 	} else if (p_id == BUTTON_GROUPS) {
 		editor_selection->clear();
@@ -145,7 +144,6 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 		set_selected(n);
 
 		NodeDock::singleton->get_parent()->call("set_current_tab", NodeDock::singleton->get_index());
-		NodeDock::singleton->show_groups();
 	} else if (p_id == BUTTON_UNIQUE) {
 		undo_redo->create_action(TTR("Disable Scene Unique Name"));
 		undo_redo->add_do_method(n, "set_unique_name_in_owner", false);
@@ -284,21 +282,21 @@ void SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent, bool p_disabl
 					get_icon("SignalsAndGroups", "EditorIcons"),
 					BUTTON_SIGNALS,
 					false,
-					vformat(TTR("Node has %s connection(s) and %s group(s).\nClick to show signals dock."), num_connections, num_groups));
+					vformat(TTR("Node has %s connection(s) and %s group(s).\nClick to show Node dock."), num_connections, num_groups));
 		} else if (num_connections >= 1) {
 			item->add_button(
 					0,
 					get_icon("Signals", "EditorIcons"),
 					BUTTON_SIGNALS,
 					false,
-					vformat(TTR("Node has %s connection(s).\nClick to show signals dock."), num_connections));
+					vformat(TTR("Node has %s connection(s).\nClick to show Node dock."), num_connections));
 		} else if (num_groups >= 1) {
 			item->add_button(
 					0,
 					get_icon("Groups", "EditorIcons"),
 					BUTTON_GROUPS,
 					false,
-					vformat(TTR("Node is in %s group(s).\nClick to show groups dock."), num_groups));
+					vformat(TTR("Node is in %s group(s).\nClick to show Node dock."), num_groups));
 		}
 	}
 

@@ -117,7 +117,7 @@ class GroupsEditor : public VBoxContainer {
 	GroupDialog *group_dialog;
 
 	LineEdit *group_name;
-	Button *add;
+	ToolButton *add;
 	Tree *tree;
 
 	UndoRedo *undo_redo;
