@@ -223,8 +223,8 @@ void ColorPicker::_update_color(bool p_update_sliders) {
 		} else {
 			for (int i = 0; i < 4; i++) {
 				if (raw_mode_enabled) {
-					scroll[i]->set_step(0.01);
-					scroll[i]->set_max(100);
+					scroll[i]->set_step(0.001);
+					scroll[i]->set_max(1);
 					if (i == 3) {
 						scroll[i]->set_max(1);
 					}
