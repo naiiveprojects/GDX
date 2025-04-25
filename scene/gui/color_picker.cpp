@@ -789,7 +789,7 @@ ColorPicker::ColorPicker() :
 	text_is_constructor = false;
 	hsv_mode_enabled = false;
 	raw_mode_enabled = false;
-	deferred_mode_enabled = false;
+	deferred_mode_enabled = true;
 	changing_color = false;
 	presets_enabled = true;
 	presets_visible = true;
@@ -847,6 +847,7 @@ ColorPicker::ColorPicker() :
 	btn_pick = memnew(ToolButton);
 	hb_smpl->add_child(btn_pick);
 	btn_pick->set_custom_minimum_size(h_width);
+	btn_pick->set_icon_align(Button::ALIGN_CENTER);
 	btn_pick->set_toggle_mode(true);
 	btn_pick->set_tooltip(RTR("Pick a color from the editor window."));
 	btn_pick->connect("pressed", this, "_screen_pick_pressed");
