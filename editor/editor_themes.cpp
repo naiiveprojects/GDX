@@ -429,7 +429,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	icon_color_pressed.a = 1.0;
 
 	const Color separator_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.1);
-	const Color contrast_accent_color = accent_color.get_s() < 0.6 ? base_color : base_color.inverted();
+	const Color contrast_accent_color = accent_color.get_luminance() > 0.5 ? base_color : mono_color;
 	const Color highlight_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.2);
 
 	theme->set_color("accent_color", "Editor", accent_color);
@@ -618,7 +618,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	// Menu
 	Ref<StyleBoxFlat> style_menu = style_widget->duplicate();
 	style_menu->set_draw_center(false);
-	style_menu->set_border_width_all(1);
+	style_menu->set_border_width_all(0);
 	theme->set_stylebox("panel", "PanelContainer", style_menu);
 	theme->set_stylebox("MenuPanel", "EditorStyles", style_menu);
 
@@ -1345,7 +1345,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_icon("toggle_hidden", "FileDialog", theme->get_icon("GuiVisibilityVisible", "EditorIcons"));
 	// Use a different color for folder icons to make them easier to distinguish from files.
 	// On a light theme, the icon will be dark, so we need to lighten it before blending it with the accent color.
-	theme->set_color("folder_icon_modulate", "FileDialog", (dark_theme ? Color(1, 1, 1) : Color(4.25, 4.25, 4.25)).linear_interpolate(accent_color, 0.7));
+	theme->set_color("folder_icon_modulate", "FileDialog", accent_color);
 	theme->set_color("files_disabled", "FileDialog", font_color_disabled);
 
 	// color picker
