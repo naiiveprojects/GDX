@@ -70,16 +70,14 @@ private:
 	TextureRect *sample;
 	GridContainer *preset_container = memnew(GridContainer);
 	HSeparator *preset_separator;
-	ToolButton *btn_add_preset;
 	ToolButton *btn_pick;
-	ToolButton *btn_rgb;
-	ToolButton *btn_hsv;
-	ToolButton *btn_raw;
 	HSlider *scroll[4];
 	SpinBox *values[4];
 	Label *labels[4];
+	Button *btn_mode;
 	Button *text_type;
 	LineEdit *c_text;
+	Button *btn_add_preset;
 	bool edit_alpha;
 	Size2i ms;
 	bool text_is_constructor;
@@ -146,7 +144,7 @@ public:
 	PoolColorArray get_presets() const;
 	void _update_presets();
 
-	void set_mode(bool p_enabled, int p_mode);
+	void change_mode();
 
 	void set_hsv_mode(bool p_enabled);
 	bool is_hsv_mode() const;
