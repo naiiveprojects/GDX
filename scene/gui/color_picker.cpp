@@ -46,12 +46,14 @@ void ColorPicker::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			btn_pick->set_icon(get_icon("screen_picker", "ColorPicker"));
+			btn_mode->set_icon(get_icon("mode", "ColorPicker"));
 			btn_add_preset->set_icon(get_icon("add_preset"));
 			_update_presets();
 			_update_controls();
 		} break;
 		case NOTIFICATION_ENTER_TREE: {
 			btn_pick->set_icon(get_icon("screen_picker", "ColorPicker"));
+			text_type->set_icon(get_icon("hexadecimal", "ColorPicker"));
 			btn_add_preset->set_icon(get_icon("add_preset"));
 
 			_update_controls();
@@ -259,13 +261,11 @@ void ColorPicker::_update_presets() {
 void ColorPicker::_text_type_toggled() {
 	text_is_constructor = !text_is_constructor;
 	if (text_is_constructor) {
-		text_type->set_text("");
-		text_type->set_icon(get_icon("Script", "EditorIcons"));
+		text_type->set_icon(get_icon("code", "ColorPicker"));
 
 		c_text->set_editable(false);
 	} else {
-		text_type->set_text("#");
-		text_type->set_icon(nullptr);
+		text_type->set_icon(get_icon("hexadecimal", "ColorPicker"));
 
 		c_text->set_editable(true);
 	}
@@ -346,18 +346,16 @@ PoolColorArray ColorPicker::get_presets() const {
 	return arr;
 }
 
-void ColorPicker::set_mode(bool p_enabled, int p_mode) {
-	if (!p_enabled) {
-		return;
-	}
-
-	set_hsv_mode(false);
-	set_raw_mode(false);
-
-	if (p_mode == 1) {
+void ColorPicker::change_mode() {
+	if (!hsv_mode_enabled && !raw_mode_enabled) {
+		set_raw_mode(false);
 		set_hsv_mode(true);
-	} else if (p_mode == 2) {
+	} else if (hsv_mode_enabled) {
+		set_hsv_mode(false);
 		set_raw_mode(true);
+	} else {
+		set_hsv_mode(false);
+		set_raw_mode(false);
 	}
 }
 
@@ -408,11 +406,9 @@ bool ColorPicker::is_deferred_mode() const {
 void ColorPicker::_update_text_value() {
 	bool visible = true;
 	if (text_is_constructor) {
-		String t = "Color(" + String::num(color.r) + ", " + String::num(color.g) + ", " + String::num(color.b);
+		String t = String::num(color.r) + ", " + String::num(color.g) + ", " + String::num(color.b);
 		if (edit_alpha && color.a < 1) {
-			t += ", " + String::num(color.a) + ")";
-		} else {
-			t += ")";
+			t += ", " + String::num(color.a);
 		}
 		c_text->set_text(t);
 	}
@@ -741,7 +737,7 @@ void ColorPicker::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_pick_color", "color"), &ColorPicker::set_pick_color);
 	ClassDB::bind_method(D_METHOD("get_pick_color"), &ColorPicker::get_pick_color);
 	ClassDB::bind_method(D_METHOD("set_hsv_mode", "mode"), &ColorPicker::set_hsv_mode);
-	ClassDB::bind_method(D_METHOD("set_mode"), &ColorPicker::set_mode);
+	ClassDB::bind_method(D_METHOD("change_mode"), &ColorPicker::change_mode);
 	ClassDB::bind_method(D_METHOD("is_hsv_mode"), &ColorPicker::is_hsv_mode);
 	ClassDB::bind_method(D_METHOD("set_raw_mode", "mode"), &ColorPicker::set_raw_mode);
 	ClassDB::bind_method(D_METHOD("is_raw_mode"), &ColorPicker::is_raw_mode);
@@ -799,17 +795,28 @@ ColorPicker::ColorPicker() :
 	presets_visible = true;
 	screen = nullptr;
 
+	VBoxContainer *vb_color = memnew(VBoxContainer);
+	vb_color->add_constant_override("separation", 0);
+	vb_color->set_v_size_flags(SIZE_EXPAND_FILL);
+	vb_color->set_h_size_flags(SIZE_EXPAND_FILL);
+	add_child(vb_color);
+
 	Size2 sv_size = Size2(get_constant("sv_width"), get_constant("sv_height"));
 	Size2 h_width = Size2(get_constant("h_width"), 0);
+	Size2 label_width = Size2(get_constant("label_width"), 0);
+
+#ifdef TOOLS_ENABLED
 	// hack fix incorrect HiDPI size
-	if (GLOBAL_GET("gui/theme/use_hidpi")) {
-		sv_size = Size2(get_constant("sv_width"), get_constant("sv_height")) / 2;
-		h_width = Size2(get_constant("h_width"), 0) / 2;
-	}
+	sv_size = Size2(224, 224) * EDSCALE;
+	h_width = Size2(26, 0) * EDSCALE;
+	label_width = Size2(6, 0) * EDSCALE;
+#endif
 
 	HBoxContainer *hb_edit = memnew(HBoxContainer);
-	add_child(hb_edit);
+	hb_edit->add_constant_override("separation", 0);
 	hb_edit->set_v_size_flags(SIZE_EXPAND_FILL);
+	hb_edit->set_h_size_flags(SIZE_EXPAND_FILL);
+	vb_color->add_child(hb_edit);
 
 	uv_edit = memnew(Control);
 	hb_edit->add_child(uv_edit);
@@ -829,7 +836,7 @@ ColorPicker::ColorPicker() :
 	w_edit->connect("draw", this, "_hsv_draw", make_binds(1, w_edit));
 
 	HBoxContainer *hb_smpl = memnew(HBoxContainer);
-	add_child(hb_smpl);
+	vb_color->add_child(hb_smpl);
 
 	sample = memnew(TextureRect);
 	hb_smpl->add_child(sample);
@@ -837,48 +844,22 @@ ColorPicker::ColorPicker() :
 	sample->connect("gui_input", this, "_sample_input");
 	sample->connect("draw", this, "_sample_draw");
 
-	btn_add_preset = memnew(ToolButton);
-	hb_smpl->add_child(btn_add_preset);
-	btn_add_preset->connect("pressed", this, "_add_preset_pressed");
-	btn_add_preset->set_tooltip(RTR("Add current color as a preset."));
+	btn_pick = memnew(ToolButton);
+	hb_smpl->add_child(btn_pick);
+	btn_pick->set_custom_minimum_size(h_width);
+	btn_pick->set_toggle_mode(true);
+	btn_pick->set_tooltip(RTR("Pick a color from the editor window."));
+	btn_pick->connect("pressed", this, "_screen_pick_pressed");
 
 	VBoxContainer *vbr = memnew(VBoxContainer);
 	add_child(vbr);
 	vbr->set_h_size_flags(SIZE_EXPAND_FILL);
 
-	HBoxContainer *hbb = memnew(HBoxContainer);
-	vbr->add_child(hbb);
-
-	btn_rgb = memnew(ToolButton);
-	hbb->add_child(btn_rgb);
-	btn_rgb->set_text(RTR("RGB"));
-
-	btn_hsv = memnew(ToolButton);
-	hbb->add_child(btn_hsv);
-	btn_hsv->set_text(RTR("HSV"));
-
-	btn_raw = memnew(ToolButton);
-	hbb->add_child(btn_raw);
-	btn_raw->set_text(RTR("RAW"));
-
-	Ref<ButtonGroup> group;
-	group.instance();
-
-	for (int i = 0; i < hbb->get_child_count(); i++) {
-		ToolButton *btn = Object::cast_to<ToolButton>(hbb->get_child(i));
-		if (btn) {
-			btn->set_toggle_mode(true);
-			btn->set_button_group(group);
-			btn->set_h_size_flags(SIZE_EXPAND_FILL);
-			btn->connect("toggled", this, "set_mode", varray(i));
-		}
-	}
-
 	for (int i = 0; i < 4; i++) {
 		HBoxContainer *hbc = memnew(HBoxContainer);
 
 		labels[i] = memnew(Label());
-		labels[i]->set_custom_minimum_size(Size2(get_constant("label_width"), 0));
+		labels[i]->set_custom_minimum_size(label_width);
 		labels[i]->set_v_size_flags(SIZE_SHRINK_CENTER);
 		hbc->add_child(labels[i]);
 
@@ -893,7 +874,7 @@ ColorPicker::ColorPicker() :
 		hbc->add_child(values[i]);
 		values[i]->get_line_edit()->connect("focus_entered", this, "_focus_enter");
 		values[i]->get_line_edit()->connect("focus_exited", this, "_focus_exit");
-		values[i]->get_line_edit()->set_stretch_ratio(0.5);
+		values[i]->set_stretch_ratio(0.3);
 
 		scroll[i]->set_min(0);
 		scroll[i]->set_page(0);
@@ -908,16 +889,15 @@ ColorPicker::ColorPicker() :
 	HBoxContainer *hhb = memnew(HBoxContainer);
 	vbr->add_child(hhb);
 
+	btn_mode = memnew(Button);
+	hhb->add_child(btn_mode);
+	btn_mode->set_tooltip(TTR("Change Color Mode."));
+	btn_mode->connect("pressed", this, "change_mode");
+
 	text_type = memnew(Button);
 	hhb->add_child(text_type);
-	text_type->set_text("#");
 	text_type->set_tooltip(TTR("Switch between hexadecimal and code values."));
-	if (Engine::get_singleton()->is_editor_hint()) {
-		text_type->connect("pressed", this, "_text_type_toggled");
-	} else {
-		text_type->set_flat(true);
-		text_type->set_mouse_filter(MOUSE_FILTER_IGNORE);
-	}
+	text_type->connect("pressed", this, "_text_type_toggled");
 
 	c_text = memnew(LineEdit);
 	hhb->add_child(c_text);
@@ -926,11 +906,11 @@ ColorPicker::ColorPicker() :
 	c_text->connect("focus_entered", this, "_focus_enter");
 	c_text->connect("focus_exited", this, "_html_focus_exit");
 
-	btn_pick = memnew(ToolButton);
-	hhb->add_child(btn_pick);
-	btn_pick->set_toggle_mode(true);
-	btn_pick->set_tooltip(RTR("Pick a color from the editor window."));
-	btn_pick->connect("pressed", this, "_screen_pick_pressed");
+	btn_add_preset = memnew(Button);
+	hhb->add_child(btn_add_preset);
+	btn_add_preset->set_custom_minimum_size(h_width);
+	btn_add_preset->connect("pressed", this, "_add_preset_pressed");
+	btn_add_preset->set_tooltip(RTR("Add current color as a preset."));
 
 	_update_controls();
 	updating = false;
@@ -941,6 +921,8 @@ ColorPicker::ColorPicker() :
 	add_child(preset_separator);
 
 	preset_container->set_h_size_flags(SIZE_EXPAND_FILL);
+	preset_container->add_constant_override("hseparation", 0);
+	preset_container->add_constant_override("vseparation", 0);
 	preset_container->set_columns(preset_column_count);
 	add_child(preset_container);
 }
