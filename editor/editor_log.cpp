@@ -66,6 +66,7 @@ void EditorLog::_notification(int p_what) {
 				if (df_output_code.is_valid()) {
 					log->add_font_override("normal_font", get_font("output_source", "EditorFonts"));
 					log->add_color_override("selection_color", get_color("accent_color", "Editor") * Color(1, 1, 1, 0.4));
+					log->set_custom_minimum_size(Size2(0, df_output_code->get_height() * 12) * EDSCALE);
 				}
 			}
 
@@ -74,6 +75,9 @@ void EditorLog::_notification(int p_what) {
 			theme_cache.warning_color = get_color("warning_color", "Editor");
 			theme_cache.warning_icon = get_icon("Warning", "EditorIcons");
 			theme_cache.message_color = get_color("font_color", "Editor") * Color(1, 1, 1, 0.6);
+
+			copybutton->set_icon(get_icon("ActionCopy", "EditorIcons"));
+			clearbutton->set_icon(get_icon("Clear", "EditorIcons"));
 		} break;
 	}
 }
@@ -153,36 +157,37 @@ void EditorLog::_bind_methods() {
 }
 
 EditorLog::EditorLog() {
-	VBoxContainer *vb = this;
-
-	HBoxContainer *hb = memnew(HBoxContainer);
-	vb->add_child(hb);
-	title = memnew(Label);
-	title->set_text(VERSION_FULL_BUILD);
-	title->set_h_size_flags(SIZE_EXPAND_FILL);
-	hb->add_child(title);
-
-	copybutton = memnew(Button);
-	hb->add_child(copybutton);
-	copybutton->set_text(TTR("Copy"));
-	copybutton->set_shortcut(ED_SHORTCUT("editor/copy_output", TTR("Copy Selection"), KEY_MASK_CMD | KEY_C));
-	copybutton->connect("pressed", this, "_copy_request");
-
-	clearbutton = memnew(Button);
-	hb->add_child(clearbutton);
-	clearbutton->set_text(TTR("Clear"));
-	clearbutton->set_shortcut(ED_SHORTCUT("editor/clear_output", TTR("Clear Output"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_K));
-	clearbutton->connect("pressed", this, "_clear_request");
+	VBoxContainer *hb = this;
 
 	log = memnew(RichTextLabel);
 	log->set_scroll_follow(true);
 	log->set_selection_enabled(true);
 	log->set_focus_mode(FOCUS_CLICK);
-	log->set_custom_minimum_size(Size2(0, 180) * EDSCALE);
 	log->set_v_size_flags(SIZE_EXPAND_FILL);
 	log->set_h_size_flags(SIZE_EXPAND_FILL);
 	log->set_deselect_on_focus_loss_enabled(false);
-	vb->add_child(log);
+	hb->add_child(log);
+
+	HBoxContainer *vb = memnew(HBoxContainer);
+	log->add_child(vb);
+	vb->set_anchor_and_margin(MARGIN_LEFT, Control::ANCHOR_END, -14 * EDSCALE);
+	vb->set_anchor_and_margin(MARGIN_TOP, Control::ANCHOR_BEGIN, 14 * EDSCALE);
+	vb->set_anchor_and_margin(MARGIN_RIGHT, Control::ANCHOR_END, -14 * EDSCALE);
+	vb->set_h_grow_direction(Control::GROW_DIRECTION_BEGIN);
+
+	copybutton = memnew(ToolButton);
+	vb->add_child(copybutton);
+	copybutton->set_tooltip(TTR("Copy"));
+	copybutton->set_shortcut(ED_SHORTCUT("editor/copy_output", TTR("Copy Selection"), KEY_MASK_CMD | KEY_C));
+	copybutton->add_color_override("icon_color_normal", Color(1, 1, 1, 0.5));
+	copybutton->connect("pressed", this, "_copy_request");
+
+	clearbutton = memnew(ToolButton);
+	vb->add_child(clearbutton);
+	clearbutton->set_tooltip(TTR("Clear"));
+	clearbutton->set_shortcut(ED_SHORTCUT("editor/clear_output", TTR("Clear Output"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_K));
+	clearbutton->add_color_override("icon_color_normal", Color(1, 1, 1, 0.5));
+	clearbutton->connect("pressed", this, "_clear_request");
 
 	eh.errfunc = _error_handler;
 	eh.userdata = this;
