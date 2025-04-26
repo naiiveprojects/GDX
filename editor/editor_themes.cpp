@@ -576,18 +576,22 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	Ref<StyleBoxFlat> style_tab_selected = style_widget->duplicate();
 	style_tab_selected->set_border_width_all(0);
-	style_tab_selected->set_corner_radius_individual(corner_radius, corner_radius, 0, 0);
+	style_tab_selected->set_corner_radius_all(0);
+	style_tab_selected->set_border_width(MARGIN_TOP, 2 * EDSCALE);
 	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, corner_radius * EDSCALE);
 	style_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
 	style_tab_selected->set_default_margin(MARGIN_TOP, tab_default_margin_vertical);
+	style_tab_selected->set_border_color(accent_color);
 	style_tab_selected->set_bg_color(base_color);
 
 	Ref<StyleBoxFlat> style_tab_unselected = style_tab_selected->duplicate();
+	style_tab_unselected->set_border_width_all(0);
+	style_tab_unselected->set_corner_radius_individual(corner_radius, corner_radius, 0, 0);
 	style_tab_unselected->set_bg_color(dark_color_1);
 
-	Ref<StyleBoxFlat> style_tab_disabled = style_tab_selected->duplicate();
+	Ref<StyleBoxFlat> style_tab_disabled = style_tab_unselected->duplicate();
 	style_tab_disabled->set_bg_color(color_disabled_bg);
 
 	Ref<StyleBoxFlat> style_scene_tab_selected = style_widget->duplicate();
@@ -617,7 +621,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Menu
 	Ref<StyleBoxFlat> style_menu = style_widget->duplicate();
-	style_menu->set_draw_center(false);
+	style_menu->set_draw_center(true);
 	style_menu->set_border_width_all(0);
 	theme->set_stylebox("panel", "PanelContainer", style_menu);
 	theme->set_stylebox("MenuPanel", "EditorStyles", style_menu);
@@ -826,7 +830,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_property_bg->set_bg_color(highlight_color);
 	style_property_bg->set_border_width_all(0);
 
-	theme->set_constant("font_offset", "EditorProperty", 1 * EDSCALE);
+	theme->set_constant("font_offset", "EditorProperty", 12 * EDSCALE);
 	theme->set_stylebox("bg_selected", "EditorProperty", style_property_bg);
 	theme->set_stylebox("bg", "EditorProperty", Ref<StyleBoxEmpty>(memnew(StyleBoxEmpty)));
 	theme->set_constant("vseparation", "EditorProperty", (extra_spacing + default_margin_size) * EDSCALE);
@@ -1046,8 +1050,10 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_icon("grabber", "VSplitContainer", theme->get_icon("GuiVsplitter", "EditorIcons"));
 	theme->set_icon("grabber", "HSplitContainer", theme->get_icon("GuiHsplitter", "EditorIcons"));
 
-	theme->set_constant("separation", "HSplitContainer", default_margin_size * 2 * EDSCALE);
-	theme->set_constant("separation", "VSplitContainer", default_margin_size * 2 * EDSCALE);
+	theme->set_constant("separation", "HSplitContainer", default_margin_size * EDSCALE);
+	theme->set_constant("separation", "VSplitContainer", default_margin_size * EDSCALE);
+	theme->set_constant("drag_area", "HSplitContainer", default_margin_size * 2 * EDSCALE);
+	theme->set_constant("drag_area", "VSplitContainer", default_margin_size * 2 * EDSCALE);
 
 	// Containers
 	theme->set_constant("separation", "BoxContainer", default_margin_size * EDSCALE);
