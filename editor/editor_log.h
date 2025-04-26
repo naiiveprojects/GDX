@@ -56,12 +56,11 @@ class EditorLog : public VBoxContainer {
 		Color message_color;
 	} theme_cache;
 
-	Button *clearbutton;
-	Button *copybutton;
-	Label *title;
+	ToolButton *clearbutton;
+	ToolButton *copybutton;
+	Button *title;
 	RichTextLabel *log;
 	HBoxContainer *title_hb;
-	//PaneDrag *pd;
 	ToolButton *tool_button;
 
 	static void _error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, ErrorHandlerType p_type);
