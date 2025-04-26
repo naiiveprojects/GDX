@@ -77,8 +77,7 @@ void SplitContainer::_resort() {
 
 	// Determine the separation between items
 	Ref<Texture> g = get_icon("grabber");
-	int sep = get_constant("separation");
-	sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? MAX(sep, vertical ? g->get_height() : g->get_width()) : 0;
+	int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? get_constant("separation") : 0;
 
 	// Compute the minimum size
 	Size2 ms_first = first->get_combined_minimum_size();
@@ -109,11 +108,11 @@ void SplitContainer::_resort() {
 
 	if (vertical) {
 		fit_child_in_rect(first, Rect2(Point2(0, 0), Size2(get_size().width, middle_sep)));
-		int sofs = middle_sep + sep;
+		int sofs = middle_sep + (collapsed ? 0 : sep);
 		fit_child_in_rect(second, Rect2(Point2(0, sofs), Size2(get_size().width, get_size().height - sofs)));
 	} else {
 		fit_child_in_rect(first, Rect2(Point2(0, 0), Size2(middle_sep, get_size().height)));
-		int sofs = middle_sep + sep;
+		int sofs = middle_sep + (collapsed ? 0 : sep);
 		fit_child_in_rect(second, Rect2(Point2(sofs, 0), Size2(get_size().width - sofs, get_size().height)));
 	}
 
@@ -207,16 +206,18 @@ void SplitContainer::_gui_input(const Ref<InputEvent> &p_event) {
 	if (mb.is_valid()) {
 		if (mb->get_button_index() == BUTTON_LEFT) {
 			if (mb->is_pressed()) {
-				int sep = get_constant("separation");
+				const int drag_area = get_constant("drag_area");
+				const int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? get_constant("separation") : 0;
+				const int center = middle_sep + sep / 2;
 
 				if (vertical) {
-					if (mb->get_position().y > middle_sep && mb->get_position().y < middle_sep + sep) {
+					if (mb->get_position().y >= (center - drag_area) && mb->get_position().y <= (center + drag_area)) {
 						dragging = true;
 						drag_from = mb->get_position().y;
 						drag_ofs = split_offset;
 					}
 				} else {
-					if (mb->get_position().x > middle_sep && mb->get_position().x < middle_sep + sep) {
+					if (mb->get_position().x >= (center - drag_area) && mb->get_position().x <= (center + drag_area)) {
 						dragging = true;
 						drag_from = mb->get_position().x;
 						drag_ofs = split_offset;
@@ -231,11 +232,14 @@ void SplitContainer::_gui_input(const Ref<InputEvent> &p_event) {
 	Ref<InputEventMouseMotion> mm = p_event;
 
 	if (mm.is_valid()) {
+		const int drag_area = get_constant("drag_area");
+		const int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? get_constant("separation") : 0;
+		const int center = middle_sep + sep / 2;
 		bool mouse_inside_state = false;
 		if (vertical) {
-			mouse_inside_state = mm->get_position().y > middle_sep && mm->get_position().y < middle_sep + get_constant("separation");
+			mouse_inside_state = mm->get_position().y >= (center - drag_area) && mm->get_position().y <= (center + drag_area);
 		} else {
-			mouse_inside_state = mm->get_position().x > middle_sep && mm->get_position().x < middle_sep + get_constant("separation");
+			mouse_inside_state = mm->get_position().x >= (center - drag_area) && mm->get_position().x <= (center + drag_area);
 		}
 
 		if (mouse_inside != mouse_inside_state) {
@@ -262,14 +266,15 @@ Control::CursorShape SplitContainer::get_cursor_shape(const Point2 &p_pos) const
 	}
 
 	if (!collapsed && _getch(0) && _getch(1) && dragger_visibility == DRAGGER_VISIBLE) {
-		int sep = get_constant("separation");
-
+		const int drag_area = get_constant("drag_area");
+		const int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? get_constant("separation") : 0;
+		const int center = middle_sep + sep / 2;
 		if (vertical) {
-			if (p_pos.y > middle_sep && p_pos.y < middle_sep + sep) {
+			if (p_pos.y >= (center - drag_area) && p_pos.y <= (center + drag_area)) {
 				return CURSOR_VSPLIT;
 			}
 		} else {
-			if (p_pos.x > middle_sep && p_pos.x < middle_sep + sep) {
+			if (p_pos.x >= (center - drag_area) && p_pos.x <= (center + drag_area)) {
 				return CURSOR_HSPLIT;
 			}
 		}
