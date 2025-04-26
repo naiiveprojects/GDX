@@ -936,7 +936,7 @@ void EditorInspectorPlugin::_bind_methods() {
 void EditorInspectorCategory::_notification(int p_what) {
 	if (p_what == NOTIFICATION_DRAW) {
 		draw_rect(Rect2(Vector2(), get_size()), bg_color);
-		Ref<Font> font = get_font("font", "Tree");
+		Ref<Font> font = get_font("bold", "EditorFonts");
 
 		int hs = get_constant("hseparation", "Tree");
 
@@ -1076,7 +1076,7 @@ void EditorInspectorSection::_notification(int p_what) {
 
 			const int arrow_margin = 3;
 			Color color = get_color("font_color", "Tree");
-			Ref<Font> font = get_font("font", "Tree");
+			Ref<Font> font = get_font("bold", "EditorFonts");
 			draw_string(font, Point2(Math::round((16 + arrow_margin) * EDSCALE), font->get_ascent() + (h - font->get_height()) / 2).floor(), label, color, get_size().width);
 
 			Ref<Texture> arrow = _get_arrow();

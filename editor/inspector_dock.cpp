@@ -354,7 +354,7 @@ void InspectorDock::_notification(int p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			set_theme(editor->get_gui_base()->get_theme());
 
-			options_button->set_icon(get_icon("VisualScriptComment", "EditorIcons"));
+			options_button->set_icon(get_icon("GuiDropdown", "EditorIcons"));
 			resource_new_button->set_icon(get_icon("New", "EditorIcons"));
 			resource_load_button->set_icon(get_icon("Load", "EditorIcons"));
 			resource_save_button->set_icon(get_icon("Save", "EditorIcons"));
@@ -569,18 +569,19 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	HBoxContainer *property_tools_hb = memnew(HBoxContainer);
 	add_child(property_tools_hb);
 
-	search = memnew(LineEdit);
-	search->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	search->set_placeholder(TTR("Filter properties"));
-	search->set_clear_button_enabled(true);
-	property_tools_hb->add_child(search);
-
 	options_button = memnew(ToolButton);
 	options_button->set_flat(true);
 	options_button->set_toggle_mode(true);
 	options_button->set_tooltip(TTR("Options"));
-	options_button->set_icon(get_icon("VisualScriptComment", "EditorIcons"));
+	options_button->set_icon(get_icon("GuiDropdown", "EditorIcons"));
 	property_tools_hb->add_child(options_button);
+
+	search = memnew(LineEdit);
+	search->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	search->set_placeholder(TTR("Filter properties"));
+	search->set_right_icon(get_icon("Search", "EditorIcons"));
+	search->set_clear_button_enabled(true);
+	property_tools_hb->add_child(search);
 
 	HBoxContainer *subresource_hb = memnew(HBoxContainer);
 	subresource_hb->hide();
@@ -590,25 +591,43 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	editor_path->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	subresource_hb->add_child(editor_path);
 
+	HBoxContainer *general_options_hb = memnew(HBoxContainer);
+	general_options_hb->hide();
+	add_child(general_options_hb);
+
 	open_docs_button = memnew(Button);
 	open_docs_button->set_flat(true);
 	open_docs_button->set_disabled(true);
 	open_docs_button->set_tooltip(TTR("Open documentation for this object."));
 	open_docs_button->set_icon(get_icon("HelpSearch", "EditorIcons"));
 	open_docs_button->set_shortcut(ED_SHORTCUT("property_editor/open_help", TTR("Open Documentation")));
-	subresource_hb->add_child(open_docs_button);
+	general_options_hb->add_child(open_docs_button);
 	open_docs_button->connect("pressed", this, "_menu_option", varray(OBJECT_REQUEST_HELP));
 
-	HBoxContainer *general_options_hb = memnew(HBoxContainer);
-	general_options_hb->hide();
-	add_child(general_options_hb);
+	history_menu = memnew(MenuButton);
+	history_menu->set_tooltip(TTR("History of recently edited objects."));
+	history_menu->set_icon(get_icon("History", "EditorIcons"));
+	general_options_hb->add_child(history_menu);
+	history_menu->connect("about_to_show", this, "_prepare_history");
+	history_menu->get_popup()->connect("id_pressed", this, "_select_history");
 
-	object_menu = memnew(MenuButton);
-	object_menu->set_icon(get_icon("Tools", "EditorIcons"));
-	general_options_hb->add_child(object_menu);
-	object_menu->set_tooltip(TTR("Manage object properties."));
-	object_menu->get_popup()->connect("about_to_show", this, "_prepare_menu");
-	object_menu->get_popup()->connect("id_pressed", this, "_menu_option");
+	backward_button = memnew(ToolButton);
+	general_options_hb->add_child(backward_button);
+	backward_button->set_icon(get_icon("Back", "EditorIcons"));
+	backward_button->set_flat(true);
+	backward_button->set_tooltip(TTR("Go to the previous edited object in history."));
+	backward_button->set_disabled(true);
+	backward_button->connect("pressed", this, "_edit_back");
+
+	forward_button = memnew(ToolButton);
+	general_options_hb->add_child(forward_button);
+	forward_button->set_icon(get_icon("Forward", "EditorIcons"));
+	forward_button->set_flat(true);
+	forward_button->set_tooltip(TTR("Go to the next edited object in history."));
+	forward_button->set_disabled(true);
+	forward_button->connect("pressed", this, "_edit_forward");
+
+	general_options_hb->add_spacer();
 
 	resource_new_button = memnew(ToolButton);
 	resource_new_button->set_tooltip(TTR("Create a new resource in memory and edit it."));
@@ -647,38 +666,20 @@ InspectorDock::InspectorDock(EditorNode *p_editor, EditorData &p_editor_data) {
 	resource_extra_button->get_popup()->set_item_disabled(3, true);
 	resource_extra_button->get_popup()->connect("id_pressed", this, "_menu_option");
 
-	general_options_hb->add_spacer();
+	object_menu = memnew(MenuButton);
+	object_menu->set_icon(get_icon("Tools", "EditorIcons"));
+	general_options_hb->add_child(object_menu);
+	object_menu->set_tooltip(TTR("Manage object properties."));
+	object_menu->get_popup()->connect("about_to_show", this, "_prepare_menu");
+	object_menu->get_popup()->connect("id_pressed", this, "_menu_option");
 
-	backward_button = memnew(ToolButton);
-	general_options_hb->add_child(backward_button);
-	backward_button->set_icon(get_icon("Back", "EditorIcons"));
-	backward_button->set_flat(true);
-	backward_button->set_tooltip(TTR("Go to the previous edited object in history."));
-	backward_button->set_disabled(true);
-	backward_button->connect("pressed", this, "_edit_back");
-
-	forward_button = memnew(ToolButton);
-	general_options_hb->add_child(forward_button);
-	forward_button->set_icon(get_icon("Forward", "EditorIcons"));
-	forward_button->set_flat(true);
-	forward_button->set_tooltip(TTR("Go to the next edited object in history."));
-	forward_button->set_disabled(true);
-	forward_button->connect("pressed", this, "_edit_forward");
-
-	history_menu = memnew(MenuButton);
-	history_menu->set_tooltip(TTR("History of recently edited objects."));
-	history_menu->set_icon(get_icon("History", "EditorIcons"));
-	general_options_hb->add_child(history_menu);
-	history_menu->connect("about_to_show", this, "_prepare_history");
-	history_menu->get_popup()->connect("id_pressed", this, "_select_history");
+	options_button->connect("toggled", subresource_hb, "set_visible");
+	options_button->connect("toggled", general_options_hb, "set_visible");
 
 	new_resource_dialog = memnew(CreateDialog);
 	editor->get_gui_base()->add_child(new_resource_dialog);
 	new_resource_dialog->set_base_type("Resource");
 	new_resource_dialog->connect("create", this, "_resource_created");
-
-	options_button->connect("toggled", subresource_hb, "set_visible");
-	options_button->connect("toggled", general_options_hb, "set_visible");
 
 	warning = memnew(Button);
 	add_child(warning);
