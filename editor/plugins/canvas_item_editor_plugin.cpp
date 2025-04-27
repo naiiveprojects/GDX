@@ -3571,7 +3571,6 @@ void CanvasItemEditor::_draw_selection() {
 		}
 
 		if (single && !item_locked && (tool == TOOL_SELECT || tool == TOOL_MOVE || tool == TOOL_SCALE || tool == TOOL_ROTATE || tool == TOOL_EDIT_PIVOT)) { //kind of sucks
-			Color c = get_color("accent_color", "Editor");
 			// Draw the pivot
 			if (canvas_item->_edit_use_pivot()) {
 				// Draw the node's pivot
