@@ -46,7 +46,6 @@
 #include "scene/2d/sprite.h"
 #include "scene/2d/touch_screen_button.h"
 #include "scene/gui/check_box.h"
-#include "scene/gui/flow_container.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/nine_patch_rect.h"
 #include "scene/gui/spin_box.h"
@@ -3320,9 +3319,9 @@ void CanvasItemEditor::_draw_control_anchors(Control *control) {
 		anchor_rects[1] = Rect2(anchors_pos[1] - Vector2(0.0, anchor_handle->get_size().y), Point2(-anchor_handle->get_size().x, anchor_handle->get_size().y));
 		anchor_rects[2] = Rect2(anchors_pos[2], -anchor_handle->get_size());
 		anchor_rects[3] = Rect2(anchors_pos[3] - Vector2(anchor_handle->get_size().x, 0.0), Point2(anchor_handle->get_size().x, -anchor_handle->get_size().y));
-
+		Color c = get_color("accent_color", "Editor");
 		for (int i = 0; i < 4; i++) {
-			anchor_handle->draw_rect(ci, anchor_rects[i]);
+			anchor_handle->draw_rect(ci, anchor_rects[i], false, c);
 		}
 	}
 }
@@ -3546,6 +3545,7 @@ void CanvasItemEditor::_draw_selection() {
 		Transform2D xform = transform * canvas_item->get_global_transform_with_canvas();
 
 		// Draw the selected items position / surrounding boxes
+		Color c = get_color("accent_color", "Editor");
 		if (canvas_item->_edit_use_rect()) {
 			Rect2 rect = canvas_item->_edit_get_rect();
 			Vector2 endpoints[4] = {
@@ -3554,8 +3554,6 @@ void CanvasItemEditor::_draw_selection() {
 				xform.xform(rect.position + rect.size),
 				xform.xform(rect.position + Vector2(0, rect.size.y))
 			};
-
-			Color c = Color(1, 0.6, 0.4, 0.7);
 
 			if (item_locked) {
 				c = Color(0.7, 0.7, 0.7, 0.7);
@@ -3568,11 +3566,12 @@ void CanvasItemEditor::_draw_selection() {
 			Transform2D unscaled_transform = (xform * canvas_item->get_transform().affine_inverse() * canvas_item->_edit_get_transform()).orthonormalized();
 			Transform2D simple_xform = viewport->get_transform() * unscaled_transform;
 			viewport->draw_set_transform_matrix(simple_xform);
-			viewport->draw_texture(position_icon, -(position_icon->get_size() / 2));
+			viewport->draw_texture(position_icon, -(position_icon->get_size() / 2), c);
 			viewport->draw_set_transform_matrix(viewport->get_transform());
 		}
 
 		if (single && !item_locked && (tool == TOOL_SELECT || tool == TOOL_MOVE || tool == TOOL_SCALE || tool == TOOL_ROTATE || tool == TOOL_EDIT_PIVOT)) { //kind of sucks
+			Color c = get_color("accent_color", "Editor");
 			// Draw the pivot
 			if (canvas_item->_edit_use_pivot()) {
 				// Draw the node's pivot
@@ -3580,7 +3579,7 @@ void CanvasItemEditor::_draw_selection() {
 				Transform2D simple_xform = viewport->get_transform() * unscaled_transform;
 
 				viewport->draw_set_transform_matrix(simple_xform);
-				viewport->draw_texture(pivot_icon, -(pivot_icon->get_size() / 2).floor());
+				viewport->draw_texture(pivot_icon, -(pivot_icon->get_size() / 2).floor(), c);
 				viewport->draw_set_transform_matrix(viewport->get_transform());
 			}
 
@@ -3607,12 +3606,12 @@ void CanvasItemEditor::_draw_selection() {
 					Vector2 ofs = ((endpoints[i] - endpoints[prev]).normalized() + ((endpoints[i] - endpoints[next]).normalized())).normalized();
 					ofs *= Math_SQRT2 * (select_handle->get_size().width / 2);
 
-					select_handle->draw(ci, (endpoints[i] + ofs - (select_handle->get_size() / 2)).floor());
+					select_handle->draw(ci, (endpoints[i] + ofs - (select_handle->get_size() / 2)).floor(), c);
 
 					ofs = (endpoints[i] + endpoints[next]) / 2;
 					ofs += (endpoints[next] - endpoints[i]).tangent().normalized() * (select_handle->get_size().width / 2);
 
-					select_handle->draw(ci, (ofs - (select_handle->get_size() / 2)).floor());
+					select_handle->draw(ci, (ofs - (select_handle->get_size() / 2)).floor(), c);
 				}
 			}
 
@@ -4212,6 +4211,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		grid_snap_button->set_icon(get_icon("SnapGrid", "EditorIcons"));
 		snap_config_menu->set_icon(get_icon("GuiTabMenuHl", "EditorIcons"));
 		skeleton_menu->set_icon(get_icon("Bone", "EditorIcons"));
+		view_menu->set_icon(get_icon("GuiVisibilityXray", "EditorIcons"));
 		override_camera_button->set_icon(get_icon("Camera2D", "EditorIcons"));
 		pan_button->set_icon(get_icon("ToolPan", "EditorIcons"));
 		ruler_button->set_icon(get_icon("Ruler", "EditorIcons"));
@@ -4303,6 +4303,17 @@ void CanvasItemEditor::_notification(int p_what) {
 		info_overlay->get_theme()->set_stylebox("normal", "Label", get_stylebox("CanvasItemInfoOverlay", "EditorStyles"));
 		warning_child_of_container->add_color_override("font_color", get_color("warning_color", "Editor"));
 		warning_child_of_container->add_font_override("font", get_font("main", "EditorFonts"));
+
+		int editor_tools_view = EditorSettings::get_singleton()->get("editors/2d/editor_tools_view");
+		if (Control *space_right = Object::cast_to<Control>(main_menu_hbox->get_node(NodePath("SpaceRight")))) {
+			space_right->set_visible(editor_tools_view == 0 || editor_tools_view == 2);
+		}
+		if (Control *space_center = Object::cast_to<Control>(main_menu_hbox->get_node(NodePath("SpaceCenter")))) {
+			space_center->set_visible(editor_tools_view == 1);
+		}
+		if (Control *space_left = Object::cast_to<Control>(main_menu_hbox->get_node(NodePath("SpaceLeft")))) {
+			space_left->set_visible(editor_tools_view == 0 || editor_tools_view == 3);
+		}
 	}
 
 	if (p_what == NOTIFICATION_VISIBILITY_CHANGED) {
@@ -4395,15 +4406,40 @@ void CanvasItemEditor::_tree_changed(Node *) {
 }
 
 void CanvasItemEditor::_update_context_menu_stylebox() {
-	// This must be called when the theme changes to follow the new accent color.
-	Ref<StyleBoxFlat> context_menu_stylebox = memnew(StyleBoxFlat);
-	const Color accent_color = EditorNode::get_singleton()->get_gui_base()->get_color("accent_color", "Editor");
-	context_menu_stylebox->set_bg_color(accent_color * Color(1, 1, 1, 0.1));
-	// Add an underline to the StyleBox, but prevent its minimum vertical size from changing.
-	context_menu_stylebox->set_border_color(accent_color);
-	context_menu_stylebox->set_border_width(MARGIN_BOTTOM, Math::round(2 * EDSCALE));
-	context_menu_stylebox->set_default_margin(MARGIN_BOTTOM, 0);
-	context_menu_panel->add_style_override("panel", context_menu_stylebox);
+	Ref<StyleBox> panel_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles");
+	Ref<StyleBox> pressed_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("AccentPanelAlpha", "EditorStyles");
+	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("PanelBlank", "EditorStyles");
+
+	for (int i = 0; i < main_menu_hbox->get_child_count(); ++i) {
+		PanelContainer *panel_container = Object::cast_to<PanelContainer>(main_menu_hbox->get_child(i));
+		if (!panel_container) {
+			continue;
+		}
+
+		panel_container->add_style_override("panel", panel_stylebox);
+		panel_container->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+
+		for (int j = 0; j < panel_container->get_child_count(); j++) {
+			HBoxContainer *hbox_container = Object::cast_to<HBoxContainer>(panel_container->get_child(j));
+			if (!hbox_container) {
+				continue;
+			}
+
+			for (int k = 0; k < hbox_container->get_child_count(); k++) {
+				ToolButton *tool_button = Object::cast_to<ToolButton>(hbox_container->get_child(k));
+				if (!tool_button || !tool_button->is_toggle_mode()) {
+					continue;
+				}
+
+				tool_button->add_style_override("pressed", pressed_stylebox);
+				tool_button->add_style_override("hover_pressed", pressed_stylebox);
+				tool_button->add_style_override("hover", normal_stylebox);
+				tool_button->add_style_override("focus", normal_stylebox);
+				tool_button->add_style_override("disabled", normal_stylebox);
+				tool_button->add_style_override("normal", normal_stylebox);
+			}
+		}
+	}
 }
 
 void CanvasItemEditor::_update_scrollbars() {
@@ -5898,18 +5934,6 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	editor->call_deferred("connect", "play_pressed", this, "_update_override_camera_button", make_binds(true));
 	editor->call_deferred("connect", "stop_pressed", this, "_update_override_camera_button", make_binds(false));
 
-	PanelContainer *main_flow_bg = memnew(PanelContainer);
-	main_flow_bg->add_style_override("panel", EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles"));
-	main_flow_bg->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
-	// A fluid container for all toolbars.
-	HBoxContainer *main_flow = memnew(HBoxContainer);
-	main_flow_bg->add_child(main_flow);
-
-	// Main toolbars.
-	HBoxContainer *main_menu_hbox = memnew(HBoxContainer);
-	main_menu_hbox->set_anchors_and_margins_preset(Control::PRESET_WIDE);
-	main_flow->add_child(main_menu_hbox);
-
 	bottom_split = memnew(VSplitContainer);
 	add_child(bottom_split);
 	bottom_split->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -5937,20 +5961,24 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	scene_tree->add_child(p_editor->get_scene_root());
 
 	controls_vb = memnew(VBoxContainer);
-	controls_vb->set_begin(Point2(5, 5));
-	controls_vb->set_anchors_preset(LayoutPreset::PRESET_CENTER);
-	controls_vb->set_anchor_and_margin(MARGIN_TOP, ANCHOR_BEGIN, -20 * EDSCALE);
-	controls_vb->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_BEGIN, -10 * EDSCALE);
+	controls_vb->set_mouse_filter(MOUSE_FILTER_IGNORE);
+	controls_vb->set_anchor_and_margin(MARGIN_LEFT, ANCHOR_BEGIN, 14 * EDSCALE);
+	controls_vb->set_anchor_and_margin(MARGIN_TOP, ANCHOR_BEGIN, 14 * EDSCALE);
+	controls_vb->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, -14 * EDSCALE);
+	controls_vb->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -14 * EDSCALE);
 	controls_vb->set_h_grow_direction(GROW_DIRECTION_BOTH);
 	controls_vb->set_v_grow_direction(GROW_DIRECTION_END);
 
-	controls_vb->add_child(main_flow_bg);
+	// Main toolbars.
+	main_menu_hbox = memnew(HFlowContainer);
+	main_menu_hbox->set_mouse_filter(MOUSE_FILTER_IGNORE);
+	main_menu_hbox->set_h_size_flags(SIZE_EXPAND_FILL);
+	controls_vb->add_child(main_menu_hbox);
 
-	zoom_hb = memnew(HBoxContainer);
-	// Bring the zoom percentage closer to the zoom buttons
-	zoom_hb->set_h_size_flags(SIZE_SHRINK_CENTER);
-	zoom_hb->add_constant_override("separation", Math::round(-8 * EDSCALE));
-	controls_vb->add_child(zoom_hb);
+	Control *space_right = memnew(Control);
+	space_right->set_name("SpaceRight");
+	space_right->set_h_size_flags(SIZE_EXPAND_FILL);
+	main_menu_hbox->add_child(space_right);
 
 	viewport = memnew(CanvasItemEditorViewport(p_editor, this));
 	viewport_scrollable->add_child(viewport);
@@ -5990,111 +6018,157 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 
 	viewport->add_child(controls_vb);
 
-	zoom_minus = memnew(ToolButton);
-	zoom_hb->add_child(zoom_minus);
-	zoom_minus->connect("pressed", this, "_button_zoom_minus");
-	zoom_minus->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_minus", TTR("Zoom Out"), KEY_MASK_CMD | KEY_MINUS));
-	zoom_minus->set_focus_mode(FOCUS_NONE);
-
-	zoom_reset = memnew(ToolButton);
-	zoom_hb->add_child(zoom_reset);
-	zoom_reset->connect("pressed", this, "_button_zoom_reset");
-	zoom_reset->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_reset", TTR("Zoom Reset"), KEY_MASK_CMD | KEY_0));
-	zoom_reset->set_focus_mode(FOCUS_NONE);
-	zoom_reset->set_text_align(Button::TextAlign::ALIGN_CENTER);
-	// Prevent the button's size from changing when the text size changes
-	zoom_reset->set_custom_minimum_size(Size2(75 * EDSCALE, 0));
-
-	zoom_plus = memnew(ToolButton);
-	zoom_hb->add_child(zoom_plus);
-	zoom_plus->connect("pressed", this, "_button_zoom_plus");
-	zoom_plus->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_plus", TTR("Zoom In"), KEY_MASK_CMD | KEY_EQUAL)); // Usually direct access key for PLUS
-	zoom_plus->set_focus_mode(FOCUS_NONE);
-
 	updating_scroll = false;
 
+	PanelContainer *p_select = memnew(PanelContainer);
+	main_menu_hbox->add_child(p_select);
+
+	HBoxContainer *hb_select = memnew(HBoxContainer);
+	p_select->add_child(hb_select);
+
 	select_button = memnew(ToolButton);
-	main_menu_hbox->add_child(select_button);
-	select_button->set_toggle_mode(true);
+	hb_select->add_child(select_button);
 	select_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_SELECT));
 	select_button->set_pressed(true);
 	select_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/select_mode", TTR("Select Mode"), KEY_Q));
 	select_button->set_tooltip(keycode_get_string(KEY_MASK_CMD) + TTR("Drag: Rotate selected node around pivot.") + "\n" + TTR("Alt+Drag: Move selected node.") + "\n" + keycode_get_string(KEY_MASK_CMD) + TTR("Alt+Drag: Scale selected node.") + "\n" + TTR("V: Set selected node's pivot position.") + "\n" + TTR("Alt+RMB: Show list of all nodes at position clicked, including locked.") + "\n" + keycode_get_string(KEY_MASK_CMD) + TTR("RMB: Add node at position clicked."));
 
-	main_menu_hbox->add_child(memnew(VSeparator));
-
-	move_button = memnew(ToolButton);
-	main_menu_hbox->add_child(move_button);
-	move_button->set_toggle_mode(true);
-	move_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_MOVE));
-	move_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/move_mode", TTR("Move Mode"), KEY_W));
-	move_button->set_tooltip(TTR("Move Mode"));
-
-	rotate_button = memnew(ToolButton);
-	main_menu_hbox->add_child(rotate_button);
-	rotate_button->set_toggle_mode(true);
-	rotate_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_ROTATE));
-	rotate_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/rotate_mode", TTR("Rotate Mode"), KEY_E));
-	rotate_button->set_tooltip(TTR("Rotate Mode"));
-
-	scale_button = memnew(ToolButton);
-	main_menu_hbox->add_child(scale_button);
-	scale_button->set_toggle_mode(true);
-	scale_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_SCALE));
-	scale_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/scale_mode", TTR("Scale Mode"), KEY_S));
-	scale_button->set_tooltip(TTR("Shift: Scale proportionally."));
-
-	main_menu_hbox->add_child(memnew(VSeparator));
-
-	list_select_button = memnew(ToolButton);
-	main_menu_hbox->add_child(list_select_button);
-	list_select_button->set_toggle_mode(true);
-	list_select_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_LIST_SELECT));
-	list_select_button->set_tooltip(TTR("Show a list of all objects at the position clicked\n(same as Alt+RMB in select mode)."));
-
-	pivot_button = memnew(ToolButton);
-	main_menu_hbox->add_child(pivot_button);
-	pivot_button->set_toggle_mode(true);
-	pivot_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_EDIT_PIVOT));
-	pivot_button->set_tooltip(TTR("Click to change object's rotation pivot."));
-
 	pan_button = memnew(ToolButton);
-	main_menu_hbox->add_child(pan_button);
-	pan_button->set_toggle_mode(true);
+	hb_select->add_child(pan_button);
 	pan_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_PAN));
 	pan_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/pan_mode", TTR("Pan Mode"), KEY_G));
 	pan_button->set_tooltip(TTR("Pan Mode"));
 
+	PanelContainer *p_transform = memnew(PanelContainer);
+	main_menu_hbox->add_child(p_transform);
+
+	HBoxContainer *hb_transform = memnew(HBoxContainer);
+	p_transform->add_child(hb_transform);
+
+	move_button = memnew(ToolButton);
+	hb_transform->add_child(move_button);
+	move_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_MOVE));
+	move_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/move_mode", TTR("Move Mode"), KEY_W));
+	move_button->set_tooltip(TTR("Move Mode"));
+
+	scale_button = memnew(ToolButton);
+	hb_transform->add_child(scale_button);
+	scale_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_SCALE));
+	scale_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/scale_mode", TTR("Scale Mode"), KEY_S));
+	scale_button->set_tooltip(TTR("Shift: Scale proportionally."));
+
+	rotate_button = memnew(ToolButton);
+	hb_transform->add_child(rotate_button);
+	rotate_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_ROTATE));
+	rotate_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/rotate_mode", TTR("Rotate Mode"), KEY_E));
+	rotate_button->set_tooltip(TTR("Rotate Mode"));
+
+	pivot_button = memnew(ToolButton);
+	hb_transform->add_child(pivot_button);
+	pivot_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_EDIT_PIVOT));
+	pivot_button->set_tooltip(TTR("Click to change object's rotation pivot."));
+
+	PanelContainer *p_node = memnew(PanelContainer);
+	main_menu_hbox->add_child(p_node);
+
+	HBoxContainer *hb_node = memnew(HBoxContainer);
+	p_node->add_child(hb_node);
+
+	lock_button = memnew(ToolButton);
+	hb_node->add_child(lock_button);
+	lock_button->connect("pressed", this, "_popup_callback", varray(LOCK_SELECTED));
+	lock_button->set_tooltip(TTR("Lock the selected object in place (can't be moved)."));
+	lock_button->set_shortcut(ED_SHORTCUT("editor/lock_selected_nodes", TTR("Lock Selected Node(s)"), KEY_MASK_CMD | KEY_L));
+
+	unlock_button = memnew(ToolButton);
+	hb_node->add_child(unlock_button);
+	unlock_button->connect("pressed", this, "_popup_callback", varray(UNLOCK_SELECTED));
+	unlock_button->set_tooltip(TTR("Unlock the selected object (can be moved)."));
+	unlock_button->set_shortcut(ED_SHORTCUT("editor/unlock_selected_nodes", TTR("Unlock Selected Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_L));
+
+	group_button = memnew(ToolButton);
+	hb_node->add_child(group_button);
+	group_button->connect("pressed", this, "_popup_callback", varray(GROUP_SELECTED));
+	group_button->set_tooltip(TTR("Make selected node's children not selectable."));
+	group_button->set_shortcut(ED_SHORTCUT("editor/group_selected_nodes", TTR("Group Selected Node(s)"), KEY_MASK_CMD | KEY_G));
+
+	ungroup_button = memnew(ToolButton);
+	hb_node->add_child(ungroup_button);
+	ungroup_button->connect("pressed", this, "_popup_callback", varray(UNGROUP_SELECTED));
+	ungroup_button->set_tooltip(TTR("Make selected node's children selectable."));
+	ungroup_button->set_shortcut(ED_SHORTCUT("editor/ungroup_selected_nodes", TTR("Ungroup Selected Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_G));
+
+	skeleton_menu = memnew(MenuButton);
+	hb_node->add_child(skeleton_menu);
+	skeleton_menu->set_tooltip(TTR("Skeleton Options"));
+	skeleton_menu->set_switch_on_hover(true);
+
+	PopupMenu *p = skeleton_menu->get_popup();
+	p->set_hide_on_checkable_item_selection(false);
+	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_show_bones", TTR("Show Bones")), SKELETON_SHOW_BONES);
+	p->add_separator();
+	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_set_ik_chain", TTR("Make IK Chain")), SKELETON_SET_IK_CHAIN);
+	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_clear_ik_chain", TTR("Clear IK Chain")), SKELETON_CLEAR_IK_CHAIN);
+	p->add_separator();
+	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_make_bones", TTR("Make Custom Bone(s) from Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_B), SKELETON_MAKE_BONES);
+	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_clear_bones", TTR("Clear Custom Bones")), SKELETON_CLEAR_BONES);
+	p->connect("id_pressed", this, "_popup_callback");
+
+	Control *space_center = memnew(Control);
+	space_center->set_name("SpaceCenter");
+	space_center->set_h_size_flags(SIZE_EXPAND_FILL);
+	main_menu_hbox->add_child(space_center);
+
+	context_menu_panel = memnew(PanelContainer);
+	context_menu_hbox = memnew(HBoxContainer);
+	context_menu_panel->add_child(context_menu_hbox);
+	// Use a custom stylebox to make contextual menu items stand out from the rest.
+	// This helps with editor usability as contextual menu items change when selecting nodes,
+	// even though it may not be immediately obvious at first.
+	main_menu_hbox->add_child(context_menu_panel);
+
+	override_camera_button = memnew(ToolButton);
+	context_menu_hbox->add_child(override_camera_button);
+	override_camera_button->connect("toggled", this, "_button_override_camera");
+	override_camera_button->set_disabled(true);
+	_update_override_camera_button(false);
+
+	PanelContainer *p_helper = memnew(PanelContainer);
+	main_menu_hbox->add_child(p_helper);
+
+	HBoxContainer *hb_helper = memnew(HBoxContainer);
+	p_helper->add_child(hb_helper);
+
+	list_select_button = memnew(ToolButton);
+	hb_helper->add_child(list_select_button);
+	list_select_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_LIST_SELECT));
+	list_select_button->set_tooltip(TTR("Show a list of all objects at the position clicked\n(same as Alt+RMB in select mode)."));
+
 	ruler_button = memnew(ToolButton);
-	main_menu_hbox->add_child(ruler_button);
-	ruler_button->set_toggle_mode(true);
+	hb_helper->add_child(ruler_button);
 	ruler_button->connect("pressed", this, "_button_tool_select", make_binds(TOOL_RULER));
 	ruler_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/ruler_mode", TTR("Ruler Mode"), KEY_R));
 	ruler_button->set_tooltip(TTR("Ruler Mode"));
 
-	main_menu_hbox->add_child(memnew(VSeparator));
-
 	smart_snap_button = memnew(ToolButton);
-	main_menu_hbox->add_child(smart_snap_button);
-	smart_snap_button->set_toggle_mode(true);
+	hb_helper->add_child(smart_snap_button);
 	smart_snap_button->connect("toggled", this, "_button_toggle_smart_snap");
 	smart_snap_button->set_tooltip(TTR("Toggle smart snapping."));
 	smart_snap_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/use_smart_snap", TTR("Use Smart Snap"), KEY_MASK_SHIFT | KEY_S));
 
 	grid_snap_button = memnew(ToolButton);
-	main_menu_hbox->add_child(grid_snap_button);
-	grid_snap_button->set_toggle_mode(true);
+	hb_helper->add_child(grid_snap_button);
 	grid_snap_button->connect("toggled", this, "_button_toggle_grid_snap");
 	grid_snap_button->set_tooltip(TTR("Toggle grid snapping."));
 	grid_snap_button->set_shortcut(ED_SHORTCUT("canvas_item_editor/use_grid_snap", TTR("Use Grid Snap"), KEY_MASK_SHIFT | KEY_G));
 
 	snap_config_menu = memnew(MenuButton);
-	main_menu_hbox->add_child(snap_config_menu);
+	hb_helper->add_child(snap_config_menu);
 	snap_config_menu->set_h_size_flags(SIZE_SHRINK_END);
 	snap_config_menu->set_tooltip(TTR("Snapping Options"));
 	snap_config_menu->set_switch_on_hover(true);
 
-	PopupMenu *p = snap_config_menu->get_popup();
+	p = snap_config_menu->get_popup();
 	p->connect("id_pressed", this, "_popup_callback");
 	p->set_hide_on_checkable_item_selection(false);
 	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/use_rotation_snap", TTR("Use Rotation Snap")), SNAP_USE_ROTATION);
@@ -6118,66 +6192,17 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	smartsnap_config_popup->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/snap_other_nodes", TTR("Snap to Other Nodes")), SNAP_USE_OTHER_NODES);
 	smartsnap_config_popup->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/snap_guides", TTR("Snap to Guides")), SNAP_USE_GUIDES);
 
-	main_menu_hbox->add_child(memnew(VSeparator));
-
-	lock_button = memnew(ToolButton);
-	main_menu_hbox->add_child(lock_button);
-
-	lock_button->connect("pressed", this, "_popup_callback", varray(LOCK_SELECTED));
-	lock_button->set_tooltip(TTR("Lock the selected object in place (can't be moved)."));
-	lock_button->set_shortcut(ED_SHORTCUT("editor/lock_selected_nodes", TTR("Lock Selected Node(s)"), KEY_MASK_CMD | KEY_L));
-
-	unlock_button = memnew(ToolButton);
-	main_menu_hbox->add_child(unlock_button);
-	unlock_button->connect("pressed", this, "_popup_callback", varray(UNLOCK_SELECTED));
-	unlock_button->set_tooltip(TTR("Unlock the selected object (can be moved)."));
-	unlock_button->set_shortcut(ED_SHORTCUT("editor/unlock_selected_nodes", TTR("Unlock Selected Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_L));
-
-	group_button = memnew(ToolButton);
-	main_menu_hbox->add_child(group_button);
-	group_button->connect("pressed", this, "_popup_callback", varray(GROUP_SELECTED));
-	group_button->set_tooltip(TTR("Make selected node's children not selectable."));
-	group_button->set_shortcut(ED_SHORTCUT("editor/group_selected_nodes", TTR("Group Selected Node(s)"), KEY_MASK_CMD | KEY_G));
-
-	ungroup_button = memnew(ToolButton);
-	main_menu_hbox->add_child(ungroup_button);
-	ungroup_button->connect("pressed", this, "_popup_callback", varray(UNGROUP_SELECTED));
-	ungroup_button->set_tooltip(TTR("Make selected node's children selectable."));
-	ungroup_button->set_shortcut(ED_SHORTCUT("editor/ungroup_selected_nodes", TTR("Ungroup Selected Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_G));
-
-	main_menu_hbox->add_child(memnew(VSeparator));
-
-	skeleton_menu = memnew(MenuButton);
-	main_menu_hbox->add_child(skeleton_menu);
-	skeleton_menu->set_tooltip(TTR("Skeleton Options"));
-	skeleton_menu->set_switch_on_hover(true);
-
-	p = skeleton_menu->get_popup();
-	p->set_hide_on_checkable_item_selection(false);
-	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_show_bones", TTR("Show Bones")), SKELETON_SHOW_BONES);
-	p->add_separator();
-	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_set_ik_chain", TTR("Make IK Chain")), SKELETON_SET_IK_CHAIN);
-	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_clear_ik_chain", TTR("Clear IK Chain")), SKELETON_CLEAR_IK_CHAIN);
-	p->add_separator();
-	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_make_bones", TTR("Make Custom Bone(s) from Node(s)"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_B), SKELETON_MAKE_BONES);
-	p->add_shortcut(ED_SHORTCUT("canvas_item_editor/skeleton_clear_bones", TTR("Clear Custom Bones")), SKELETON_CLEAR_BONES);
-	p->connect("id_pressed", this, "_popup_callback");
-
-	main_menu_hbox->add_child(memnew(VSeparator));
-
-	override_camera_button = memnew(ToolButton);
-	main_menu_hbox->add_child(override_camera_button);
-	override_camera_button->connect("toggled", this, "_button_override_camera");
-	override_camera_button->set_toggle_mode(true);
-	override_camera_button->set_disabled(true);
-	_update_override_camera_button(false);
-
-	main_menu_hbox->add_child(memnew(VSeparator));
-
+	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("PanelBlank", "EditorStyles");
 	view_menu = memnew(MenuButton);
 	// TRANSLATORS: Noun, name of the 2D/3D View menus.
-	view_menu->set_text(TTR("View"));
-	main_menu_hbox->add_child(view_menu);
+	view_menu->set_tooltip(TTR("View"));
+	view_menu->add_style_override("pressed", normal_stylebox);
+	view_menu->add_style_override("hover_pressed", normal_stylebox);
+	view_menu->add_style_override("hover", normal_stylebox);
+	view_menu->add_style_override("focus", normal_stylebox);
+	view_menu->add_style_override("disabled", normal_stylebox);
+	view_menu->add_style_override("normal", normal_stylebox);
+	hb_helper->add_child(view_menu);
 	view_menu->get_popup()->connect("id_pressed", this, "_popup_callback");
 	view_menu->set_switch_on_hover(true);
 
@@ -6220,16 +6245,38 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	p->add_separator();
 	p->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/preview_canvas_scale", TTR("Preview Canvas Scale"), KEY_MASK_SHIFT | KEY_MASK_CMD | KEY_P), PREVIEW_CANVAS_SCALE);
 
-	main_menu_hbox->add_child(memnew(VSeparator));
+	Control *space_left = memnew(Control);
+	space_left->set_name("SpaceLeft");
+	space_left->set_h_size_flags(SIZE_EXPAND_FILL);
+	main_menu_hbox->add_child(space_left);
 
-	context_menu_panel = memnew(PanelContainer);
-	context_menu_hbox = memnew(HBoxContainer);
-	context_menu_panel->add_child(context_menu_hbox);
-	// Use a custom stylebox to make contextual menu items stand out from the rest.
-	// This helps with editor usability as contextual menu items change when selecting nodes,
-	// even though it may not be immediately obvious at first.
-	main_flow->add_child(context_menu_panel);
-	_update_context_menu_stylebox();
+	zoom_hb = memnew(HBoxContainer);
+	// Bring the zoom percentage closer to the zoom buttons
+	zoom_hb->set_v_size_flags(10);
+	zoom_hb->set_h_size_flags(SIZE_SHRINK_END);
+	zoom_hb->add_constant_override("separation", Math::round(-8 * EDSCALE));
+	controls_vb->add_child(zoom_hb);
+
+	zoom_minus = memnew(ToolButton);
+	zoom_hb->add_child(zoom_minus);
+	zoom_minus->connect("pressed", this, "_button_zoom_minus");
+	zoom_minus->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_minus", TTR("Zoom Out"), KEY_MASK_CMD | KEY_MINUS));
+	zoom_minus->set_focus_mode(FOCUS_NONE);
+
+	zoom_reset = memnew(ToolButton);
+	zoom_hb->add_child(zoom_reset);
+	zoom_reset->connect("pressed", this, "_button_zoom_reset");
+	zoom_reset->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_reset", TTR("Zoom Reset"), KEY_MASK_CMD | KEY_0));
+	zoom_reset->set_focus_mode(FOCUS_NONE);
+	zoom_reset->set_text_align(Button::TextAlign::ALIGN_CENTER);
+	// Prevent the button's size from changing when the text size changes
+	zoom_reset->set_custom_minimum_size(Size2(75 * EDSCALE, 0));
+
+	zoom_plus = memnew(ToolButton);
+	zoom_hb->add_child(zoom_plus);
+	zoom_plus->connect("pressed", this, "_button_zoom_plus");
+	zoom_plus->set_shortcut(ED_SHORTCUT("canvas_item_editor/zoom_plus", TTR("Zoom In"), KEY_MASK_CMD | KEY_EQUAL)); // Usually direct access key for PLUS
+	zoom_plus->set_focus_mode(FOCUS_NONE);
 
 	presets_menu = memnew(MenuButton);
 	presets_menu->set_text(TTR("Layout"));
@@ -6327,6 +6374,18 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	add_node_menu->add_icon_item(editor->get_scene_tree_dock()->get_icon("Add", "EditorIcons"), TTR("Add Node Here"));
 	add_node_menu->add_icon_item(editor->get_scene_tree_dock()->get_icon("Instance", "EditorIcons"), TTR("Instance Scene Here"));
 	add_node_menu->connect("id_pressed", this, "_add_node_pressed");
+
+	ToolButton *tool_btns[] = {
+		select_button, move_button, rotate_button, scale_button,
+		list_select_button, pivot_button, pan_button, ruler_button, smart_snap_button, grid_snap_button,
+		override_camera_button
+	};
+
+	for (ToolButton *btn : tool_btns) {
+		btn->set_flat(false);
+		btn->set_toggle_mode(true);
+		btn->set_focus_mode(Control::FOCUS_NONE);
+	}
 
 	multiply_grid_step_shortcut = ED_SHORTCUT("canvas_item_editor/multiply_grid_step", TTR("Multiply grid step by 2"), KEY_KP_MULTIPLY);
 	divide_grid_step_shortcut = ED_SHORTCUT("canvas_item_editor/divide_grid_step", TTR("Divide grid step by 2"), KEY_KP_DIVIDE);

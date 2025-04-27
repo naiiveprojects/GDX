@@ -35,6 +35,7 @@
 #include "editor/editor_plugin.h"
 #include "scene/2d/canvas_item.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/flow_container.h"
 #include "scene/gui/label.h"
 #include "scene/gui/panel_container.h"
 
@@ -240,6 +241,7 @@ private:
 	VScrollBar *v_scroll;
 	// Used for secondary menu items which are displayed depending on the currently selected node
 	// (such as MeshInstance's "Mesh" menu).
+	HFlowContainer *main_menu_hbox;
 	PanelContainer *context_menu_panel = nullptr;
 	HBoxContainer *context_menu_hbox = nullptr;
 
