@@ -1,1 +1,5 @@
-<svg height="10" viewBox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" fill-opacity=".29412" r="5"/><circle cx="5" cy="5" fill="#fff" r="4"/><circle cx="5" cy="5" fill="#ff5f5f" r="3"/></svg>
+<svg height="10" viewBox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="10" height="10" fill-opacity=".3"/>
+    <rect x="1" y="1" width="8" height="8" fill="#ffffff"/>
+    <rect x="2" y="2" width="6" height="6" fill="rgba(170,170,170,0.5)"/>
+</svg>

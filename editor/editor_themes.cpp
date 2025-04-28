@@ -986,7 +986,17 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_content_panel_vp->set_default_margin(MARGIN_RIGHT, border_width * 2);
 	style_content_panel_vp->set_default_margin(MARGIN_BOTTOM, border_width * 2);
 	theme->set_stylebox("panel", "TabContainer", style_content_panel);
-	theme->set_stylebox("Content", "EditorStyles", style_content_panel_vp);
+	theme->set_stylebox("content", "EditorStyles", style_content_panel_vp);
+
+	Ref<StyleBoxFlat> style_content_panel_vp_dark = style_content_panel_vp->duplicate();
+	style_content_panel_vp_dark->set_bg_color(dark_color_1);
+	theme->set_stylebox("content_dark", "EditorStyles", style_content_panel_vp_dark);
+
+	// Editor Handle (2D)
+	Ref<StyleBoxFlat> style_editor_handle = make_flat_stylebox(Color(1, 1, 1), 2 * EDSCALE, 2 * EDSCALE, 2 * EDSCALE, 2 * EDSCALE);
+	style_editor_handle->set_border_width_all(2 * EDSCALE);
+	style_editor_handle->set_border_color(accent_color);
+	theme->set_stylebox("editor_handle", "EditorStyles", style_editor_handle);
 
 	// This stylebox is used by preview tabs in the Theme Editor.
 	Ref<StyleBoxFlat> style_theme_preview_tab = style_tab_selected_odd->duplicate();
