@@ -4228,7 +4228,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		key_scale_button->set_icon(get_icon("KeyScale", "EditorIcons"));
 		key_insert_button->set_icon(get_icon("Key", "EditorIcons"));
 		key_auto_insert_button->set_icon(get_icon("AutoKey", "EditorIcons"));
-		select_handle_sb = get_stylebox("EditorHandle", "EditorStyles");
+		select_handle_sb = get_stylebox("editor_handle", "EditorStyles");
 		// Use a different color for the active autokey icon to make them easier
 		// to distinguish from the other key icons at the top. On a light theme,
 		// the icon will be dark, so we need to lighten it before blending it
