@@ -357,6 +357,14 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_accent_color = Color(0.32, 0.58, 0.89);
 		preset_base_color = Color(0.22, 0.24, 0.29);
 		preset_contrast = 0.25;
+	} else if (preset == "Cobalt2") {
+		preset_accent_color = Color(0.00, 0.80, 1.00);
+		preset_base_color = Color(0.13, 0.18, 0.29);
+		preset_contrast = 0.21;
+	} else if (preset == "Dracula") {
+		preset_accent_color = Color(0.98, 0.38, 0.71);
+		preset_base_color = Color(0.14, 0.16, 0.22);
+		preset_contrast = 0.23;
 	} else if (preset == "Godot 2") {
 		preset_accent_color = Color(0.53, 0.67, 0.89);
 		preset_base_color = Color(0.24, 0.23, 0.27);
@@ -365,10 +373,38 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_accent_color = Color(0.44, 0.73, 0.98);
 		preset_base_color = Color(0.24, 0.24, 0.24);
 		preset_contrast = 0.2;
+	} else if (preset == "Gruvbox (Dark)") {
+		preset_accent_color = Color(0.80, 0.60, 0.36);
+		preset_base_color = Color(0.18, 0.15, 0.11);
+		preset_contrast = 0.20;
+	} else if (preset == "Gruvbox (Light)") {
+		preset_accent_color = Color(0.80, 0.60, 0.36);
+		preset_base_color = Color(0.98, 0.94, 0.82);
+		preset_contrast = 0.08;
 	} else if (preset == "Light") {
 		preset_accent_color = Color(0.13, 0.44, 1.0);
 		preset_base_color = Color(1, 1, 1);
 		preset_contrast = 0.08;
+	} else if (preset == "Material Darker") {
+		preset_accent_color = Color(0.30, 0.69, 0.31);
+		preset_base_color = Color(0.17, 0.19, 0.21);
+		preset_contrast = 0.18;
+	} else if (preset == "Material Palenight") {
+		preset_accent_color = Color(0.62, 0.51, 0.96);
+		preset_base_color = Color(0.23, 0.24, 0.31);
+		preset_contrast = 0.19;
+	} else if (preset == "Monokai") {
+		preset_accent_color = Color(0.99, 0.60, 0.00);
+		preset_base_color = Color(0.13, 0.13, 0.13);
+		preset_contrast = 0.22;
+	} else if (preset == "Nord") {
+		preset_accent_color = Color(0.46, 0.67, 0.80);
+		preset_base_color = Color(0.19, 0.23, 0.27);
+		preset_contrast = 0.18;
+	} else if (preset == "One Dark") {
+		preset_accent_color = Color(0.20, 0.60, 0.86);
+		preset_base_color = Color(0.16, 0.18, 0.23);
+		preset_contrast = 0.22;
 	} else if (preset == "Solarized (Dark)") {
 		preset_accent_color = Color(0.15, 0.55, 0.82);
 		preset_base_color = Color(0.03, 0.21, 0.26);
@@ -377,6 +413,10 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_accent_color = Color(0.15, 0.55, 0.82);
 		preset_base_color = Color(0.99, 0.96, 0.89);
 		preset_contrast = 0.06;
+	} else if (preset == "Tomorrow Night") {
+		preset_accent_color = Color(0.36, 0.54, 0.66);
+		preset_base_color = Color(0.16, 0.18, 0.20);
+		preset_contrast = 0.17;
 	} else { // Default
 		preset_accent_color = Color(0.4, 0.6, 0.9);
 		preset_base_color = Color(0.11, 0.11, 0.12);
@@ -404,6 +444,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	const Color dark_color_3 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast * 2);
 
 	const Color background_color = dark_color_2;
+	Color accent_alpha = accent_color;
+	accent_alpha.a = 0.2;
 
 	// white (dark theme) or black (light theme), will be used to generate the rest of the colors
 	const Color mono_color = dark_theme ? Color(1, 1, 1) : Color(0, 0, 0);
@@ -429,7 +471,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	icon_color_pressed.a = 1.0;
 
 	const Color separator_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.1);
-	const Color contrast_accent_color = accent_color.get_luminance() > 0.5 ? base_color : mono_color;
+	const Color contrast_accent_color = dark_theme ? (accent_color.get_luminance() > 0.5 ? base_color : mono_color) : (accent_color.get_luminance() > 0.5 ? mono_color : base_color);
 	const Color highlight_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.2);
 
 	theme->set_color("accent_color", "Editor", accent_color);
@@ -545,7 +587,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_popup->set_default_margin(MARGIN_TOP, popup_margin_size);
 	style_popup->set_default_margin(MARGIN_RIGHT, popup_margin_size);
 	style_popup->set_default_margin(MARGIN_BOTTOM, popup_margin_size);
-	style_popup->set_border_color(contrast_color_1);
+	style_popup->set_border_color(dark_color_3);
 	style_popup->set_border_width_all(MAX(EDSCALE, border_width));
 	const Color shadow_color = Color(0, 0, 0, dark_theme ? 0.3 : 0.1);
 	style_popup->set_shadow_color(shadow_color);
@@ -614,7 +656,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	// Focus
 	Ref<StyleBoxFlat> style_focus = style_default->duplicate();
 	style_focus->set_draw_center(false);
-	style_focus->set_border_color(contrast_color_2);
+	style_focus->set_border_color(accent_alpha);
 	style_focus->set_border_blend(true);
 	style_focus->set_expand_margin_size_all(2.0);
 	theme->set_stylebox("Focus", "EditorStyles", style_focus);
@@ -630,6 +672,14 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_menu_accent->set_draw_center(true);
 	style_menu_accent->set_bg_color(accent_color);
 	theme->set_stylebox("AccentPanel", "EditorStyles", style_menu_accent);
+
+	Ref<StyleBoxFlat> style_menu_accent_alpha = style_menu_accent->duplicate();
+	style_menu_accent_alpha->set_bg_color(accent_alpha);
+	theme->set_stylebox("AccentAlphaPanel", "EditorStyles", style_menu_accent_alpha);
+
+	Ref<StyleBoxFlat> style_menu_blank = style_menu_accent->duplicate();
+	style_menu_blank->set_draw_center(false);
+	theme->set_stylebox("EmptyPanel", "EditorStyles", style_menu_blank);
 
 	// CanvasItem Editor
 	Ref<StyleBoxFlat> style_canvas_editor_info = make_flat_stylebox(Color(0.0, 0.0, 0.0, 0.2));
@@ -981,10 +1031,12 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// This stylebox is used in 3d and 2d viewports (no borders).
 	Ref<StyleBoxFlat> style_content_panel_vp = style_content_panel->duplicate();
-	style_content_panel_vp->set_default_margin(MARGIN_LEFT, border_width * 2);
-	style_content_panel_vp->set_default_margin(MARGIN_TOP, default_margin_size * EDSCALE);
-	style_content_panel_vp->set_default_margin(MARGIN_RIGHT, border_width * 2);
-	style_content_panel_vp->set_default_margin(MARGIN_BOTTOM, border_width * 2);
+	style_content_panel_vp->set_expand_margin_size_all(0);
+	style_content_panel_vp->set_default_margin(MARGIN_LEFT, 0);
+	style_content_panel_vp->set_default_margin(MARGIN_TOP, 0);
+	style_content_panel_vp->set_default_margin(MARGIN_RIGHT, 0);
+	style_content_panel_vp->set_default_margin(MARGIN_BOTTOM, 0);
+
 	theme->set_stylebox("panel", "TabContainer", style_content_panel);
 	theme->set_stylebox("content", "EditorStyles", style_content_panel_vp);
 
@@ -1014,6 +1066,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	Ref<StyleBoxFlat> style_panel_debugger = style_content_panel->duplicate();
 	style_panel_debugger->set_border_width(MARGIN_BOTTOM, 0);
+	style_panel_debugger->set_corner_radius_all(0);
 	theme->set_stylebox("DebuggerPanel", "EditorStyles", style_panel_debugger);
 	theme->set_stylebox("DebuggerTabFG", "EditorStyles", style_tab_selected);
 	theme->set_stylebox("DebuggerTabBG", "EditorStyles", style_tab_unselected);
@@ -1111,12 +1164,12 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	if (increase_scrollbar_touch_area) {
 		theme->set_stylebox("scroll", "HScrollBar", make_line_stylebox(separator_color, 50));
 	} else {
-		theme->set_stylebox("scroll", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 5, 5, 5, 5, 0, 0, 0, 0));
+		theme->set_stylebox("scroll", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 4, 4, 4, 4, 0, 0, 0, 0));
 	}
-	theme->set_stylebox("scroll_focus", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 5, 5, 5, 5, 0, 0, 0, 0));
-	theme->set_stylebox("grabber", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabber", "EditorIcons"), 6, 6, 6, 6, 2, 2, 2, 2));
-	theme->set_stylebox("grabber_highlight", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberHl", "EditorIcons"), 5, 5, 5, 5, 2, 2, 2, 2));
-	theme->set_stylebox("grabber_pressed", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberPressed", "EditorIcons"), 6, 6, 6, 6, 2, 2, 2, 2));
+	theme->set_stylebox("scroll_focus", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 4, 4, 4, 4, 0, 0, 0, 0));
+	theme->set_stylebox("grabber", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabber", "EditorIcons"), 5, 5, 5, 5, 1, 1, 1, 1));
+	theme->set_stylebox("grabber_highlight", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberHl", "EditorIcons"), 4, 4, 4, 4, 1, 1, 1, 1));
+	theme->set_stylebox("grabber_pressed", "HScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberPressed", "EditorIcons"), 5, 5, 5, 5, 1, 1, 1, 1));
 
 	theme->set_icon("increment", "HScrollBar", empty_icon);
 	theme->set_icon("increment_highlight", "HScrollBar", empty_icon);
@@ -1129,12 +1182,12 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	if (increase_scrollbar_touch_area) {
 		theme->set_stylebox("scroll", "VScrollBar", make_line_stylebox(separator_color, 50, 1, 1, true));
 	} else {
-		theme->set_stylebox("scroll", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 5, 5, 5, 5, 0, 0, 0, 0));
+		theme->set_stylebox("scroll", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 4, 4, 4, 4, 0, 0, 0, 0));
 	}
-	theme->set_stylebox("scroll_focus", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 5, 5, 5, 5, 0, 0, 0, 0));
-	theme->set_stylebox("grabber", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabber", "EditorIcons"), 6, 6, 6, 6, 2, 2, 2, 2));
-	theme->set_stylebox("grabber_highlight", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberHl", "EditorIcons"), 5, 5, 5, 5, 2, 2, 2, 2));
-	theme->set_stylebox("grabber_pressed", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberPressed", "EditorIcons"), 6, 6, 6, 6, 2, 2, 2, 2));
+	theme->set_stylebox("scroll_focus", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollBg", "EditorIcons"), 4, 4, 4, 4, 0, 0, 0, 0));
+	theme->set_stylebox("grabber", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabber", "EditorIcons"), 5, 5, 5, 5, 1, 1, 1, 1));
+	theme->set_stylebox("grabber_highlight", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberHl", "EditorIcons"), 4, 4, 4, 4, 1, 1, 1, 1));
+	theme->set_stylebox("grabber_pressed", "VScrollBar", make_stylebox(theme->get_icon("GuiScrollGrabberPressed", "EditorIcons"), 5, 5, 5, 5, 1, 1, 1, 1));
 
 	theme->set_icon("increment", "VScrollBar", empty_icon);
 	theme->set_icon("increment_highlight", "VScrollBar", empty_icon);
@@ -1390,7 +1443,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	// Information on 3D viewport
 	Ref<StyleBoxFlat> style_info_3d_viewport = style_default->duplicate();
-	style_info_3d_viewport->set_bg_color(style_info_3d_viewport->get_bg_color() * Color(1, 1, 1, 0.5));
+	style_info_3d_viewport->set_bg_color(style_info_3d_viewport->get_bg_color() * Color(1, 1, 1, 0.65));
 	style_info_3d_viewport->set_border_width_all(0);
 	theme->set_stylebox("Information3dViewport", "EditorStyles", style_info_3d_viewport);
 
