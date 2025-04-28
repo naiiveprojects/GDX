@@ -3604,13 +3604,15 @@ void CanvasItemEditor::_draw_selection() {
 
 					Vector2 ofs = ((endpoints[i] - endpoints[prev]).normalized() + ((endpoints[i] - endpoints[next]).normalized())).normalized();
 					ofs *= Math_SQRT2 * (select_handle->get_size().width / 2);
+					Vector2 handle_pos = (endpoints[i] + ofs - (select_handle->get_size() / 2)).floor();
 
-					select_handle->draw(ci, (endpoints[i] + ofs - (select_handle->get_size() / 2)).floor(), c);
+					select_handle_sb->draw(ci, Rect2(handle_pos, select_handle->get_size()));
 
 					ofs = (endpoints[i] + endpoints[next]) / 2;
 					ofs += (endpoints[next] - endpoints[i]).tangent().normalized() * (select_handle->get_size().width / 2);
+					handle_pos = (ofs - (select_handle->get_size() / 2)).floor();
 
-					select_handle->draw(ci, (ofs - (select_handle->get_size() / 2)).floor(), c);
+					select_handle_sb->draw(ci, Rect2(handle_pos, select_handle->get_size()));
 				}
 			}
 
@@ -4226,6 +4228,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		key_scale_button->set_icon(get_icon("KeyScale", "EditorIcons"));
 		key_insert_button->set_icon(get_icon("Key", "EditorIcons"));
 		key_auto_insert_button->set_icon(get_icon("AutoKey", "EditorIcons"));
+		select_handle_sb = get_stylebox("EditorHandle", "EditorStyles");
 		// Use a different color for the active autokey icon to make them easier
 		// to distinguish from the other key icons at the top. On a light theme,
 		// the icon will be dark, so we need to lighten it before blending it
@@ -4406,8 +4409,8 @@ void CanvasItemEditor::_tree_changed(Node *) {
 
 void CanvasItemEditor::_update_context_menu_stylebox() {
 	Ref<StyleBox> panel_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("Information3dViewport", "EditorStyles");
-	Ref<StyleBox> pressed_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("AccentPanelAlpha", "EditorStyles");
-	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("PanelBlank", "EditorStyles");
+	Ref<StyleBox> pressed_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("AccentAlphaPanel", "EditorStyles");
+	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("EmptyPanel", "EditorStyles");
 
 	for (int i = 0; i < main_menu_hbox->get_child_count(); ++i) {
 		PanelContainer *panel_container = Object::cast_to<PanelContainer>(main_menu_hbox->get_child(i));
@@ -6191,7 +6194,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	smartsnap_config_popup->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/snap_other_nodes", TTR("Snap to Other Nodes")), SNAP_USE_OTHER_NODES);
 	smartsnap_config_popup->add_check_shortcut(ED_SHORTCUT("canvas_item_editor/snap_guides", TTR("Snap to Guides")), SNAP_USE_GUIDES);
 
-	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("PanelBlank", "EditorStyles");
+	Ref<StyleBox> normal_stylebox = EditorNode::get_singleton()->get_gui_base()->get_stylebox("EmptyPanel", "EditorStyles");
 	view_menu = memnew(MenuButton);
 	// TRANSLATORS: Noun, name of the 2D/3D View menus.
 	view_menu->set_tooltip(TTR("View"));

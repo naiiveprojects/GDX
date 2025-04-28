@@ -421,6 +421,7 @@ private:
 	Point2 box_selecting_to;
 
 	Ref<StyleBoxTexture> select_sb;
+	Ref<StyleBoxFlat> select_handle_sb;
 	Ref<Texture> select_handle;
 	Ref<Texture> anchor_handle;
 
