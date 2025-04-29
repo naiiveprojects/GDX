@@ -446,8 +446,22 @@ void TabContainer::_draw_tab(Ref<StyleBox> &p_tab_style, Color &p_font_color, in
 	if (control->has_meta("_tab_icon")) {
 		Ref<Texture> icon = control->get_meta("_tab_icon");
 		if (icon.is_valid()) {
+			Color icon_color = p_font_color;
+
+			if (get_tab_disabled(p_index)) {
+				if (has_color("icon_color_disabled")) {
+					icon_color = get_color("icon_color_disabled");
+				}
+			} else if (p_index == current) {
+				if (has_color("icon_color_fg")) {
+					icon_color = get_color("icon_color_fg");
+				}
+			} else if (has_color("icon_color_bg")) {
+				icon_color = get_color("icon_color_bg");
+			}
+
 			int y = y_center - (icon->get_height() / 2);
-			icon->draw(canvas, Point2i(x_content, y));
+			icon->draw(canvas, Point2i(x_content, y), icon_color);
 			if (text != "") {
 				x_content += icon->get_width() + icon_text_distance;
 			}

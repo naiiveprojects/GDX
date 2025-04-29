@@ -469,6 +469,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	// On a light theme, icons are dark, so we need to modulate them with an even brighter color.
 	Color icon_color_pressed = accent_color * (dark_theme ? 1.15 : 3.5);
 	icon_color_pressed.a = 1.0;
+	Color icon_color_bg = Color(0.9, 0.9, 0.9, 0.9);
 
 	const Color separator_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.1);
 	const Color contrast_accent_color = dark_theme ? (accent_color.get_luminance() > 0.5 ? base_color : mono_color) : (accent_color.get_luminance() > 0.5 ? mono_color : base_color);
@@ -992,29 +993,36 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_stylebox("tab_fg", "TabContainer", style_tab_selected);
 	theme->set_stylebox("tab_bg", "TabContainer", style_tab_unselected);
 	theme->set_stylebox("tab_disabled", "TabContainer", style_tab_disabled);
+	theme->set_color("font_color_fg", "TabContainer", font_color);
+	theme->set_color("font_color_bg", "TabContainer", font_color_disabled);
+	theme->set_color("font_color_disabled", "TabContainer", font_color_disabled);
+	theme->set_color("icon_color_fg", "TabContainer", icon_color_hover);
+	theme->set_color("icon_color_bg", "TabContainer", icon_color_bg);
+	theme->set_color("icon_color_disabled", "TabContainer", font_color_disabled);
+	theme->set_icon("menu", "TabContainer", theme->get_icon("GuiScrollGrabber", "EditorIcons"));
+	theme->set_icon("menu_highlight", "TabContainer", theme->get_icon("GuiScrollGrabber", "EditorIcons"));
+	theme->set_stylebox("SceneTabFG", "EditorStyles", style_scene_tab_selected);
+	theme->set_stylebox("SceneTabBG", "EditorStyles", style_scene_tab_unselected);
+	theme->set_icon("increment", "TabContainer", theme->get_icon("GuiScrollArrowRight", "EditorIcons"));
+	theme->set_icon("decrement", "TabContainer", theme->get_icon("GuiScrollArrowLeft", "EditorIcons"));
+	theme->set_icon("increment_highlight", "TabContainer", theme->get_icon("GuiScrollArrowRightHl", "EditorIcons"));
+	theme->set_icon("decrement_highlight", "TabContainer", theme->get_icon("GuiScrollArrowLeftHl", "EditorIcons"));
+	theme->set_font("font", "TabContainer", theme->get_font("bold", "EditorFonts"));
+
 	theme->set_stylebox("tab_fg", "Tabs", style_tab_selected);
 	theme->set_stylebox("tab_bg", "Tabs", style_tab_unselected);
 	theme->set_stylebox("tab_disabled", "Tabs", style_tab_disabled);
-	theme->set_color("font_color_fg", "TabContainer", font_color);
-	theme->set_color("font_color_bg", "TabContainer", font_color_disabled);
 	theme->set_color("font_color_fg", "Tabs", font_color);
 	theme->set_color("font_color_bg", "Tabs", font_color_disabled);
-	theme->set_icon("menu", "TabContainer", theme->get_icon("TripleBar", "EditorIcons"));
-	theme->set_icon("menu_highlight", "TabContainer", theme->get_icon("TripleBar", "EditorIcons"));
-	theme->set_stylebox("SceneTabFG", "EditorStyles", style_scene_tab_selected);
-	theme->set_stylebox("SceneTabBG", "EditorStyles", style_scene_tab_unselected);
 	theme->set_icon("close", "Tabs", theme->get_icon("GuiClose", "EditorIcons"));
 	theme->set_stylebox("button_pressed", "Tabs", style_menu);
 	theme->set_stylebox("button", "Tabs", style_menu);
-	theme->set_icon("increment", "TabContainer", theme->get_icon("GuiScrollArrowRight", "EditorIcons"));
-	theme->set_icon("decrement", "TabContainer", theme->get_icon("GuiScrollArrowLeft", "EditorIcons"));
 	theme->set_icon("increment", "Tabs", theme->get_icon("GuiScrollArrowRight", "EditorIcons"));
 	theme->set_icon("decrement", "Tabs", theme->get_icon("GuiScrollArrowLeft", "EditorIcons"));
 	theme->set_icon("increment_highlight", "Tabs", theme->get_icon("GuiScrollArrowRightHl", "EditorIcons"));
 	theme->set_icon("decrement_highlight", "Tabs", theme->get_icon("GuiScrollArrowLeftHl", "EditorIcons"));
-	theme->set_icon("increment_highlight", "TabContainer", theme->get_icon("GuiScrollArrowRightHl", "EditorIcons"));
-	theme->set_icon("decrement_highlight", "TabContainer", theme->get_icon("GuiScrollArrowLeftHl", "EditorIcons"));
 	theme->set_constant("hseparation", "Tabs", 4 * EDSCALE);
+	theme->set_font("font", "Tabs", theme->get_font("bold", "EditorFonts"));
 
 	// Content of each tab
 	Ref<StyleBoxFlat> style_content_panel = style_default->duplicate();

@@ -739,6 +739,9 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_color("font_color_fg", "TabContainer", control_font_color_hover);
 	theme->set_color("font_color_bg", "TabContainer", control_font_color_low);
 	theme->set_color("font_color_disabled", "TabContainer", control_font_color_disabled);
+	theme->set_color("icon_color_fg", "TabContainer", Color(1, 1, 1));
+	theme->set_color("icon_color_bg", "TabContainer", Color(1, 1, 1, 0.5));
+	theme->set_color("icon_color_disabled", "TabContainer", Color(1, 1, 1, 0.2));
 
 	theme->set_constant("side_margin", "TabContainer", 8 * scale);
 	theme->set_constant("top_margin", "TabContainer", 24 * scale);
