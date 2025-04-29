@@ -619,14 +619,19 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	Ref<StyleBoxFlat> style_tab_selected = style_widget->duplicate();
 	style_tab_selected->set_border_width_all(0);
-	style_tab_selected->set_corner_radius_all(0);
-	style_tab_selected->set_border_width(MARGIN_TOP, 2 * EDSCALE);
+	if (EditorSettings::get_singleton()->get("interface/miscellaneous/tab_accent_color")) {
+		style_tab_selected->set_corner_radius_all(0);
+		style_tab_selected->set_border_color(accent_color);
+	} else {
+		style_tab_selected->set_corner_radius_individual(corner_radius * EDSCALE, corner_radius * EDSCALE, 0, 0);
+		style_tab_selected->set_border_color(base_color);
+	}
+	style_tab_selected->set_border_width(MARGIN_TOP, 1 * EDSCALE);
 	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, corner_radius * EDSCALE);
 	style_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
 	style_tab_selected->set_default_margin(MARGIN_TOP, tab_default_margin_vertical);
-	style_tab_selected->set_border_color(accent_color);
 	style_tab_selected->set_bg_color(base_color);
 
 	Ref<StyleBoxFlat> style_tab_unselected = style_tab_selected->duplicate();

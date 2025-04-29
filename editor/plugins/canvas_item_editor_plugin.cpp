@@ -4306,7 +4306,7 @@ void CanvasItemEditor::_notification(int p_what) {
 		warning_child_of_container->add_color_override("font_color", get_color("warning_color", "Editor"));
 		warning_child_of_container->add_font_override("font", get_font("main", "EditorFonts"));
 
-		int editor_tools_view = EditorSettings::get_singleton()->get("editors/2d/editor_tools_view");
+		int editor_tools_view = EditorSettings::get_singleton()->get("interface/miscellaneous/2D_editor_tools_view");
 		if (Control *space_right = Object::cast_to<Control>(main_menu_hbox->get_node(NodePath("SpaceRight")))) {
 			space_right->set_visible(editor_tools_view == 0 || editor_tools_view == 2);
 		}
