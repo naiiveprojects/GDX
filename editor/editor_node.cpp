@@ -509,8 +509,6 @@ void EditorNode::_notification(int p_what) {
 				_initializing_addons = false;
 			}
 
-			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
-
 			VisualServer::get_singleton()->viewport_set_hide_scenario(get_scene_root()->get_viewport_rid(), true);
 			VisualServer::get_singleton()->viewport_set_hide_canvas(get_scene_root()->get_viewport_rid(), true);
 			VisualServer::get_singleton()->viewport_set_disable_environment(get_viewport()->get_viewport_rid(), true);
@@ -529,6 +527,8 @@ void EditorNode::_notification(int p_what) {
 			if (OS::get_singleton()->can_draw() && !OS::get_singleton()->is_no_window_mode_enabled()) {
 				ProjectSettings::get_singleton()->save();
 			}
+
+			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
 
 			/* DO NOT LOAD SCENES HERE, WAIT FOR FILE SCANNING AND REIMPORT TO COMPLETE */
 		} break;
