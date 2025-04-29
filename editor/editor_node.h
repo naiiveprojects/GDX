@@ -232,6 +232,7 @@ private:
 	Control *theme_base;
 	Control *gui_base;
 	VBoxContainer *main_vbox;
+	PanelContainer *main_panel;
 	OptionButton *video_driver;
 
 	ConfirmationDialog *video_restart_dialog;
@@ -239,7 +240,6 @@ private:
 	int video_driver_current;
 	String video_driver_request;
 	void _video_driver_selected(int);
-	void _update_video_driver_color();
 
 	// Split containers
 
@@ -441,7 +441,7 @@ private:
 
 	Vector<BottomPanelItem> bottom_panel_items;
 
-	PanelContainer *bottom_panel;
+	MarginContainer *bottom_panel;
 	HBoxContainer *bottom_panel_hb;
 	HBoxContainer *bottom_panel_hb_editors;
 	VBoxContainer *bottom_panel_vb;
