@@ -1399,7 +1399,7 @@ SceneTreeEditor::SceneTreeEditor(bool p_label, bool p_can_rename, bool p_can_ope
 	tree->set_end(Point2(0, 0));
 	tree->add_constant_override("button_margin", 0);
 	tree->set_allow_reselect(true);
-	tree->add_style_override("bg", get_stylebox("Content", "EditorStyles"));
+	tree->add_style_override("bg", get_stylebox("content", "EditorStyles"));
 	add_child(tree);
 
 	tree->set_drag_forwarding(this);

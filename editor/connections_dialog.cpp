@@ -1083,6 +1083,10 @@ ConnectionsDock::ConnectionsDock(EditorNode *p_editor) {
 	HBoxContainer *hbc = memnew(HBoxContainer);
 	vbc->add_child(hbc);
 
+	connect_button = memnew(ToolButton);
+	hbc->add_child(connect_button);
+	connect_button->connect("pressed", this, "_connect_pressed");
+
 	search_box = memnew(LineEdit);
 	search_box->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	search_box->set_placeholder(TTR("Filter signals"));
@@ -1090,10 +1094,6 @@ ConnectionsDock::ConnectionsDock(EditorNode *p_editor) {
 	search_box->set_clear_button_enabled(true);
 	search_box->connect("text_changed", this, "_filter_changed");
 	hbc->add_child(search_box);
-
-	connect_button = memnew(ToolButton);
-	hbc->add_child(connect_button);
-	connect_button->connect("pressed", this, "_connect_pressed");
 
 	tree = memnew(ConnectionsDockTree);
 	tree->set_columns(1);

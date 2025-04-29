@@ -2870,7 +2870,7 @@ FileSystemDock::FileSystemDock(EditorNode *p_editor) {
 	tree->set_custom_minimum_size(Size2(0, 15 * EDSCALE));
 	tree->set_h_size_flags(SIZE_EXPAND_FILL);
 	tree->set_stretch_ratio(0.2);
-	tree->add_style_override("bg", get_stylebox("Content", "EditorStyles"));
+	tree->add_style_override("bg", get_stylebox("content", "EditorStyles"));
 	split_box->add_child(tree);
 
 	tree->connect("item_activated", this, "_tree_activate_file");
