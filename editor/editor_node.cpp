@@ -575,11 +575,30 @@ void EditorNode::_notification(int p_what) {
 			scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
 			scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
 
-			file_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-			project_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-			debug_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-			settings_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
-			help_menu->add_style_override("hover", gui_base->get_stylebox("MenuHover", "EditorStyles"));
+			MenuButton *menu_buttons[] = { file_menu, project_menu, debug_menu, settings_menu, help_menu };
+			for (MenuButton *btn : menu_buttons) {
+				btn->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				btn->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				btn->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+				btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+			}
+
+			ToolButton *tool_buttons[] = {
+				play_button,
+				play_scene_button,
+				play_custom_scene_button,
+				pause_button,
+				stop_button,
+				distraction_free,
+				button_borderless,
+				button_close,
+			};
+			for (ToolButton *btn : tool_buttons) {
+				btn->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				btn->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				btn->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+				btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+			}
 
 			if (EDITOR_GET("interface/scene_tabs/resize_if_many_tabs")) {
 				scene_tabs->set_min_width(int(EDITOR_GET("interface/scene_tabs/minimum_width")) * EDSCALE);
@@ -590,7 +609,6 @@ void EditorNode::_notification(int p_what) {
 
 			recent_scenes->set_as_minsize();
 
-			// update_icons
 			for (int i = 0; i < singleton->main_editor_buttons.size(); i++) {
 				ToolButton *tb = singleton->main_editor_buttons[i];
 				EditorPlugin *p_editor = singleton->editor_table[i];
@@ -601,7 +619,19 @@ void EditorNode::_notification(int p_what) {
 				} else if (singleton->gui_base->has_icon(p_editor->get_name(), "EditorIcons")) {
 					tb->set_icon(singleton->gui_base->get_icon(p_editor->get_name(), "EditorIcons"));
 				}
+
+				tb->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				tb->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+				tb->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+				tb->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
 			}
+
+			video_driver->add_style_override("normal", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			video_driver->add_color_override("font_color", gui_base->get_color("contrast_accent_color", "Editor"));
+			video_driver->add_color_override("font_color_hover", gui_base->get_color("accent_color", "Editor"));
+			video_driver->set_visible(EditorSettings::get_singleton()->get("interface/editor/show_video_driver"));
+
+			main_panel->add_style_override("panel", gui_base->get_stylebox("content_dark", "EditorStyles"));
 
 			_build_icon_type_cache();
 
@@ -3241,10 +3271,17 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 	if (p_editor->has_main_screen()) {
 		ToolButton *tb = memnew(ToolButton);
 		tb->set_toggle_mode(true);
+		tb->set_flat(false);
+		tb->set_icon_align(ToolButton::ALIGN_CENTER);
+		tb->set_focus_mode(Control::FOCUS_NONE);
+		tb->add_style_override("pressed", singleton->gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+		tb->add_style_override("hover_pressed", singleton->gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+		tb->add_color_override("icon_color_pressed", singleton->gui_base->get_color("contrast_accent_color", "Editor"));
+		tb->add_color_override("icon_color_hover_pressed", singleton->gui_base->get_color("contrast_accent_color", "Editor"));
 		tb->connect("pressed", singleton, "_editor_select", varray(singleton->main_editor_buttons.size()));
 		tb->set_tooltip(p_editor->get_name());
-		Ref<Texture> icon = p_editor->get_icon();
 
+		Ref<Texture> icon = p_editor->get_icon();
 		if (icon.is_valid()) {
 			tb->set_icon(icon);
 		} else if (singleton->gui_base->has_icon(p_editor->get_name(), "EditorIcons")) {
@@ -5140,6 +5177,14 @@ ToolButton *EditorNode::add_bottom_panel_item(String p_text, Control *p_item) {
 	tb->set_text(p_text);
 	tb->set_toggle_mode(true);
 	tb->set_focus_mode(Control::FOCUS_NONE);
+	tb->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	tb->set_flat(false);
+	tb->add_style_override("pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
+	tb->add_style_override("hover_pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
+	tb->add_style_override("normal", gui_base->get_stylebox("EmptyPanel", "EditorStyles"));
+	tb->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
+	tb->add_color_override("icon_color_hover_pressed", gui_base->get_color("mono_color", "Editor"));
+	tb->add_color_override("icon_color_pressed", gui_base->get_color("mono_color", "Editor"));
 	bottom_panel_vb->add_child(p_item);
 	bottom_panel_hb->raise();
 	bottom_panel_hb_editors->add_child(tb);
@@ -5659,15 +5704,6 @@ void EditorNode::_bottom_panel_raise_toggled(bool p_pressed) {
 	top_split->set_visible(!p_pressed);
 }
 
-void EditorNode::_update_video_driver_color() {
-	// TODO: Probably should de-hardcode this and add to editor settings.
-	if (video_driver->get_text() == "GLES2") {
-		video_driver->add_color_override("font_color", Color::hex(0x5586a4ff));
-	} else if (video_driver->get_text() == "GLES3") {
-		video_driver->add_color_override("font_color", Color::hex(0xa5557dff));
-	}
-}
-
 void EditorNode::_video_driver_selected(int p_which) {
 	String driver = video_driver->get_item_metadata(p_which);
 
@@ -5680,7 +5716,6 @@ void EditorNode::_video_driver_selected(int p_which) {
 	video_driver_request = driver;
 	video_restart_dialog->popup_centered_minsize();
 	video_driver->select(video_driver_current);
-	_update_video_driver_color();
 }
 
 void EditorNode::_resource_saved(RES p_resource, const String &p_path) {
@@ -6165,6 +6200,7 @@ EditorNode::EditorNode() {
 	EDITOR_DEF("interface/editor/update_vital_only", false);
 #endif
 	EDITOR_DEF("interface/editor/localize_settings", true);
+	EDITOR_DEF("interface/editor/show_video_driver", false);
 	EDITOR_DEF_RST("interface/scene_tabs/restore_scenes_on_load", false);
 	EDITOR_DEF_RST("interface/scene_tabs/show_thumbnail_on_hover", true);
 	EDITOR_DEF("interface/scene_tabs/tab_align", 1);
@@ -6217,8 +6253,14 @@ EditorNode::EditorNode() {
 	menu_hb = memnew(HBoxContainer);
 	main_vbox->add_child(menu_hb);
 
+	main_panel = memnew(PanelContainer);
+	main_panel->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	main_panel->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	main_panel->add_style_override("panel", gui_base->get_stylebox("content_dark", "EditorStyles"));
+	main_vbox->add_child(main_panel);
+
 	left_l_hsplit = memnew(HSplitContainer);
-	main_vbox->add_child(left_l_hsplit);
+	main_panel->add_child(left_l_hsplit);
 
 	left_l_hsplit->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
@@ -6243,6 +6285,7 @@ EditorNode::EditorNode() {
 	VBoxContainer *center_vb = memnew(VBoxContainer);
 	main_hsplit->add_child(center_vb);
 	center_vb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	center_vb->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 
 	center_split = memnew(VSplitContainer);
 	center_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
@@ -6280,6 +6323,8 @@ EditorNode::EditorNode() {
 	for (int i = 0; i < vsplits.size(); i++) {
 		vsplits[i]->connect("dragged", this, "_dock_split_dragged");
 		hsplits[i]->connect("dragged", this, "_dock_split_dragged");
+		vsplits[i]->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+		hsplits[i]->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 	}
 
 	dock_select_popup = memnew(PopupPanel);
@@ -6321,14 +6366,15 @@ EditorNode::EditorNode() {
 	dock_popup_selected = -1;
 	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 		dock_slot[i]->set_custom_minimum_size(Size2(170, 0) * EDSCALE);
+		dock_slot[i]->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 		dock_slot[i]->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-		dock_slot[i]->set_popup(dock_select_popup);
-		dock_slot[i]->connect("pre_popup_pressed", this, "_dock_pre_popup", varray(i));
 		dock_slot[i]->set_tab_align(TabContainer::ALIGN_LEFT);
-		dock_slot[i]->set_drag_to_rearrange_enabled(true);
+		dock_slot[i]->set_popup(dock_select_popup);
 		dock_slot[i]->set_tabs_rearrange_group(1);
-		dock_slot[i]->connect("tab_changed", this, "_dock_tab_changed");
+		dock_slot[i]->set_drag_to_rearrange_enabled(true);
 		dock_slot[i]->set_use_hidden_tabs_for_min_size(true);
+		dock_slot[i]->connect("pre_popup_pressed", this, "_dock_pre_popup", varray(i));
+		dock_slot[i]->connect("tab_changed", this, "_dock_tab_changed");
 		dock_slot[i]->connect("child_entered_tree", this, "_set_dock_icon");
 	}
 
@@ -6360,45 +6406,8 @@ EditorNode::EditorNode() {
 	tab_preview->set_position(Point2(2, 2) * EDSCALE);
 	tab_preview_panel->add_child(tab_preview);
 
-	scene_tabs = memnew(Tabs);
-	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
-	scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
-	scene_tabs->set_select_with_rmb(true);
-	scene_tabs->add_tab("unsaved");
-	scene_tabs->set_tab_align(static_cast<Tabs::TabAlign>(EDITOR_GET("interface/scene_tabs/tab_align").operator int()));
-	scene_tabs->set_tab_close_display_policy((bool(EDITOR_DEF("interface/scene_tabs/always_show_close_button", false)) ? Tabs::CLOSE_BUTTON_SHOW_ACTIVE_ONLY : Tabs::CLOSE_BUTTON_SHOW_NEVER));
-	scene_tabs->set_min_width(int(EDITOR_DEF("interface/scene_tabs/minimum_width", 50)) * EDSCALE);
-	scene_tabs->set_drag_to_rearrange_enabled(true);
-	scene_tabs->connect("tab_changed", this, "_scene_tab_changed");
-	scene_tabs->connect("right_button_pressed", this, "_scene_tab_script_edited");
-	scene_tabs->connect("tab_close", this, "_scene_tab_closed", varray(SCENE_TAB_CLOSE));
-	scene_tabs->connect("tab_hover", this, "_scene_tab_hover");
-	scene_tabs->connect("mouse_exited", this, "_scene_tab_exit");
-	scene_tabs->connect("gui_input", this, "_scene_tab_input");
-	scene_tabs->connect("reposition_active_tab_request", this, "_reposition_active_tab");
-	scene_tabs->connect("resized", this, "_update_scene_tabs");
-
-	tabbar_container = memnew(HBoxContainer);
-	tabbar_container->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	tabbar_container->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
-	scene_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-
-	scene_tabs_context_menu = memnew(PopupMenu);
-	tabbar_container->add_child(scene_tabs_context_menu);
-	scene_tabs_context_menu->connect("id_pressed", this, "_menu_option");
-	scene_tabs_context_menu->set_hide_on_window_lose_focus(true);
-
-	tabbar_container->add_child(scene_tabs);
-
-	scene_tab_add = memnew(ToolButton);
-	tabbar_container->add_child(scene_tab_add);
-	scene_tab_add->set_tooltip(TTR("Add a new scene."));
-	scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
-	scene_tab_add->add_color_override("icon_color_normal", Color(0.6f, 0.6f, 0.6f, 0.8f));
-	scene_tab_add->connect("pressed", this, "_menu_option", make_binds(FILE_NEW_SCENE));
-	scene_tab_add->hide();
-
 	scene_root_parent = memnew(MarginContainer);
+	scene_root_parent->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	scene_root_parent->set_custom_minimum_size(Size2(0, 80) * EDSCALE);
 	scene_root_parent->set_draw_behind_parent(true);
 	srt->add_child(scene_root_parent);
@@ -6520,12 +6529,7 @@ EditorNode::EditorNode() {
 	p->add_child(recent_scenes);
 	recent_scenes->connect("id_pressed", this, "_open_recent_scene");
 
-	p->add_separator();
-	p->add_shortcut(ED_SHORTCUT("editor/file_quit", TTR("Quit"), KEY_MASK_CMD + KEY_Q), FILE_QUIT, true);
-
 	project_menu = memnew(MenuButton);
-	project_menu->set_flat(false);
-	project_menu->set_switch_on_hover(true);
 	project_menu->set_tooltip(TTR("Miscellaneous project or scene-wide tools."));
 	project_menu->add_style_override("hover", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
 	project_menu->add_style_override("focus", gui_base->get_stylebox("ScriptEditor", "EditorStyles"));
@@ -6549,10 +6553,9 @@ EditorNode::EditorNode() {
 		icon = gui_base->get_icon("DefaultProjectIcon", "EditorIcons");
 	}
 	project_menu->set_icon(icon);
-	project_menu->set_flat(true);
-	project_menu->set_custom_minimum_size(Size2(20, 20) * EDSCALE);
+	project_menu->set_custom_minimum_size(Size2(19, 0) * EDSCALE);
+	project_menu->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	project_menu->set_expand_icon(true);
-	project_menu->set_icon_align(Button::ALIGN_CENTER);
 	project_menu->set_tooltip(TTR("Project"));
 
 	p = project_menu->get_popup();
@@ -6594,20 +6597,9 @@ EditorNode::EditorNode() {
 #else
 	p->add_shortcut(ED_SHORTCUT("editor/quit_to_project_list", TTR("Quit to Project List"), KEY_MASK_SHIFT + KEY_MASK_CMD + KEY_Q), RUN_PROJECT_MANAGER, true);
 #endif
-
-	menu_hb->add_child(memnew(VSeparator));
-
-	main_editor_button_vb = memnew(HBoxContainer);
-	menu_hb->add_child(main_editor_button_vb);
-
-	menu_hb->add_child(memnew(VSeparator));
-
-	menu_hb->add_child(tabbar_container);
-
-	menu_hb->add_child(memnew(VSeparator));
+	p->add_shortcut(ED_SHORTCUT("editor/file_quit", TTR("Quit"), KEY_MASK_CMD + KEY_Q), FILE_QUIT, true);
 
 	debug_menu = memnew(MenuButton);
-	debug_menu->set_switch_on_hover(true);
 	debug_menu->set_icon(gui_base->get_icon("Debug", "EditorIcons"));
 	debug_menu->set_tooltip(TTR("Debug"));
 
@@ -6661,7 +6653,6 @@ EditorNode::EditorNode() {
 	p->connect("id_pressed", this, "_menu_option");
 
 	settings_menu = memnew(MenuButton);
-	settings_menu->set_switch_on_hover(true);
 	settings_menu->set_icon(gui_base->get_icon("Tools", "EditorIcons"));
 	settings_menu->set_tooltip(TTR("Editor"));
 
@@ -6714,7 +6705,6 @@ EditorNode::EditorNode() {
 
 	// Help Menu
 	help_menu = memnew(MenuButton);
-	help_menu->set_switch_on_hover(true);
 	help_menu->set_icon(gui_base->get_icon("HelpSearch", "EditorIcons"));
 	help_menu->set_tooltip(TTR("Search Help"));
 
@@ -6746,6 +6736,97 @@ EditorNode::EditorNode() {
 	left_menu_hb->add_child(settings_menu);
 	left_menu_hb->add_child(help_menu);
 
+	for (int i = 0; i < left_menu_hb->get_child_count(); i++) {
+		MenuButton *btn = Object::cast_to<MenuButton>(left_menu_hb->get_child(i));
+		if (btn) {
+			if (btn != project_menu) {
+				btn->set_flat(false);
+			}
+			btn->set_switch_on_hover(true);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+		}
+	}
+
+	menu_hb->add_child(memnew(VSeparator));
+
+	main_editor_button_vb = memnew(HBoxContainer);
+
+	menu_hb->add_child(main_editor_button_vb);
+
+	menu_hb->add_child(memnew(VSeparator));
+
+	tabbar_container = memnew(HBoxContainer);
+	tabbar_container->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	tabbar_container->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+	menu_hb->add_child(tabbar_container);
+
+	scene_tabs = memnew(Tabs);
+	tabbar_container->add_child(scene_tabs);
+	scene_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	scene_tabs->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	scene_tabs->add_style_override("tab_fg", gui_base->get_stylebox("SceneTabFG", "EditorStyles"));
+	scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
+	scene_tabs->set_select_with_rmb(true);
+	scene_tabs->add_tab("unsaved");
+	scene_tabs->set_tab_align(static_cast<Tabs::TabAlign>(EDITOR_GET("interface/scene_tabs/tab_align").operator int()));
+	scene_tabs->set_tab_close_display_policy((bool(EDITOR_DEF("interface/scene_tabs/always_show_close_button", false)) ? Tabs::CLOSE_BUTTON_SHOW_ACTIVE_ONLY : Tabs::CLOSE_BUTTON_SHOW_NEVER));
+	scene_tabs->set_min_width(int(EDITOR_DEF("interface/scene_tabs/minimum_width", 50)) * EDSCALE);
+	scene_tabs->set_drag_to_rearrange_enabled(true);
+	scene_tabs->connect("tab_changed", this, "_scene_tab_changed");
+	scene_tabs->connect("right_button_pressed", this, "_scene_tab_script_edited");
+	scene_tabs->connect("tab_close", this, "_scene_tab_closed", varray(SCENE_TAB_CLOSE));
+	scene_tabs->connect("tab_hover", this, "_scene_tab_hover");
+	scene_tabs->connect("mouse_exited", this, "_scene_tab_exit");
+	scene_tabs->connect("gui_input", this, "_scene_tab_input");
+	scene_tabs->connect("reposition_active_tab_request", this, "_reposition_active_tab");
+	scene_tabs->connect("resized", this, "_update_scene_tabs");
+	scene_tabs->add_constant_override("hseparation", 2 * EDSCALE);
+
+	scene_tabs_context_menu = memnew(PopupMenu);
+	tabbar_container->add_child(scene_tabs_context_menu);
+	scene_tabs_context_menu->connect("id_pressed", this, "_menu_option");
+	scene_tabs_context_menu->set_hide_on_window_lose_focus(true);
+
+	scene_tab_add = memnew(ToolButton);
+	tabbar_container->add_child(scene_tab_add);
+	scene_tab_add->set_tooltip(TTR("Add a new scene."));
+	scene_tab_add->set_icon(gui_base->get_icon("Add", "EditorIcons"));
+	scene_tab_add->add_color_override("icon_color_normal", Color(0.6f, 0.6f, 0.6f, 0.8f));
+	scene_tab_add->connect("pressed", this, "_menu_option", make_binds(FILE_NEW_SCENE));
+	scene_tab_add->hide();
+
+	// Toggle for video driver
+	video_driver = memnew(OptionButton);
+	video_driver->set_flat(false);
+	video_driver->set_focus_mode(Control::FOCUS_NONE);
+	video_driver->connect("item_selected", this, "_video_driver_selected");
+	video_driver->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
+	video_driver->add_style_override("normal", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+	video_driver->add_color_override("font_color", gui_base->get_color("contrast_accent_color", "Editor"));
+	video_driver->add_color_override("font_color_hover", gui_base->get_color("accent_color", "Editor"));
+	video_driver->set_visible(EditorSettings::get_singleton()->get("interface/editor/show_video_driver"));
+	menu_hb->add_child(video_driver);
+
+	String video_drivers = ProjectSettings::get_singleton()->get_custom_property_info()["rendering/quality/driver/driver_name"].hint_string;
+	String current_video_driver = OS::get_singleton()->get_video_driver_name(OS::get_singleton()->get_current_video_driver());
+	video_driver_current = 0;
+	for (int i = 0; i < video_drivers.get_slice_count(","); i++) {
+		String driver = video_drivers.get_slice(",", i);
+		video_driver->add_item(driver);
+		video_driver->set_item_metadata(i, driver);
+
+		if (current_video_driver == driver) {
+			video_driver->select(i);
+			video_driver_current = i;
+		}
+	}
+
+	menu_hb->add_child(memnew(VSeparator));
+
 	HBoxContainer *play_hb = memnew(HBoxContainer);
 	menu_hb->add_child(play_hb);
 
@@ -6755,7 +6836,6 @@ EditorNode::EditorNode() {
 	play_hb->add_child(play_button);
 	play_button->set_toggle_mode(true);
 	play_button->set_icon(gui_base->get_icon("MainPlay", "EditorIcons"));
-	play_button->set_focus_mode(Control::FOCUS_NONE);
 	play_button->connect("pressed", this, "_menu_option", make_binds(RUN_PLAY));
 	play_button->set_tooltip(TTR("Play the project."));
 #ifdef OSX_ENABLED
@@ -6767,7 +6847,6 @@ EditorNode::EditorNode() {
 	pause_button = memnew(ToolButton);
 	pause_button->set_toggle_mode(true);
 	pause_button->set_icon(gui_base->get_icon("Pause", "EditorIcons"));
-	pause_button->set_focus_mode(Control::FOCUS_NONE);
 	pause_button->set_tooltip(TTR("Pause the scene execution for debugging."));
 	pause_button->set_disabled(true);
 	play_hb->add_child(pause_button);
@@ -6779,7 +6858,6 @@ EditorNode::EditorNode() {
 
 	stop_button = memnew(ToolButton);
 	play_hb->add_child(stop_button);
-	stop_button->set_focus_mode(Control::FOCUS_NONE);
 	stop_button->set_icon(gui_base->get_icon("Stop", "EditorIcons"));
 	stop_button->connect("pressed", this, "_menu_option", make_binds(RUN_STOP));
 	stop_button->set_tooltip(TTR("Stop the scene."));
@@ -6797,7 +6875,6 @@ EditorNode::EditorNode() {
 	play_scene_button = memnew(ToolButton);
 	play_hb->add_child(play_scene_button);
 	play_scene_button->set_toggle_mode(true);
-	play_scene_button->set_focus_mode(Control::FOCUS_NONE);
 	play_scene_button->set_icon(gui_base->get_icon("PlayScene", "EditorIcons"));
 	play_scene_button->connect("pressed", this, "_menu_option", make_binds(RUN_PLAY_SCENE));
 	play_scene_button->set_tooltip(TTR("Play the edited scene."));
@@ -6810,7 +6887,6 @@ EditorNode::EditorNode() {
 	play_custom_scene_button = memnew(ToolButton);
 	play_hb->add_child(play_custom_scene_button);
 	play_custom_scene_button->set_toggle_mode(true);
-	play_custom_scene_button->set_focus_mode(Control::FOCUS_NONE);
 	play_custom_scene_button->set_icon(gui_base->get_icon("PlayCustom", "EditorIcons"));
 	play_custom_scene_button->connect("pressed", this, "_menu_option", make_binds(RUN_PLAY_CUSTOM_SCENE));
 	play_custom_scene_button->set_tooltip(TTR("Play custom scene"));
@@ -6819,6 +6895,19 @@ EditorNode::EditorNode() {
 #else
 	play_custom_scene_button->set_shortcut(ED_SHORTCUT("editor/play_custom_scene", TTR("Play Custom Scene"), KEY_MASK_CMD | KEY_MASK_SHIFT | KEY_F5));
 #endif
+
+	for (int i = 0; i < play_hb->get_child_count(); i++) {
+		ToolButton *btn = Object::cast_to<ToolButton>(play_hb->get_child(i));
+		if (btn) {
+			btn->set_flat(false);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->set_focus_mode(Control::FOCUS_NONE);
+			btn->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+		}
+	}
 
 	HBoxContainer *right_menu_hb = memnew(HBoxContainer);
 	menu_hb->add_child(right_menu_hb);
@@ -6861,30 +6950,18 @@ EditorNode::EditorNode() {
 	right_menu_hb->add_child(button_close);
 	button_close->hide();
 
-	// Toggle for video driver
-	video_driver = memnew(OptionButton);
-	video_driver->set_flat(true);
-	video_driver->set_focus_mode(Control::FOCUS_NONE);
-	video_driver->connect("item_selected", this, "_video_driver_selected");
-	video_driver->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
-	video_driver->hide();
-	right_menu_hb->add_child(video_driver);
-
-	String video_drivers = ProjectSettings::get_singleton()->get_custom_property_info()["rendering/quality/driver/driver_name"].hint_string;
-	String current_video_driver = OS::get_singleton()->get_video_driver_name(OS::get_singleton()->get_current_video_driver());
-	video_driver_current = 0;
-	for (int i = 0; i < video_drivers.get_slice_count(","); i++) {
-		String driver = video_drivers.get_slice(",", i);
-		video_driver->add_item(driver);
-		video_driver->set_item_metadata(i, driver);
-
-		if (current_video_driver == driver) {
-			video_driver->select(i);
-			video_driver_current = i;
+	for (int i = 0; i < right_menu_hb->get_child_count(); i++) {
+		ToolButton *btn = Object::cast_to<ToolButton>(right_menu_hb->get_child(i));
+		if (btn) {
+			btn->set_flat(false);
+			btn->set_icon_align(ToolButton::ALIGN_CENTER);
+			btn->set_focus_mode(Control::FOCUS_NONE);
+			btn->add_style_override("pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_style_override("hover_pressed", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
+			btn->add_color_override("icon_color_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
+			btn->add_color_override("icon_color_hover_pressed", gui_base->get_color("contrast_accent_color", "Editor"));
 		}
 	}
-
-	_update_video_driver_color();
 
 	video_restart_dialog = memnew(ConfirmationDialog);
 	video_restart_dialog->set_text(TTR("Changing the video driver requires restarting the editor."));
@@ -6967,15 +7044,18 @@ EditorNode::EditorNode() {
 
 	// Bottom panels
 
-	bottom_panel = memnew(PanelContainer);
+	bottom_panel = memnew(MarginContainer);
+	bottom_panel->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	center_split->add_child(bottom_panel);
 	center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 
 	bottom_panel_vb = memnew(VBoxContainer);
+	bottom_panel_vb->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	bottom_panel->add_child(bottom_panel_vb);
 
 	bottom_panel_hb = memnew(HBoxContainer);
-	bottom_panel_hb->set_custom_minimum_size(Size2(0, 24 * EDSCALE)); // Adjust for the height of the "Expand Bottom Dock" icon.
+	bottom_panel_hb->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	bottom_panel_hb->set_custom_minimum_size(Size2(0, 28 * EDSCALE)); // Adjust for the height of the "Expand Bottom Dock" icon.
 	bottom_panel_vb->add_child(bottom_panel_hb);
 
 	update_spinner = memnew(MenuButton);
