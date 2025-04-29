@@ -528,7 +528,7 @@ void EditorNode::_notification(int p_what) {
 				ProjectSettings::get_singleton()->save();
 			}
 
-			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
+			_borderless(EditorSettings::get_singleton()->get("interface/miscellaneous/borderless_mode"));
 
 			/* DO NOT LOAD SCENES HERE, WAIT FOR FILE SCANNING AND REIMPORT TO COMPLETE */
 		} break;
@@ -561,7 +561,7 @@ void EditorNode::_notification(int p_what) {
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			scene_tabs->set_tab_close_display_policy((bool(EDITOR_GET("interface/scene_tabs/always_show_close_button")) ? Tabs::CLOSE_BUTTON_SHOW_ACTIVE_ONLY : Tabs::CLOSE_BUTTON_SHOW_NEVER));
-			scene_tabs->set_tab_align(static_cast<Tabs::TabAlign>(EDITOR_GET("interface/scene_tabs/tab_align").operator int()));
+			scene_tabs->set_tab_align(bool(EDITOR_GET("interface/miscellaneous/scene_tabs_centered")) ? Tabs::ALIGN_CENTER : Tabs::ALIGN_LEFT);
 			FileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
 			EditorFileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
 			EditorFileDialog::set_default_display_mode((EditorFileDialog::DisplayMode)EditorSettings::get_singleton()->get("filesystem/file_dialog/display_mode").operator int());
@@ -629,7 +629,7 @@ void EditorNode::_notification(int p_what) {
 			video_driver->add_style_override("normal", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
 			video_driver->add_color_override("font_color", gui_base->get_color("contrast_accent_color", "Editor"));
 			video_driver->add_color_override("font_color_hover", gui_base->get_color("accent_color", "Editor"));
-			video_driver->set_visible(EditorSettings::get_singleton()->get("interface/editor/show_video_driver"));
+			video_driver->set_visible(EditorSettings::get_singleton()->get("interface/miscellaneous/show_video_driver"));
 
 			main_panel->add_style_override("panel", gui_base->get_stylebox("content_dark", "EditorStyles"));
 
@@ -672,7 +672,7 @@ void EditorNode::_notification(int p_what) {
 			p->set_item_icon(p->get_item_index(HELP_ABOUT), gui_base->get_icon("Godot", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SUPPORT_GODOT_DEVELOPMENT), gui_base->get_icon("Heart", "EditorIcons"));
 			_update_update_spinner();
-			_borderless(EditorSettings::get_singleton()->get("interface/editor/borderless_mode"));
+			_borderless(EditorSettings::get_singleton()->get("interface/miscellaneous/borderless_mode"));
 		} break;
 
 		case Control::NOTIFICATION_RESIZED: {
@@ -5977,7 +5977,7 @@ void EditorNode::_borderless(bool p_pressed) {
 	button_borderless->set_pressed(p_pressed);
 	button_close->set_visible(p_pressed && !playing);
 
-	EditorSettings::get_singleton()->set("interface/editor/borderless_mode", p_pressed);
+	EditorSettings::get_singleton()->set("interface/miscellaneous/borderless_mode", p_pressed);
 }
 
 void EditorNode::_bottom_panel_visible(bool p_pressed) {
@@ -6200,11 +6200,8 @@ EditorNode::EditorNode() {
 	EDITOR_DEF("interface/editor/update_vital_only", false);
 #endif
 	EDITOR_DEF("interface/editor/localize_settings", true);
-	EDITOR_DEF("interface/editor/show_video_driver", false);
 	EDITOR_DEF_RST("interface/scene_tabs/restore_scenes_on_load", false);
 	EDITOR_DEF_RST("interface/scene_tabs/show_thumbnail_on_hover", true);
-	EDITOR_DEF("interface/scene_tabs/tab_align", 1);
-	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::INT, "interface/scene_tabs/tab_align", PROPERTY_HINT_ENUM, "Left,Center"));
 	EDITOR_DEF_RST("interface/inspector/default_property_name_style", EditorPropertyNameProcessor::STYLE_CAPITALIZED);
 	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::INT, "interface/inspector/default_property_name_style", PROPERTY_HINT_ENUM, "Raw,Capitalized,Localized"));
 	EDITOR_DEF_RST("interface/inspector/default_float_step", 0.001);
@@ -6772,7 +6769,7 @@ EditorNode::EditorNode() {
 	scene_tabs->add_style_override("tab_bg", gui_base->get_stylebox("SceneTabBG", "EditorStyles"));
 	scene_tabs->set_select_with_rmb(true);
 	scene_tabs->add_tab("unsaved");
-	scene_tabs->set_tab_align(static_cast<Tabs::TabAlign>(EDITOR_GET("interface/scene_tabs/tab_align").operator int()));
+	scene_tabs->set_tab_align(bool(EDITOR_GET("interface/miscellaneous/scene_tabs_centered")) ? Tabs::ALIGN_CENTER : Tabs::ALIGN_LEFT);
 	scene_tabs->set_tab_close_display_policy((bool(EDITOR_DEF("interface/scene_tabs/always_show_close_button", false)) ? Tabs::CLOSE_BUTTON_SHOW_ACTIVE_ONLY : Tabs::CLOSE_BUTTON_SHOW_NEVER));
 	scene_tabs->set_min_width(int(EDITOR_DEF("interface/scene_tabs/minimum_width", 50)) * EDSCALE);
 	scene_tabs->set_drag_to_rearrange_enabled(true);
@@ -6808,7 +6805,7 @@ EditorNode::EditorNode() {
 	video_driver->add_style_override("normal", gui_base->get_stylebox("AccentPanel", "EditorStyles"));
 	video_driver->add_color_override("font_color", gui_base->get_color("contrast_accent_color", "Editor"));
 	video_driver->add_color_override("font_color_hover", gui_base->get_color("accent_color", "Editor"));
-	video_driver->set_visible(EditorSettings::get_singleton()->get("interface/editor/show_video_driver"));
+	video_driver->set_visible(EditorSettings::get_singleton()->get("interface/miscellaneous/show_video_driver"));
 	menu_hb->add_child(video_driver);
 
 	String video_drivers = ProjectSettings::get_singleton()->get_custom_property_info()["rendering/quality/driver/driver_name"].hint_string;

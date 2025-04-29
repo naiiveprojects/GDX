@@ -335,12 +335,19 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	// so this should be used at the user's discretion.
 	hints["interface/editor/unfocused_low_processor_mode_sleep_usec"] = PropertyInfo(Variant::REAL, "interface/editor/unfocused_low_processor_mode_sleep_usec", PROPERTY_HINT_RANGE, "1,1000000,1", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED);
 	_initial_set("interface/editor/separate_distraction_mode", false);
-	_initial_set("interface/editor/borderless_mode", false);
 	_initial_set("interface/editor/automatically_open_screenshots", true);
 	_initial_set("interface/editor/save_each_scene_on_quit", true); // Regression
 	_initial_set("interface/editor/quit_confirmation", true);
 	_initial_set("interface/editor/accept_dialog_cancel_ok_buttons", 0);
 	hints["interface/editor/accept_dialog_cancel_ok_buttons"] = PropertyInfo(Variant::INT, "interface/editor/accept_dialog_cancel_ok_buttons", PROPERTY_HINT_ENUM, vformat("Auto (%s),Cancel First,OK First", OS::get_singleton()->get_swap_ok_cancel() ? "OK First" : "Cancel First"), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED);
+
+	// GDX
+	_initial_set("interface/miscellaneous/borderless_mode", false);
+	_initial_set("interface/miscellaneous/show_video_driver", false);
+	_initial_set("interface/miscellaneous/scene_tabs_centered", true);
+	_initial_set("interface/miscellaneous/2D_editor_tools_view", 1);
+	hints["interface/miscellaneous/2D_editor_tools_view"] = PropertyInfo(Variant::INT, "interface/miscellaneous/2D_editor_tools_view", PROPERTY_HINT_ENUM, "Center,Split,Right,Left");
+	_initial_set("interface/miscellaneous/tab_accent_color", false);
 
 	// Inspector
 	_initial_set("interface/inspector/max_array_dictionary_items_per_page", 20);
@@ -628,8 +635,6 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/2d/simple_panning", false);
 	_initial_set("editors/2d/scroll_to_pan", false);
 	_initial_set("editors/2d/pan_speed", 20);
-	_initial_set("editors/2d/editor_tools_view", 0);
-	hints["editors/2d/editor_tools_view"] = PropertyInfo(Variant::INT, "editors/2d/editor_tools_view", PROPERTY_HINT_ENUM, "Center,Split,Right,Left");
 
 	// Polygon editor
 	_initial_set("editors/poly_editor/point_grab_radius", has_touchscreen_ui ? 32 : 8);
