@@ -665,11 +665,10 @@ void EditorNode::_notification(int p_what) {
 			p->set_item_icon(p->get_item_index(HELP_SEARCH), gui_base->get_icon("HelpSearch", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_DOCS), gui_base->get_icon("ExternalLink", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_QA), gui_base->get_icon("ExternalLink", "EditorIcons"));
-			p->set_item_icon(p->get_item_index(HELP_COMMUNITY), gui_base->get_icon("ExternalLink", "EditorIcons"));
-			p->set_item_icon(p->get_item_index(HELP_COPY_SYSTEM_INFO), gui_base->get_icon("ActionCopy", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_REPORT_A_BUG), gui_base->get_icon("ExternalLink", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SUGGEST_A_FEATURE), gui_base->get_icon("ExternalLink", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SEND_DOCS_FEEDBACK), gui_base->get_icon("ExternalLink", "EditorIcons"));
+			p->set_item_icon(p->get_item_index(HELP_COMMUNITY), gui_base->get_icon("ExternalLink", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_ABOUT), gui_base->get_icon("Godot", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SUPPORT_GODOT_DEVELOPMENT), gui_base->get_icon("Heart", "EditorIcons"));
 			_update_update_spinner();
@@ -2970,13 +2969,6 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		case HELP_QA: {
 			OS::get_singleton()->shell_open("https://godotengine.org/qa/");
 		} break;
-		case HELP_COMMUNITY: {
-			OS::get_singleton()->shell_open("https://godotengine.org/community");
-		} break;
-		case HELP_COPY_SYSTEM_INFO: {
-			String info = _get_system_info();
-			OS::get_singleton()->set_clipboard(info);
-		} break;
 		case HELP_REPORT_A_BUG: {
 			OS::get_singleton()->shell_open("https://github.com/godotengine/godot/issues");
 		} break;
@@ -2985,6 +2977,9 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		} break;
 		case HELP_SEND_DOCS_FEEDBACK: {
 			OS::get_singleton()->shell_open("https://github.com/godotengine/godot-docs/issues");
+		} break;
+		case HELP_COMMUNITY: {
+			OS::get_singleton()->shell_open("https://godotengine.org/community");
 		} break;
 		case HELP_ABOUT: {
 			about->popup_centered_minsize(Size2(780, 500) * EDSCALE);
@@ -4358,33 +4353,6 @@ void EditorNode::show_warning(const String &p_text, const String &p_title) {
 
 void EditorNode::_copy_warning(const String &p_str) {
 	OS::get_singleton()->set_clipboard(warning->get_text());
-}
-
-String EditorNode::_get_system_info() {
-	String engine = String(VERSION_FULL_NAME);
-	String hash = String(VERSION_HASH);
-	hash = hash.empty() ? String(" [unknown]") : vformat(" [%s]", hash.left(9));
-	engine += hash;
-
-	String os = OS::get_singleton()->get_name();
-
-	String screen = itos(OS::get_singleton()->get_screen_count());
-	screen += (OS::get_singleton()->get_screen_count() > 1) ? String(" monitors") : String(" monitor");
-	String video_driver = OS::get_singleton()->get_video_driver_name(OS::get_singleton()->get_current_video_driver());
-	String video_adapter = VisualServer::get_singleton()->get_video_adapter_name();
-
-	String processor = OS::get_singleton()->get_processor_name();
-	processor += vformat(" (%s threads)", OS::get_singleton()->get_processor_count());
-
-	Vector<String> info;
-	info.push_back(engine);
-	info.push_back(os);
-	info.push_back(screen);
-	info.push_back(video_driver);
-	info.push_back(video_adapter);
-	info.push_back(processor);
-
-	return String(" - ").join(info);
 }
 
 void EditorNode::_dock_select_input(const Ref<InputEvent> &p_input) {
@@ -5872,7 +5840,6 @@ void EditorNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_inherit_imported"), &EditorNode::_inherit_imported);
 
 	ClassDB::bind_method("_copy_warning", &EditorNode::_copy_warning);
-	ClassDB::bind_method("_get_system_info", &EditorNode::_get_system_info);
 
 	ClassDB::bind_method(D_METHOD("_resources_reimported"), &EditorNode::_resources_reimported);
 	ClassDB::bind_method(D_METHOD("_bottom_panel_raise_toggled"), &EditorNode::_bottom_panel_raise_toggled);
@@ -6732,12 +6699,10 @@ EditorNode::EditorNode() {
 	p->add_separator();
 	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/online_docs", TTR("Online Documentation")), HELP_DOCS);
 	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/q&a", TTR("Questions & Answers")), HELP_QA);
-	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/community", TTR("Community")), HELP_COMMUNITY);
-	p->add_separator();
-	p->add_icon_shortcut(gui_base->get_icon("ActionCopy", "EditorIcons"), ED_SHORTCUT("editor/copy_system_info", TTR("Copy System Info")), HELP_COPY_SYSTEM_INFO);
 	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/report_a_bug", TTR("Report a Bug")), HELP_REPORT_A_BUG);
 	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/suggest_a_feature", TTR("Suggest a Feature")), HELP_SUGGEST_A_FEATURE);
 	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/send_docs_feedback", TTR("Send Docs Feedback")), HELP_SEND_DOCS_FEEDBACK);
+	p->add_icon_shortcut(gui_base->get_icon("ExternalLink", "EditorIcons"), ED_SHORTCUT("editor/community", TTR("Community")), HELP_COMMUNITY);
 	p->add_separator();
 	p->add_icon_shortcut(gui_base->get_icon("Godot", "EditorIcons"), ED_SHORTCUT("editor/about", TTR("About Godot")), HELP_ABOUT);
 	p->add_icon_shortcut(gui_base->get_icon("Heart", "EditorIcons"), ED_SHORTCUT("editor/support_development", TTR("Support Godot Development")), HELP_SUPPORT_GODOT_DEVELOPMENT);
