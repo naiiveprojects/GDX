@@ -316,12 +316,14 @@ void Button::set_icon(const Ref<Texture> &p_icon) {
 	if (icon == p_icon) {
 		return;
 	}
-	if (icon.is_valid()) {
+	if (icon.is_valid() && icon->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
 		icon->disconnect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
 	}
 	icon = p_icon;
 	if (icon.is_valid()) {
-		icon->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		if (!icon->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
+			icon->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		}
 	}
 	update();
 	_change_notify("icon");
@@ -336,12 +338,14 @@ void Button::set_icon_pressed(const Ref<Texture> &p_icon_pressed) {
 	if (icon_pressed == p_icon_pressed) {
 		return;
 	}
-	if (icon_pressed.is_valid()) {
+	if (icon_pressed.is_valid() && icon_pressed->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
 		icon_pressed->disconnect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
 	}
 	icon_pressed = p_icon_pressed;
 	if (icon_pressed.is_valid()) {
-		icon_pressed->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		if (!icon_pressed->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
+			icon_pressed->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		}
 	}
 	update();
 	_change_notify("icon_pressed");
