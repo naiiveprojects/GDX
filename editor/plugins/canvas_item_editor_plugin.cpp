@@ -5980,6 +5980,7 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	Control *space_right = memnew(Control);
 	space_right->set_name("SpaceRight");
 	space_right->set_h_size_flags(SIZE_EXPAND_FILL);
+	space_right->set_mouse_filter(MOUSE_FILTER_IGNORE);
 	main_menu_hbox->add_child(space_right);
 
 	viewport = memnew(CanvasItemEditorViewport(p_editor, this));
@@ -6251,6 +6252,12 @@ CanvasItemEditor::CanvasItemEditor(EditorNode *p_editor) {
 	space_left->set_name("SpaceLeft");
 	space_left->set_h_size_flags(SIZE_EXPAND_FILL);
 	main_menu_hbox->add_child(space_left);
+
+	for (int i = 0; i < main_menu_hbox->get_child_count(); ++i) {
+		if (Object::cast_to<Control>(main_menu_hbox->get_child(i))) {
+			Object::cast_to<Control>(main_menu_hbox->get_child(i))->set_mouse_filter(MOUSE_FILTER_IGNORE);
+		}
+	}
 
 	zoom_hb = memnew(HBoxContainer);
 	// Bring the zoom percentage closer to the zoom buttons

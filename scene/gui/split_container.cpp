@@ -215,12 +215,14 @@ void SplitContainer::_gui_input(const Ref<InputEvent> &p_event) {
 						dragging = true;
 						drag_from = mb->get_position().y;
 						drag_ofs = split_offset;
+						mouse_inside = false;
 					}
 				} else {
 					if (mb->get_position().x >= (center - drag_area) && mb->get_position().x <= (center + drag_area)) {
 						dragging = true;
 						drag_from = mb->get_position().x;
 						drag_ofs = split_offset;
+						mouse_inside = false;
 					}
 				}
 			} else {
@@ -235,17 +237,20 @@ void SplitContainer::_gui_input(const Ref<InputEvent> &p_event) {
 		const int drag_area = get_constant("drag_area");
 		const int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? get_constant("separation") : 0;
 		const int center = middle_sep + sep / 2;
-		bool mouse_inside_state = false;
-		if (vertical) {
-			mouse_inside_state = mm->get_position().y >= (center - drag_area) && mm->get_position().y <= (center + drag_area);
-		} else {
-			mouse_inside_state = mm->get_position().x >= (center - drag_area) && mm->get_position().x <= (center + drag_area);
-		}
 
-		if (mouse_inside != mouse_inside_state) {
-			mouse_inside = mouse_inside_state;
-			if (get_constant("autohide")) {
-				update();
+		if (!dragging) {
+			bool mouse_inside_state = false;
+			if (vertical) {
+				mouse_inside_state = mm->get_position().y >= (center - drag_area) && mm->get_position().y <= (center + drag_area);
+			} else {
+				mouse_inside_state = mm->get_position().x >= (center - drag_area) && mm->get_position().x <= (center + drag_area);
+			}
+
+			if (mouse_inside != mouse_inside_state) {
+				mouse_inside = mouse_inside_state;
+				if (get_constant("autohide")) {
+					update();
+				}
 			}
 		}
 

@@ -1128,8 +1128,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	theme->set_constant("separation", "HSplitContainer", default_margin_size * EDSCALE);
 	theme->set_constant("separation", "VSplitContainer", default_margin_size * EDSCALE);
-	theme->set_constant("drag_area", "HSplitContainer", default_margin_size * 4 * EDSCALE);
-	theme->set_constant("drag_area", "VSplitContainer", default_margin_size * 4 * EDSCALE);
+	theme->set_constant("drag_area", "HSplitContainer", default_margin_size * 2 * EDSCALE);
+	theme->set_constant("drag_area", "VSplitContainer", default_margin_size * 2 * EDSCALE);
 
 	// Containers
 	theme->set_constant("separation", "BoxContainer", default_margin_size * EDSCALE);
@@ -1445,6 +1445,11 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_icon("code", "ColorPicker", theme->get_icon("Script", "EditorIcons"));
 
 	theme->set_icon("bg", "ColorPickerButton", theme->get_icon("GuiMiniCheckerboard", "EditorIcons"));
+	theme->set_stylebox("normal", "ColorPickerButton", style_content_panel_vp);
+	theme->set_stylebox("pressed", "ColorPickerButton", style_content_panel_vp);
+	theme->set_stylebox("hover", "ColorPickerButton", style_content_panel_vp);
+	theme->set_stylebox("disabled", "ColorPickerButton", style_content_panel_vp);
+	theme->set_stylebox("focus", "ColorPickerButton", style_content_panel_vp);
 
 	// ColorPresetButton
 	Ref<StyleBoxFlat> preset_sb = make_flat_stylebox(Color(1, 1, 1), 2, 2, 2, 2);
