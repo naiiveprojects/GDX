@@ -202,10 +202,11 @@ private:
 		HELP_SEARCH,
 		HELP_DOCS,
 		HELP_QA,
+		HELP_COMMUNITY,
+		HELP_COPY_SYSTEM_INFO,
 		HELP_REPORT_A_BUG,
 		HELP_SUGGEST_A_FEATURE,
 		HELP_SEND_DOCS_FEEDBACK,
-		HELP_COMMUNITY,
 		HELP_ABOUT,
 		HELP_SUPPORT_GODOT_DEVELOPMENT,
 
@@ -477,6 +478,7 @@ private:
 	void _save_screenshot(NodePath p_path);
 	void _borderless(bool p_pressed);
 	void _bottom_panel_visible(bool p_pressed);
+	String _get_system_info();
 
 	void _tool_menu_option(int p_idx);
 	void _update_debug_options();
