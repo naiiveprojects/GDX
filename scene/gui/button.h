@@ -48,6 +48,7 @@ private:
 	String text;
 	String xl_text;
 	Ref<Texture> icon;
+	Ref<Texture> icon_pressed;
 	bool expand_icon;
 	bool clip_text;
 	TextAlign align;
@@ -69,6 +70,9 @@ public:
 
 	void set_icon(const Ref<Texture> &p_icon);
 	Ref<Texture> get_icon() const;
+
+	void set_icon_pressed(const Ref<Texture> &p_icon_pressed);
+	Ref<Texture> get_icon_pressed() const;
 
 	void set_expand_icon(bool p_expand_icon);
 	bool is_expand_icon() const;

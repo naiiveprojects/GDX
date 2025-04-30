@@ -40,25 +40,38 @@ Size2 Button::get_minimum_size() const {
 		minsize.width = 0;
 	}
 
-	if (!expand_icon) {
-		Ref<Texture> _icon;
-		if (icon.is_null() && has_icon("icon")) {
-			_icon = Control::get_icon("icon");
+	Ref<Texture> normal_icon;
+	if (icon.is_null() && has_icon("icon")) {
+		normal_icon = Control::get_icon("icon");
+	} else {
+		normal_icon = icon;
+	}
+
+	Ref<Texture> pressed_icon = icon_pressed;
+
+	Ref<Texture> _icon = normal_icon;
+	if (normal_icon.is_valid() && pressed_icon.is_valid()) {
+		if (normal_icon->get_width() >= pressed_icon->get_width() && normal_icon->get_height() >= pressed_icon->get_height()) {
+			_icon = normal_icon;
 		} else {
-			_icon = icon;
+			_icon = pressed_icon;
 		}
+	} else if (normal_icon.is_valid()) {
+		_icon = normal_icon;
+	} else if (pressed_icon.is_valid()) {
+		_icon = pressed_icon;
+	}
 
-		if (!_icon.is_null()) {
-			minsize.height = MAX(minsize.height, _icon->get_height());
+	if (!expand_icon && !_icon.is_null()) {
+		minsize.height = MAX(minsize.height, _icon->get_height());
 
-			if (icon_align != ALIGN_CENTER) {
-				minsize.width += _icon->get_width();
-				if (xl_text != "") {
-					minsize.width += get_constant("hseparation");
-				}
-			} else {
-				minsize.width = MAX(minsize.width, _icon->get_width());
+		if (icon_align != ALIGN_CENTER) {
+			minsize.width += _icon->get_width();
+			if (!xl_text.empty()) {
+				minsize.width += get_constant("hseparation");
 			}
+		} else {
+			minsize.width = MAX(minsize.width, _icon->get_width());
 		}
 	}
 
@@ -81,6 +94,7 @@ void Button::_notification(int p_what) {
 			Size2 size = get_size();
 			Color color;
 			Color color_icon(1, 1, 1, 1);
+			bool use_pressed_icon = false;
 
 			Ref<StyleBox> style = get_stylebox("normal");
 
@@ -120,6 +134,7 @@ void Button::_notification(int p_what) {
 						if (has_color("icon_color_hover_pressed")) {
 							color_icon = get_color("icon_color_hover_pressed");
 						}
+						use_pressed_icon = icon_pressed.is_valid();
 
 						break;
 					}
@@ -138,6 +153,7 @@ void Button::_notification(int p_what) {
 					if (has_color("icon_color_pressed")) {
 						color_icon = get_color("icon_color_pressed");
 					}
+					use_pressed_icon = icon_pressed.is_valid();
 
 				} break;
 				case DRAW_HOVER: {
@@ -172,7 +188,9 @@ void Button::_notification(int p_what) {
 
 			Ref<Font> font = get_font("font");
 			Ref<Texture> _icon;
-			if (icon.is_null() && has_icon("icon")) {
+			if (use_pressed_icon) {
+				_icon = icon_pressed;
+			} else if (icon.is_null() && has_icon("icon")) {
 				_icon = Control::get_icon("icon");
 			} else {
 				_icon = icon;
@@ -311,12 +329,14 @@ void Button::set_icon(const Ref<Texture> &p_icon) {
 	if (icon == p_icon) {
 		return;
 	}
-	if (icon.is_valid()) {
+	if (icon.is_valid() && icon->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
 		icon->disconnect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
 	}
 	icon = p_icon;
 	if (icon.is_valid()) {
-		icon->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		if (!icon->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
+			icon->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		}
 	}
 	update();
 	_change_notify("icon");
@@ -325,6 +345,28 @@ void Button::set_icon(const Ref<Texture> &p_icon) {
 
 Ref<Texture> Button::get_icon() const {
 	return icon;
+}
+
+void Button::set_icon_pressed(const Ref<Texture> &p_icon_pressed) {
+	if (icon_pressed == p_icon_pressed) {
+		return;
+	}
+	if (icon_pressed.is_valid() && icon_pressed->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
+		icon_pressed->disconnect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+	}
+	icon_pressed = p_icon_pressed;
+	if (icon_pressed.is_valid()) {
+		if (!icon_pressed->is_connected(SceneStringNames::get_singleton()->changed, this, "_texture_changed")) {
+			icon_pressed->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+		}
+	}
+	update();
+	_change_notify("icon_pressed");
+	minimum_size_changed();
+}
+
+Ref<Texture> Button::get_icon_pressed() const {
+	return icon_pressed;
 }
 
 void Button::_texture_changed() {
@@ -386,6 +428,8 @@ void Button::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_text"), &Button::get_text);
 	ClassDB::bind_method(D_METHOD("set_button_icon", "texture"), &Button::set_icon);
 	ClassDB::bind_method(D_METHOD("get_button_icon"), &Button::get_icon);
+	ClassDB::bind_method(D_METHOD("set_button_icon_pressed", "texture"), &Button::set_icon_pressed);
+	ClassDB::bind_method(D_METHOD("get_button_icon_pressed"), &Button::get_icon_pressed);
 	ClassDB::bind_method(D_METHOD("set_flat", "enabled"), &Button::set_flat);
 	ClassDB::bind_method(D_METHOD("is_flat"), &Button::is_flat);
 	ClassDB::bind_method(D_METHOD("set_clip_text", "enabled"), &Button::set_clip_text);
@@ -405,6 +449,7 @@ void Button::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_DEFAULT_INTL), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_button_icon", "get_button_icon");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_button_icon_pressed", "get_button_icon_pressed");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "clip_text"), "set_clip_text", "get_clip_text");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "align", PROPERTY_HINT_ENUM, "Left,Center,Right"), "set_text_align", "get_text_align");
