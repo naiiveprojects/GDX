@@ -81,6 +81,7 @@ void Button::_notification(int p_what) {
 			Size2 size = get_size();
 			Color color;
 			Color color_icon(1, 1, 1, 1);
+			bool use_pressed_icon = false;
 
 			Ref<StyleBox> style = get_stylebox("normal");
 
@@ -120,6 +121,7 @@ void Button::_notification(int p_what) {
 						if (has_color("icon_color_hover_pressed")) {
 							color_icon = get_color("icon_color_hover_pressed");
 						}
+						use_pressed_icon = icon_pressed.is_valid();
 
 						break;
 					}
@@ -138,6 +140,7 @@ void Button::_notification(int p_what) {
 					if (has_color("icon_color_pressed")) {
 						color_icon = get_color("icon_color_pressed");
 					}
+					use_pressed_icon = icon_pressed.is_valid();
 
 				} break;
 				case DRAW_HOVER: {
@@ -172,13 +175,6 @@ void Button::_notification(int p_what) {
 
 			Ref<Font> font = get_font("font");
 			Ref<Texture> _icon;
-			bool use_pressed_icon = false;
-			switch (get_draw_mode()) {
-				case DRAW_PRESSED:
-				case DRAW_HOVER_PRESSED:
-					use_pressed_icon = icon_pressed.is_valid();
-					break;
-			}
 			if (use_pressed_icon) {
 				_icon = icon_pressed;
 			} else if (icon.is_null() && has_icon("icon")) {
