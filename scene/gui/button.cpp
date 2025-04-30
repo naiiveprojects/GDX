@@ -40,25 +40,38 @@ Size2 Button::get_minimum_size() const {
 		minsize.width = 0;
 	}
 
-	if (!expand_icon) {
-		Ref<Texture> _icon;
-		if (icon.is_null() && has_icon("icon")) {
-			_icon = Control::get_icon("icon");
+	Ref<Texture> normal_icon;
+	if (icon.is_null() && has_icon("icon")) {
+		normal_icon = Control::get_icon("icon");
+	} else {
+		normal_icon = icon;
+	}
+
+	Ref<Texture> pressed_icon = icon_pressed;
+
+	Ref<Texture> _icon = normal_icon;
+	if (normal_icon.is_valid() && pressed_icon.is_valid()) {
+		if (normal_icon->get_width() >= pressed_icon->get_width() && normal_icon->get_height() >= pressed_icon->get_height()) {
+			_icon = normal_icon;
 		} else {
-			_icon = icon;
+			_icon = pressed_icon;
 		}
+	} else if (normal_icon.is_valid()) {
+		_icon = normal_icon;
+	} else if (pressed_icon.is_valid()) {
+		_icon = pressed_icon;
+	}
 
-		if (!_icon.is_null()) {
-			minsize.height = MAX(minsize.height, _icon->get_height());
+	if (!expand_icon && !_icon.is_null()) {
+		minsize.height = MAX(minsize.height, _icon->get_height());
 
-			if (icon_align != ALIGN_CENTER) {
-				minsize.width += _icon->get_width();
-				if (xl_text != "") {
-					minsize.width += get_constant("hseparation");
-				}
-			} else {
-				minsize.width = MAX(minsize.width, _icon->get_width());
+		if (icon_align != ALIGN_CENTER) {
+			minsize.width += _icon->get_width();
+			if (!xl_text.empty()) {
+				minsize.width += get_constant("hseparation");
 			}
+		} else {
+			minsize.width = MAX(minsize.width, _icon->get_width());
 		}
 	}
 
