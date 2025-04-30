@@ -344,10 +344,12 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	// GDX
 	_initial_set("interface/miscellaneous/borderless_mode", false);
 	_initial_set("interface/miscellaneous/show_video_driver", false);
-	_initial_set("interface/miscellaneous/scene_tabs_centered", true);
+	_initial_set("interface/miscellaneous/tab_accent_color", false);
+	_initial_set("interface/miscellaneous/scene_tabs_centered", false);
 	_initial_set("interface/miscellaneous/2D_editor_tools_view", 1);
 	hints["interface/miscellaneous/2D_editor_tools_view"] = PropertyInfo(Variant::INT, "interface/miscellaneous/2D_editor_tools_view", PROPERTY_HINT_ENUM, "Center,Split,Right,Left");
-	_initial_set("interface/miscellaneous/tab_accent_color", false);
+	_initial_set("interface/miscellaneous/bottom_dock_align", 0);
+	hints["interface/miscellaneous/bottom_dock_align"] = PropertyInfo(Variant::INT, "interface/miscellaneous/bottom_dock_align", PROPERTY_HINT_ENUM, vformat("Left,Center,Right"), PROPERTY_USAGE_DEFAULT);
 
 	// Inspector
 	_initial_set("interface/inspector/max_array_dictionary_items_per_page", 20);

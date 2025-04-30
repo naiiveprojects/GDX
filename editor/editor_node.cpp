@@ -591,6 +591,7 @@ void EditorNode::_notification(int p_what) {
 				stop_button,
 				distraction_free,
 				button_borderless,
+				button_panel_bottom,
 				button_close,
 			};
 			for (ToolButton *btn : tool_buttons) {
@@ -672,7 +673,20 @@ void EditorNode::_notification(int p_what) {
 			p->set_item_icon(p->get_item_index(HELP_ABOUT), gui_base->get_icon("Godot", "EditorIcons"));
 			p->set_item_icon(p->get_item_index(HELP_SUPPORT_GODOT_DEVELOPMENT), gui_base->get_icon("Heart", "EditorIcons"));
 			_update_update_spinner();
+
 			_borderless(EditorSettings::get_singleton()->get("interface/miscellaneous/borderless_mode"));
+
+			bottom_panel_hb_editors->set_alignment((BoxContainer::AlignMode)(int)EditorSettings::get_singleton()->get("interface/miscellaneous/bottom_dock_align"));
+			for (int i = 0; i < bottom_panel_hb_editors->get_child_count(); i++) {
+				ToolButton *tb = Object::cast_to<ToolButton>(bottom_panel_hb_editors->get_child(i));
+				if (tb) {
+					tb->add_style_override("pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
+					tb->add_style_override("hover_pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
+					tb->add_style_override("normal", gui_base->get_stylebox("EmptyPanel", "EditorStyles"));
+					tb->add_color_override("icon_color_hover_pressed", gui_base->get_color("mono_color", "Editor"));
+					tb->add_color_override("icon_color_pressed", gui_base->get_color("mono_color", "Editor"));
+				}
+			}
 		} break;
 
 		case Control::NOTIFICATION_RESIZED: {
@@ -5179,10 +5193,10 @@ ToolButton *EditorNode::add_bottom_panel_item(String p_text, Control *p_item) {
 	tb->set_focus_mode(Control::FOCUS_NONE);
 	tb->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	tb->set_flat(false);
+	tb->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
 	tb->add_style_override("pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
 	tb->add_style_override("hover_pressed", gui_base->get_stylebox("AccentAlphaPanel", "EditorStyles"));
 	tb->add_style_override("normal", gui_base->get_stylebox("EmptyPanel", "EditorStyles"));
-	tb->add_font_override("font", gui_base->get_font("bold", "EditorFonts"));
 	tb->add_color_override("icon_color_hover_pressed", gui_base->get_color("mono_color", "Editor"));
 	tb->add_color_override("icon_color_pressed", gui_base->get_color("mono_color", "Editor"));
 	bottom_panel_vb->add_child(p_item);
@@ -5275,6 +5289,7 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 			bottom_panel_items[i].control->set_visible(i == p_idx);
 		}
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_VISIBLE);
+		bottom_panel->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 		center_split->set_collapsed(false);
 		if (bottom_panel_raise->is_pressed()) {
 			top_split->hide();
@@ -5285,6 +5300,7 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 		bottom_panel_items[p_idx].button->set_pressed(false);
 		bottom_panel_items[p_idx].control->set_visible(false);
 		center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
+		bottom_panel->set_v_size_flags(Control::SIZE_SHRINK_END);
 		center_split->set_collapsed(true);
 		bottom_panel_raise->set_disabled(true);
 		if (bottom_panel_raise->is_pressed()) {
@@ -6069,7 +6085,7 @@ EditorNode::EditorNode() {
 	}
 
 	// Define a minimum window size to prevent UI elements from overlapping or being cut off
-	OS::get_singleton()->set_min_window_size(Size2(1024, 600) * EDSCALE);
+	OS::get_singleton()->set_min_window_size(Size2(512, 128) * EDSCALE);
 
 	FileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
 	EditorFileDialog::set_default_show_hidden_files(EditorSettings::get_singleton()->get("filesystem/file_dialog/show_hidden_files"));
@@ -7043,6 +7059,8 @@ EditorNode::EditorNode() {
 
 	bottom_panel = memnew(MarginContainer);
 	bottom_panel->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	bottom_panel->set_v_size_flags(Control::SIZE_SHRINK_END);
+	bottom_panel->set_stretch_ratio(0);
 	center_split->add_child(bottom_panel);
 	center_split->set_dragger_visibility(SplitContainer::DRAGGER_HIDDEN);
 
@@ -7068,8 +7086,9 @@ EditorNode::EditorNode() {
 	_update_update_spinner();
 
 	bottom_panel_hb_editors = memnew(HBoxContainer);
-	bottom_panel_hb_editors->set_h_size_flags(6);
 	bottom_panel_hb->add_child(bottom_panel_hb_editors);
+	bottom_panel_hb_editors->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	bottom_panel_hb_editors->set_alignment((BoxContainer::AlignMode)(int)EditorSettings::get_singleton()->get("interface/miscellaneous/bottom_dock_align"));
 
 	bottom_panel_raise = memnew(ToolButton);
 	bottom_panel_raise->set_icon(gui_base->get_icon("ExpandBottomDock", "EditorIcons"));
