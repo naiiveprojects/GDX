@@ -43,6 +43,9 @@
 			Button's icon, if text is present the icon will be placed before the text.
 			To edit margin and spacing of the icon, use [code]hseparation[/code] theme property of [Button] and [code]content_margin_*[/code] properties of the used [StyleBox]es.
 		</member>
+		<member name="icon_pressed" type="Texture" setter="set_button_icon_pressed" getter="get_button_icon_pressed">
+			Texture to display only when the button is pressed.
+		</member>
 		<member name="icon_align" type="int" setter="set_icon_align" getter="get_icon_align" enum="Button.TextAlign" default="0">
 			Specifies if the icon should be aligned to the left, right, or center of a button. Uses the same [enum TextAlign] constants as the text alignment. If centered, text will draw on top of the icon.
 		</member>

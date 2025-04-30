@@ -172,7 +172,16 @@ void Button::_notification(int p_what) {
 
 			Ref<Font> font = get_font("font");
 			Ref<Texture> _icon;
-			if (icon.is_null() && has_icon("icon")) {
+			bool use_pressed_icon = false;
+			switch (get_draw_mode()) {
+				case DRAW_PRESSED:
+				case DRAW_HOVER_PRESSED:
+					use_pressed_icon = icon_pressed.is_valid();
+					break;
+			}
+			if (use_pressed_icon) {
+				_icon = icon_pressed;
+			} else if (icon.is_null() && has_icon("icon")) {
 				_icon = Control::get_icon("icon");
 			} else {
 				_icon = icon;
@@ -327,6 +336,26 @@ Ref<Texture> Button::get_icon() const {
 	return icon;
 }
 
+void Button::set_icon_pressed(const Ref<Texture> &p_icon_pressed) {
+	if (icon_pressed == p_icon_pressed) {
+		return;
+	}
+	if (icon_pressed.is_valid()) {
+		icon_pressed->disconnect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+	}
+	icon_pressed = p_icon_pressed;
+	if (icon_pressed.is_valid()) {
+		icon_pressed->connect(SceneStringNames::get_singleton()->changed, this, "_texture_changed");
+	}
+	update();
+	_change_notify("icon_pressed");
+	minimum_size_changed();
+}
+
+Ref<Texture> Button::get_icon_pressed() const {
+	return icon_pressed;
+}
+
 void Button::_texture_changed() {
 	update();
 	minimum_size_changed();
@@ -386,6 +415,8 @@ void Button::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_text"), &Button::get_text);
 	ClassDB::bind_method(D_METHOD("set_button_icon", "texture"), &Button::set_icon);
 	ClassDB::bind_method(D_METHOD("get_button_icon"), &Button::get_icon);
+	ClassDB::bind_method(D_METHOD("set_button_icon_pressed", "texture"), &Button::set_icon_pressed);
+	ClassDB::bind_method(D_METHOD("get_button_icon_pressed"), &Button::get_icon_pressed);
 	ClassDB::bind_method(D_METHOD("set_flat", "enabled"), &Button::set_flat);
 	ClassDB::bind_method(D_METHOD("is_flat"), &Button::is_flat);
 	ClassDB::bind_method(D_METHOD("set_clip_text", "enabled"), &Button::set_clip_text);
@@ -405,6 +436,7 @@ void Button::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_DEFAULT_INTL), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_button_icon", "get_button_icon");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_button_icon_pressed", "get_button_icon_pressed");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "clip_text"), "set_clip_text", "get_clip_text");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "align", PROPERTY_HINT_ENUM, "Left,Center,Right"), "set_text_align", "get_text_align");
