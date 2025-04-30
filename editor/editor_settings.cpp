@@ -424,6 +424,8 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 
 	// SceneTree
 	_initial_set("docks/scene_tree/start_create_dialog_fully_expanded", false);
+	_initial_set("docks/scene_tree/draw_relationship_lines", 0);
+	_initial_set("docks/scene_tree/relationship_line_color", 0);
 
 	// FileSystem
 	_initial_set("docks/filesystem/thumbnail_size", 64);
@@ -479,7 +481,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("text_editor/appearance/show_info_gutter", true);
 	_initial_set("text_editor/appearance/code_folding", true);
 	_initial_set("text_editor/appearance/word_wrap", true);
-	_initial_set("text_editor/appearance/show_line_length_guidelines", true);
+	_initial_set("text_editor/appearance/show_line_length_guidelines", false);
 	_initial_set("text_editor/appearance/line_length_guideline_soft_column", 80);
 	hints["text_editor/appearance/line_length_guideline_soft_column"] = PropertyInfo(Variant::INT, "text_editor/appearance/line_length_guideline_soft_column", PROPERTY_HINT_RANGE, "20, 160, 1");
 	_initial_set("text_editor/appearance/line_length_guideline_hard_column", 100);
