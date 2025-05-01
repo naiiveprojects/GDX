@@ -1,5 +1,7 @@
 # GDX Changelogs
 
+<img src="rdm_features.png" width=100%>
+
 All notable changes to this project will be documented in this file. refer to the linked Pull Requests (PRs) For more information / documentation.
 
 ## Added

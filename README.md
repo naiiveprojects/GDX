@@ -64,4 +64,4 @@ We appreciate contributions!
   - Please provide a clear explanation of the changes, as this can help resolving potential merge conflicts in the future.
   - For substantial changes or new features, its recommended to include relevant documentation directly within the PR description.
 
-<center><img src="thirdparty/gdx/icon_white.png" width="32"></center>
+<img src="thirdparty/gdx/icon_white.png" width="32">
