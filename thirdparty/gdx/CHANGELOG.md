@@ -1,8 +1,10 @@
 # GDX Changelogs
 
+All notable changes to this project will be documented in this file.
+
 <img src="rdm_features.png" width=100%>
 
-All notable changes to this project will be documented in this file. refer to the linked Pull Requests (PRs) For more information / documentation.
+please refer to the linked Pull Requests (PRs) For more information / documentation.
 
 ## Added
 
@@ -12,6 +14,7 @@ All notable changes to this project will be documented in this file. refer to th
   - MiniZip https://github.com/naiiveprojects/GDX/pull/70
 - Node
   - `Node` Backport 4.x Pause Mode https://github.com/naiiveprojects/GDX/pull/88
+  - `Button` Add icon_pressed option https://github.com/naiiveprojects/GDX/pull/127
   - `ProgressBar` Fill Direction https://github.com/naiiveprojects/GDX/pull/67
   - `AudioStreamPlayer` Control Left and Right Volume https://github.com/naiiveprojects/GDX/pull/68
   - `TextEdit` Code completion filter https://github.com/naiiveprojects/GDX/pull/84
@@ -19,14 +22,15 @@ All notable changes to this project will be documented in this file. refer to th
   - `TabContainer` Add Icon color properties https://github.com/naiiveprojects/GDX/pull/121
 - Editor https://github.com/naiiveprojects/GDX/pull/123
   - Borderless mode https://github.com/naiiveprojects/GDX/pull/77 https://github.com/naiiveprojects/GDX/pull/106 https://github.com/naiiveprojects/GDX/pull/111
-  - Bottom panel visibility option https://github.com/naiiveprojects/GDX/pull/77
-  - Dock Icons https://github.com/naiiveprojects/GDX/pull/77
+  - `Dock` Icons https://github.com/naiiveprojects/GDX/pull/77
+  - `BottomDock`
+    - Add Align setting https://github.com/naiiveprojects/GDX/pull/125
+    - Visibility toggle https://github.com/naiiveprojects/GDX/pull/77
   - `SceneTree` NodePath export hint https://github.com/naiiveprojects/GDX/pull/87
   - `FileSystem` Bottom Dock https://github.com/naiiveprojects/GDX/pull/75
   - `CanvasItemEditor` ( 2D ) Collapse tool menu into the viewport https://github.com/naiiveprojects/GDX/pull/74 https://github.com/naiiveprojects/GDX/pull/119
   - Corner Radius Setting https://github.com/naiiveprojects/GDX/pull/107
-  - Editor scene tab align setting https://github.com/naiiveprojects/GDX/pull/114
-  - Copy System Info on Editor help menu https://github.com/naiiveprojects/GDX/pull/109
+  - `SceneTabs` align setting https://github.com/naiiveprojects/GDX/pull/114
   - `ScriptEditor`
     - `ScriptList` Dock https://github.com/naiiveprojects/GDX/pull/73
     - Open valid URI https://github.com/naiiveprojects/GDX/pull/86
@@ -48,7 +52,7 @@ All notable changes to this project will be documented in this file. refer to th
 - Node
   - Revamp color picker https://github.com/naiiveprojects/GDX/pull/108
 - Main
-  - default settings https://github.com/naiiveprojects/GDX/pull/71
+- Default settings https://github.com/naiiveprojects/GDX/pull/71
 - Editor
   - Default settings https://github.com/naiiveprojects/GDX/pull/71 https://github.com/naiiveprojects/GDX/pull/102
   - Revamp https://github.com/naiiveprojects/GDX/pull/77
