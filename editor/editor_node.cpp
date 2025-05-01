@@ -632,7 +632,7 @@ void EditorNode::_notification(int p_what) {
 			video_driver->add_color_override("font_color_hover", gui_base->get_color("accent_color", "Editor"));
 			video_driver->set_visible(EditorSettings::get_singleton()->get("interface/miscellaneous/show_video_driver"));
 
-			main_panel->add_style_override("panel", gui_base->get_stylebox("content_dark", "EditorStyles"));
+			main_panel->add_style_override("panel", gui_base->get_stylebox("ContentDark", "EditorStyles"));
 
 			_build_icon_type_cache();
 
@@ -6269,7 +6269,7 @@ EditorNode::EditorNode() {
 	main_panel = memnew(PanelContainer);
 	main_panel->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	main_panel->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-	main_panel->add_style_override("panel", gui_base->get_stylebox("content_dark", "EditorStyles"));
+	main_panel->add_style_override("panel", gui_base->get_stylebox("ContentDark", "EditorStyles"));
 	main_vbox->add_child(main_panel);
 
 	left_l_hsplit = memnew(HSplitContainer);
