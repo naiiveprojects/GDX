@@ -321,7 +321,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	OS::get_singleton()->benchmark_begin_measure("create_editor_theme");
 	Ref<Theme> theme = Ref<Theme>(memnew(Theme));
 
-	const float default_contrast = 0.5;
+	const float default_contrast = 0.25;
 
 	//Theme settings
 	Color accent_color = EDITOR_GET("interface/theme/accent_color");
@@ -341,7 +341,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	Color preset_accent_color;
 	Color preset_base_color;
-	float preset_contrast = 0.5;
+	float preset_contrast = 0.25;
 
 	// Please, use alphabet order if you've added new theme here(After "Default" and "Custom")
 
@@ -358,9 +358,17 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_base_color = Color(0.22, 0.24, 0.29);
 		preset_contrast = 0.25;
 	} else if (preset == "Cobalt2") {
-		preset_accent_color = Color(0.00, 0.80, 1.00);
-		preset_base_color = Color(0.13, 0.18, 0.29);
+		preset_accent_color = Color(1, 0.8, 0);
+		preset_base_color = Color(0.07, 0.15, 0.22);
 		preset_contrast = 0.21;
+	} else if (preset == "GDX Accessible") {
+		preset_accent_color = Color(0.22, 0.48, 0.9);
+		preset_base_color = Color(0.22, 0.22, 0.22);
+		preset_contrast = 0.25;
+	} else if (preset == "GDX Deep") {
+		preset_accent_color = Color(0.4, 0.6, 1.0);
+		preset_base_color = Color(0.11, 0.11, 0.12);
+		preset_contrast = 0.4;
 	} else if (preset == "Dracula") {
 		preset_accent_color = Color(0.98, 0.38, 0.71);
 		preset_base_color = Color(0.14, 0.16, 0.22);
@@ -368,6 +376,14 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	} else if (preset == "Godot 2") {
 		preset_accent_color = Color(0.53, 0.67, 0.89);
 		preset_base_color = Color(0.24, 0.23, 0.27);
+		preset_contrast = 0.25;
+	} else if (preset == "Godot 3") {
+		preset_accent_color = Color(0.41, 0.61, 0.91);
+		preset_base_color = Color(0.2, 0.23, 0.31);
+		preset_contrast = 0.25;
+	} else if (preset == "Godot 4") {
+		preset_accent_color = Color(0.44, 0.73, 0.98);
+		preset_base_color = Color(0.21, 0.24, 0.29);
 		preset_contrast = 0.25;
 	} else if (preset == "Grey") {
 		preset_accent_color = Color(0.44, 0.73, 0.98);
@@ -418,8 +434,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		preset_base_color = Color(0.16, 0.18, 0.20);
 		preset_contrast = 0.17;
 	} else { // Default
-		preset_accent_color = Color(0.4, 0.6, 0.9);
-		preset_base_color = Color(0.11, 0.11, 0.12);
+		preset_accent_color = Color(0.08, 0.5, 1.0);
+		preset_base_color = Color(0.137, 0.137, 0.137);
 		preset_contrast = default_contrast;
 	}
 
@@ -797,10 +813,11 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_constant("hseparation", "CheckButton", 4 * EDSCALE);
 	theme->set_constant("check_vadjust", "CheckButton", 0);
 
-	theme->set_stylebox("normal", "CheckBox", style_menu);
-	theme->set_stylebox("pressed", "CheckBox", style_menu);
-	theme->set_stylebox("disabled", "CheckBox", style_menu);
-	theme->set_stylebox("hover", "CheckBox", style_menu);
+	theme->set_stylebox("normal", "CheckBox", style_empty);
+	theme->set_stylebox("pressed", "CheckBox", style_empty);
+	theme->set_stylebox("disabled", "CheckBox", style_empty);
+	theme->set_stylebox("hover", "CheckBox", style_empty);
+	theme->set_stylebox("hover_pressed", "CheckBox", style_empty);
 	theme->set_icon("checked", "CheckBox", theme->get_icon("GuiChecked", "EditorIcons"));
 	theme->set_icon("unchecked", "CheckBox", theme->get_icon("GuiUnchecked", "EditorIcons"));
 	theme->set_icon("checked_disabled", "CheckBox", theme->get_icon("GuiCheckedDisabled", "EditorIcons"));
@@ -809,7 +826,6 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	theme->set_icon("radio_unchecked", "CheckBox", theme->get_icon("GuiRadioUnchecked", "EditorIcons"));
 	theme->set_icon("radio_checked_disabled", "CheckBox", theme->get_icon("GuiRadioCheckedDisabled", "EditorIcons"));
 	theme->set_icon("radio_unchecked_disabled", "CheckBox", theme->get_icon("GuiRadioUncheckedDisabled", "EditorIcons"));
-
 	theme->set_color("font_color", "CheckBox", font_color);
 	theme->set_color("font_color_hover", "CheckBox", font_color_hl);
 	theme->set_color("font_color_focus", "CheckBox", font_color_focus);
@@ -1055,7 +1071,11 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	Ref<StyleBoxFlat> style_content_panel_vp_dark = style_content_panel_vp->duplicate();
 	style_content_panel_vp_dark->set_bg_color(dark_color_1);
-	theme->set_stylebox("content_dark", "EditorStyles", style_content_panel_vp_dark);
+	theme->set_stylebox("ContentDark", "EditorStyles", style_content_panel_vp_dark);
+
+	Ref<StyleBoxFlat> style_content_panel_vp_empty = style_content_panel_vp->duplicate();
+	style_content_panel_vp_empty->set_draw_center(false);
+	theme->set_stylebox("ContentEmpty", "EditorStyles", style_content_panel_vp_empty);
 
 	// Editor Handle (2D)
 	Ref<StyleBoxFlat> style_editor_handle = make_flat_stylebox(Color(1, 1, 1), 2 * EDSCALE, 2 * EDSCALE, 2 * EDSCALE, 2 * EDSCALE);

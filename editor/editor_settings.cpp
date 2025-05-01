@@ -361,13 +361,13 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 			Variant::STRING,
 			"interface/theme/preset",
 			PROPERTY_HINT_ENUM,
-			"Default,Alien,Arc,Cobalt2,Dracula,Godot 2,Grey,Gruvbox (Dark),Gruvbox (Light),Light,Material Darker,Material Palenight,Monokai,Nord,One Dark,Solarized (Dark),Solarized (Light),Tomorrow Night,Custom",
+			"Default,Alien,Arc,Cobalt2,GDX Accessible,GDX Deep,Dracula,Godot 2,Godot 3,Godot 4,Grey,Gruvbox (Dark),Gruvbox (Light),Light,Material Darker,Material Palenight,Monokai,Nord,One Dark,Solarized (Dark),Solarized (Light),Tomorrow Night,Custom",
 			PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/theme/icon_and_font_color", 0);
 	hints["interface/theme/icon_and_font_color"] = PropertyInfo(Variant::INT, "interface/theme/icon_and_font_color", PROPERTY_HINT_ENUM, "Auto,Dark,Light", PROPERTY_USAGE_DEFAULT);
-	_initial_set("interface/theme/base_color", Color(0.2, 0.23, 0.31));
+	_initial_set("interface/theme/base_color", Color(0.137, 0.137, 0.137));
 	hints["interface/theme/base_color"] = PropertyInfo(Variant::COLOR, "interface/theme/base_color", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT);
-	_initial_set("interface/theme/accent_color", Color(0.41, 0.61, 0.91));
+	_initial_set("interface/theme/accent_color", Color(0.08, 0.5, 1.0));
 	hints["interface/theme/accent_color"] = PropertyInfo(Variant::COLOR, "interface/theme/accent_color", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/theme/contrast", 0.25);
 	hints["interface/theme/contrast"] = PropertyInfo(Variant::REAL, "interface/theme/contrast", PROPERTY_HINT_RANGE, "-1, 1, 0.01");
