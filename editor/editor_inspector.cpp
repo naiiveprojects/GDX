@@ -935,7 +935,6 @@ void EditorInspectorPlugin::_bind_methods() {
 
 void EditorInspectorCategory::_notification(int p_what) {
 	if (p_what == NOTIFICATION_DRAW) {
-		draw_rect(Rect2(Vector2(), get_size()), bg_color);
 		Ref<Font> font = get_font("bold", "EditorFonts");
 
 		int hs = get_constant("hseparation", "Tree");
@@ -1958,9 +1957,6 @@ void EditorInspector::_update_inspector_bg() {
 			n = n->get_parent();
 		}
 		count_subinspectors = MIN(15, count_subinspectors);
-		add_style_override("bg", get_stylebox("sub_inspector_bg" + itos(count_subinspectors), "Editor"));
-	} else {
-		add_style_override("bg", get_stylebox("bg", "Tree"));
 	}
 }
 void EditorInspector::set_sub_inspector(bool p_enable) {
