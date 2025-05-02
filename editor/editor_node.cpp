@@ -3159,6 +3159,7 @@ void EditorNode::_discard_changes(const String &p_str) {
 			}
 		} break;
 		case FILE_QUIT: {
+			OS::get_singleton()->set_window_minimized(true);
 			_menu_option_confirm(RUN_STOP, true);
 			_exit_editor();
 
