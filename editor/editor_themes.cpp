@@ -454,10 +454,11 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 
 	//Colors
 	bool dark_theme = EditorSettings::get_singleton()->is_dark_theme();
-
-	const Color dark_color_1 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast);
-	const Color dark_color_2 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast * 1.5);
-	const Color dark_color_3 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast * 2);
+	const Color dark_color_0 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast / 2);
+	const Color dark_color_1 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast / 1.5);
+	const Color dark_color_2 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast);
+	const Color dark_color_3 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast * 1.5);
+	const Color dark_color_4 = base_color.linear_interpolate(Color(0, 0, 0, 1), contrast * 2);
 
 	const Color background_color = dark_color_2;
 	Color accent_alpha = accent_color;
@@ -488,15 +489,17 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	Color icon_color_bg = Color(0.9, 0.9, 0.9, 0.9);
 
 	const Color separator_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.1);
-	const Color contrast_accent_color = dark_theme ? (accent_color.get_luminance() > 0.5 ? base_color : mono_color) : (accent_color.get_luminance() > 0.5 ? mono_color : base_color);
+	const Color contrast_accent_color = (accent_color.get_luminance() > 0.5 ? base_color : mono_color);
 	const Color highlight_color = Color(mono_color.r, mono_color.g, mono_color.b, 0.2);
 
 	theme->set_color("accent_color", "Editor", accent_color);
 	theme->set_color("highlight_color", "Editor", highlight_color);
 	theme->set_color("base_color", "Editor", base_color);
+	theme->set_color("dark_color_0", "Editor", dark_color_0);
 	theme->set_color("dark_color_1", "Editor", dark_color_1);
 	theme->set_color("dark_color_2", "Editor", dark_color_2);
 	theme->set_color("dark_color_3", "Editor", dark_color_3);
+	theme->set_color("dark_color_4", "Editor", dark_color_4);
 	theme->set_color("contrast_color_1", "Editor", contrast_color_1);
 	theme->set_color("contrast_color_2", "Editor", contrast_color_2);
 	theme->set_color("contrast_accent_color", "Editor", contrast_accent_color);
@@ -643,7 +646,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 		style_tab_selected->set_border_color(base_color);
 	}
 	style_tab_selected->set_border_width(MARGIN_TOP, 1 * EDSCALE);
-	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, corner_radius * EDSCALE);
+	style_tab_selected->set_expand_margin_size(MARGIN_BOTTOM, corner_radius);
 	style_tab_selected->set_default_margin(MARGIN_LEFT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_RIGHT, tab_default_margin_side);
 	style_tab_selected->set_default_margin(MARGIN_BOTTOM, tab_default_margin_vertical);
@@ -653,7 +656,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	Ref<StyleBoxFlat> style_tab_unselected = style_tab_selected->duplicate();
 	style_tab_unselected->set_border_width_all(0);
 	style_tab_unselected->set_corner_radius_individual(corner_radius, corner_radius, 0, 0);
-	style_tab_unselected->set_bg_color(dark_color_1);
+	style_tab_unselected->set_bg_color(dark_color_2);
 
 	Ref<StyleBoxFlat> style_tab_disabled = style_tab_unselected->duplicate();
 	style_tab_disabled->set_bg_color(color_disabled_bg);
@@ -667,8 +670,8 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 	style_scene_tab_selected->set_bg_color(base_color);
 
 	Ref<StyleBoxFlat> style_scene_tab_unselected = style_scene_tab_selected->duplicate();
-	style_scene_tab_unselected->set_bg_color(dark_color_1);
-	style_scene_tab_unselected->set_border_color(dark_color_2);
+	style_scene_tab_unselected->set_bg_color(dark_color_3);
+	style_scene_tab_unselected->set_border_color(dark_color_4);
 
 	// Editor background
 	Color background_color_opaque = background_color;
