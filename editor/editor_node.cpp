@@ -687,6 +687,17 @@ void EditorNode::_notification(int p_what) {
 					tb->add_color_override("icon_color_pressed", gui_base->get_color("mono_color", "Editor"));
 				}
 			}
+
+			for (int i = 0; i < DOCK_SLOT_MAX; i++) {
+				TabContainer *tab = dock_slot[i];
+				for (int j = 0; j < tab->get_child_count(); j++) {
+					Node *child = tab->get_child(j);
+					if (child) {
+						_set_dock_icon(child);
+					}
+				}
+			}
+
 		} break;
 
 		case Control::NOTIFICATION_RESIZED: {
@@ -4869,11 +4880,40 @@ void EditorNode::_load_open_scenes_from_config(Ref<ConfigFile> p_layout, const S
 }
 
 void EditorNode::_set_dock_icon(Node *p_node) {
-	if (gui_base->has_icon("Dock" + p_node->get_name(), "EditorIcons")) {
-		Ref<Texture> icon = gui_base->get_icon("Dock" + p_node->get_name(), "EditorIcons");
-		TabContainer *tab = cast_to<TabContainer>(p_node->get_parent());
-		tab->set_tab_icon(p_node->get_index(), icon);
-		tab->set_tab_title(p_node->get_index(), "");
+	int dock_tab_display = int(EditorSettings::get_singleton()->get("interface/miscellaneous/dock_tab_display"));
+	TabContainer *tab = cast_to<TabContainer>(p_node->get_parent());
+	if (!tab) {
+		return;
+	}
+
+	bool has_icon = gui_base->has_icon("Dock" + p_node->get_name(), "EditorIcons");
+	Ref<Texture> icon;
+	if (has_icon) {
+		icon = gui_base->get_icon("Dock" + p_node->get_name(), "EditorIcons");
+	}
+
+	switch (dock_tab_display) {
+		case 0: // Text Only
+			tab->set_tab_icon(p_node->get_index(), Ref<Texture>());
+			tab->set_tab_title(p_node->get_index(), p_node->get_name());
+			break;
+		case 1: // Icon Only
+			if (has_icon) {
+				tab->set_tab_icon(p_node->get_index(), icon);
+				tab->set_tab_title(p_node->get_index(), "");
+			} else {
+				tab->set_tab_icon(p_node->get_index(), Ref<Texture>());
+				tab->set_tab_title(p_node->get_index(), p_node->get_name());
+			}
+			break;
+		case 2: // Text & Icon
+			if (has_icon) {
+				tab->set_tab_icon(p_node->get_index(), icon);
+			} else {
+				tab->set_tab_icon(p_node->get_index(), Ref<Texture>());
+			}
+			tab->set_tab_title(p_node->get_index(), p_node->get_name());
+			break;
 	}
 }
 

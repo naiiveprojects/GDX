@@ -348,6 +348,8 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("interface/miscellaneous/scene_tabs_centered", false);
 	_initial_set("interface/miscellaneous/2D_editor_tools_view", 1);
 	hints["interface/miscellaneous/2D_editor_tools_view"] = PropertyInfo(Variant::INT, "interface/miscellaneous/2D_editor_tools_view", PROPERTY_HINT_ENUM, "Center,Split,Right,Left");
+	_initial_set("interface/miscellaneous/dock_tab_display", 1);
+	hints["interface/miscellaneous/dock_tab_display"] = PropertyInfo(Variant::INT, "interface/miscellaneous/dock_tab_display", PROPERTY_HINT_ENUM, vformat("Text Only,Icon Only,Text & Icon"), PROPERTY_USAGE_DEFAULT);
 	_initial_set("interface/miscellaneous/bottom_dock_align", 0);
 	hints["interface/miscellaneous/bottom_dock_align"] = PropertyInfo(Variant::INT, "interface/miscellaneous/bottom_dock_align", PROPERTY_HINT_ENUM, vformat("Left,Center,Right"), PROPERTY_USAGE_DEFAULT);
 
