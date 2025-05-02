@@ -2,14 +2,15 @@
 
 <img src="thirdparty/gdx/rdm_header.png" width=100%>
 
-GDX is a custom [Godot Engine 3.x branch](https://github.com/godotengine/godot/tree/3.x). it aims to incorporate changes, additions, or merged features that may not be merged into the official branch.
 
 [![release](https://badges.ws/github/release/naiiveprojects/gdx?color=green)](https://github.com/naiiveprojects/GDX/releases/latest)
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/naiiveprojects/GDX/latest?style=flat&logo=2c2c2e&label=commit%20since%20release&labelColor=2c2c2e&color=e6653d)](https://github.com/naiiveprojects/GDX/commits/3.x)
 [![repo](https://badges.ws/github/repo-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 [![lang](https://badges.ws/github/lang-size/naiiveprojects/gdx)](https://github.com/naiiveprojects/GDX/pulse/monthly)
 
-<img src="thirdparty/gdx/rdm_screenshot.png" width=100%>
+GDX is a custom [Godot Engine 3.x branch](https://github.com/godotengine/godot/tree/3.x). it aims to incorporate changes, additions, or merged features that may not be merged into the official branch.
+
+<img src="thirdparty/gdx/rdm_screenshot.webp" width=100%>
 
 refer to [**this Changelog**](thirdparty/gdx/CHANGELOG.md) for list of notable changes.
 
