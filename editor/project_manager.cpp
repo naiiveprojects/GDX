@@ -954,7 +954,9 @@ public:
 
 	enum MenuOptions {
 		GLOBAL_NEW_WINDOW,
-		GLOBAL_OPEN_PROJECT
+		GLOBAL_OPEN_PROJECT,
+		GLOBAL_COPY_VERSION,
+		GLOBAL_OPEN_REPOSITORY,
 	};
 
 	// Can often be passed by copy
@@ -1964,24 +1966,36 @@ void ProjectManager::_confirm_update_settings() {
 
 void ProjectManager::_global_menu_action(const Variant &p_id, const Variant &p_meta) {
 	int id = (int)p_id;
-	if (id == ProjectList::GLOBAL_NEW_WINDOW) {
-		List<String> args;
-		args.push_back("-p");
-		String exec = OS::get_singleton()->get_executable_path();
-
-		OS::ProcessID pid = 0;
-		OS::get_singleton()->execute(exec, args, false, &pid);
-	} else if (id == ProjectList::GLOBAL_OPEN_PROJECT) {
-		String conf = (String)p_meta;
-
-		if (conf != String()) {
+	switch (id) {
+		case ProjectList::GLOBAL_NEW_WINDOW: {
 			List<String> args;
-			args.push_back(conf);
+			args.push_back("-p");
 			String exec = OS::get_singleton()->get_executable_path();
 
 			OS::ProcessID pid = 0;
 			OS::get_singleton()->execute(exec, args, false, &pid);
-		}
+		} break;
+		case ProjectList::GLOBAL_OPEN_PROJECT: {
+			String conf = (String)p_meta;
+
+			if (conf != String()) {
+				List<String> args;
+				args.push_back(conf);
+				String exec = OS::get_singleton()->get_executable_path();
+
+				OS::ProcessID pid = 0;
+				OS::get_singleton()->execute(exec, args, false, &pid);
+			}
+		} break;
+		case ProjectList::GLOBAL_COPY_VERSION: {
+			String version = (String)p_meta;
+			OS::get_singleton()->set_clipboard(version);
+		} break;
+		case ProjectList::GLOBAL_OPEN_REPOSITORY: {
+			OS::get_singleton()->shell_open("https://github.com/naiiveprojects/GDX");
+		} break;
+		default:
+			break;
 	}
 }
 
@@ -2432,27 +2446,20 @@ ProjectManager::ProjectManager() {
 	add_child(gui_base);
 	gui_base->set_anchors_and_margins_preset(Control::PRESET_WIDE);
 
-	Panel *panel = memnew(Panel);
+	PanelContainer *panel = memnew(PanelContainer);
 	gui_base->add_child(panel);
 	panel->set_anchors_and_margins_preset(Control::PRESET_WIDE);
 	panel->add_style_override("panel", gui_base->get_stylebox("Background", "EditorStyles"));
-
-	VBoxContainer *vb = memnew(VBoxContainer);
-	panel->add_child(vb);
-	vb->set_anchors_and_margins_preset(Control::PRESET_WIDE, Control::PRESET_MODE_MINSIZE, 8 * EDSCALE);
+	panel->set_self_modulate(Color(0.7, 0.7, 0.7));
 
 	String cp;
 	cp += 0xA9;
 	// TRANSLATORS: This refers to the application where users manage their Godot projects.
 	OS::get_singleton()->set_window_title(TTR("Project Manager ", "Application"));
 
-	Control *center_box = memnew(Control);
-	center_box->set_v_size_flags(SIZE_EXPAND_FILL);
-	vb->add_child(center_box);
-
 	tabs = memnew(TabContainer);
-	center_box->add_child(tabs);
-	tabs->set_anchors_and_margins_preset(Control::PRESET_WIDE);
+	panel->add_child(tabs);
+	tabs->set_v_size_flags(SIZE_EXPAND_FILL);
 	tabs->set_tab_align(TabContainer::ALIGN_LEFT);
 	tabs->connect("tab_changed", this, "_on_tab_changed");
 
@@ -2606,15 +2613,28 @@ ProjectManager::ProjectManager() {
 	}
 
 	HBoxContainer *settings_hb = memnew(HBoxContainer);
-	settings_hb->set_alignment(BoxContainer::ALIGN_END);
-	settings_hb->set_h_grow_direction(Control::GROW_DIRECTION_BEGIN);
+	settings_hb->set_name(TTR("Settings"));
 
-	Label *center_label = memnew(Label);
-	center_label->set_text(VERSION_FULL_NAME);
-	settings_hb->add_child(center_label);
+	Button *version_btn = memnew(Button);
+	String hash = String(VERSION_HASH);
+	if (hash.length() != 0) {
+		hash = " " + vformat("[%s]", hash.left(9));
+	}
+	version_btn->set_text(VERSION_FULL_BUILD + hash);
+	version_btn->set_tooltip(TTR("Click to copy."));
+	version_btn->set_focus_mode(Control::FOCUS_NONE);
+	version_btn->add_color_override("font_color", get_color("disabled_font_color", "Editor"));
+	version_btn->connect("pressed", this, "_global_menu_action", varray(ProjectList::GLOBAL_COPY_VERSION, version_btn->get_text()));
+	settings_hb->add_child(version_btn);
+
+	Button *repo_btn = memnew(Button);
+	repo_btn->set_icon(get_icon("ExternalLink", "EditorIcons"));
+	repo_btn->set_tooltip(TTR("Click to open repository."));
+	repo_btn->connect("pressed", this, "_global_menu_action", varray(ProjectList::GLOBAL_OPEN_REPOSITORY, repo_btn->get_text()));
+	repo_btn->set_focus_mode(Control::FOCUS_NONE);
+	settings_hb->add_child(repo_btn);
 
 	language_btn = memnew(OptionButton);
-	language_btn->set_flat(true);
 	language_btn->set_focus_mode(Control::FOCUS_NONE);
 #ifdef ANDROID_ENABLED
 	// The language selection dropdown doesn't work on Android (as the setting isn't saved), see GH-60353.
@@ -2648,8 +2668,9 @@ ProjectManager::ProjectManager() {
 	settings_hb->add_child(language_btn);
 	language_btn->connect("item_selected", this, "_language_selected");
 
-	center_box->add_child(settings_hb);
-	settings_hb->set_anchors_and_margins_preset(Control::PRESET_TOP_RIGHT);
+	panel->add_child(settings_hb);
+	settings_hb->set_h_size_flags(SIZE_SHRINK_END);
+	settings_hb->set_v_size_flags(SIZE_EXPAND);
 
 	//////////////////////////////////////////////////////////////
 
