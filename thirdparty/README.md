@@ -116,6 +116,11 @@ comments.
 
 ## fonts
 
+- `Inter*.woff2`:
+  * https://rsms.me/inter/
+  * Version: 4.1 (2024)
+  * License: SIL-1.1
+  * Comment: Default Editor UI font.
 - `NotoSans*.woff2`, `NotoNaskhArabicUI_Regular.woff2`:
   * Upstream: https://github.com/googlei18n/noto-fonts
   * Version: 1.06 (2017)

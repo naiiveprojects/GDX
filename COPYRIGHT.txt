@@ -185,6 +185,11 @@ Comment: Noto Sans font
 Copyright: 2012, Google Inc.
 License: OFL-1.1
 
+Files: ./thirdparty/fonts/Inter*.woff2
+Comment: Inter font
+Copyright: 2020, The Inter Project
+License: SIL-1.1
+
 Files: ./thirdparty/fonts/Hack_Regular.woff2
 Comment: Hack font
 Copyright: 2018, Source Foundry Authors
