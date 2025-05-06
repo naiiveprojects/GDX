@@ -440,6 +440,7 @@ EditorSceneTabs::EditorSceneTabs() {
 	scene_tab_add->set_accessibility_name(TTRC("Add Scene"));
 	scene_tabs->add_child(scene_tab_add);
 	scene_tab_add->connect(SceneStringName(pressed), callable_mp(EditorNode::get_singleton(), &EditorNode::trigger_menu_option).bind(EditorNode::SCENE_NEW_SCENE, false));
+	scene_tab_add->hide();
 
 	scene_tab_add_ph = memnew(Control);
 	scene_tab_add_ph->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
