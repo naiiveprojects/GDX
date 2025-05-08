@@ -55,7 +55,6 @@ public:
 	};
 
 private:
-	PanelContainer *tabbar_panel = nullptr;
 	HBoxContainer *tabbar_container = nullptr;
 
 	TabBar *scene_tabs = nullptr;

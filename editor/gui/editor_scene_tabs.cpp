@@ -51,7 +51,6 @@
 void EditorSceneTabs::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
-			tabbar_panel->add_theme_style_override(SceneStringName(panel), get_theme_stylebox(SNAME("tabbar_background"), SNAME("TabContainer")));
 			scene_tabs->add_theme_constant_override("icon_max_width", get_theme_constant(SNAME("class_icon_size"), EditorStringName(Editor)));
 
 			scene_tab_add->set_button_icon(get_editor_theme_icon(SNAME("Add")));
@@ -405,10 +404,8 @@ EditorSceneTabs::EditorSceneTabs() {
 	set_process_shortcut_input(true);
 	set_process_unhandled_key_input(true);
 
-	tabbar_panel = memnew(PanelContainer);
-	add_child(tabbar_panel);
 	tabbar_container = memnew(HBoxContainer);
-	tabbar_panel->add_child(tabbar_container);
+	add_child(tabbar_container);
 
 	scene_tabs = memnew(TabBar);
 	scene_tabs->set_select_with_rmb(true);
@@ -440,6 +437,7 @@ EditorSceneTabs::EditorSceneTabs() {
 	scene_tab_add->set_accessibility_name(TTRC("Add Scene"));
 	scene_tabs->add_child(scene_tab_add);
 	scene_tab_add->connect(SceneStringName(pressed), callable_mp(EditorNode::get_singleton(), &EditorNode::trigger_menu_option).bind(EditorNode::SCENE_NEW_SCENE, false));
+	scene_tab_add->hide();
 
 	scene_tab_add_ph = memnew(Control);
 	scene_tab_add_ph->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
