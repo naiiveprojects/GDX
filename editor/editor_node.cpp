@@ -7742,10 +7742,9 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT_OVERRIDE("editor/quit_to_project_list", "macos", KeyModifierMask::META + KeyModifierMask::CTRL + KeyModifierMask::ALT + Key::Q);
 	project_menu->add_shortcut(ED_GET_SHORTCUT("editor/quit_to_project_list"), PROJECT_QUIT_TO_PROJECT_MANAGER, true);
 
-	// Spacer 2D / 3D / Script buttons.
-	title_bar->add_child(memnew(VSeparator));
-
 	if (can_expand && global_menu) {
+		// Separator main_menu.
+		title_bar->add_child(memnew(VSeparator));
 		project_title = memnew(Label);
 		project_title->add_theme_font_override(SceneStringName(font), theme->get_font(SNAME("bold"), EditorStringName(EditorFonts)));
 		project_title->add_theme_font_size_override(SceneStringName(font_size), theme->get_font_size(SNAME("bold_size"), EditorStringName(EditorFonts)));
@@ -7755,12 +7754,6 @@ EditorNode::EditorNode() {
 		project_title->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 		title_bar->add_child(project_title);
 	}
-
-	HBoxContainer *main_editor_button_hb = memnew(HBoxContainer);
-	main_editor_button_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
-	editor_main_screen->set_button_container(main_editor_button_hb);
-	title_bar->add_child(main_editor_button_hb);
-	title_bar->set_center_control(main_editor_button_hb);
 
 	// Options are added and handled by DebuggerEditorPlugin.
 	debug_menu = memnew(PopupMenu);
@@ -7846,7 +7839,7 @@ EditorNode::EditorNode() {
 	}
 	help_menu->add_icon_shortcut(_get_editor_theme_native_menu_icon(SNAME("Heart"), global_menu, dark_mode), ED_SHORTCUT_AND_COMMAND("editor/support_development", TTRC("Support Godot Development")), HELP_SUPPORT_GODOT_DEVELOPMENT);
 
-	// Spacer 2D / 3D / Script buttons.
+	// Separator main_menu.
 	title_bar->add_child(memnew(VSeparator));
 
 	scene_tabs = memnew(EditorSceneTabs);
@@ -7869,7 +7862,16 @@ EditorNode::EditorNode() {
 	scene_tabs->add_extra_button(distraction_free);
 	distraction_free->connect(SceneStringName(pressed), callable_mp(this, &EditorNode::_toggle_distraction_free_mode));
 
-	// Spacer for scene_tabs
+	// Separator scene_tabs.
+	title_bar->add_child(memnew(VSeparator));
+
+	HBoxContainer *main_editor_button_hb = memnew(HBoxContainer);
+	main_editor_button_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
+	editor_main_screen->set_button_container(main_editor_button_hb);
+	title_bar->add_child(main_editor_button_hb);
+	title_bar->set_center_control(main_editor_button_hb);
+
+	// Separator for main_editor_button_hb.
 	title_bar->add_child(memnew(VSeparator));
 
 	project_run_bar = memnew(EditorRunBar);
