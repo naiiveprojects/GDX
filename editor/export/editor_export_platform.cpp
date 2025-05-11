@@ -1952,7 +1952,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 
 	int64_t pck_start_pos = f->get_position();
 
-	f->store_32(PACK_HEADER_MAGIC);
+	f->store_32(PACK_HEADER_ALTER);
 	f->store_32(PACK_FORMAT_VERSION);
 	f->store_32(GODOT_VERSION_MAJOR);
 	f->store_32(GODOT_VERSION_MINOR);
@@ -2121,7 +2121,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 
 		uint64_t pck_size = f->get_position() - pck_start_pos;
 		f->store_64(pck_size);
-		f->store_32(PACK_HEADER_MAGIC);
+		f->store_32(PACK_HEADER_ALTER);
 
 		if (r_embedded_size) {
 			*r_embedded_size = f->get_position() - embed_pos;
