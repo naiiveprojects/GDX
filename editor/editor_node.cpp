@@ -59,6 +59,7 @@
 #include "scene/gui/panel.h"
 #include "scene/gui/popup.h"
 #include "scene/gui/rich_text_label.h"
+#include "scene/gui/separator.h"
 #include "scene/gui/split_container.h"
 #include "scene/gui/tab_container.h"
 #include "scene/main/window.h"
@@ -3571,6 +3572,8 @@ int EditorNode::_next_unsaved_scene(bool p_valid_filename, int p_start) {
 }
 
 void EditorNode::_exit_editor(int p_exit_code) {
+	DisplayServer::get_singleton()->window_set_mode(DisplayServer::WINDOW_MODE_MINIMIZED);
+
 	exiting = true;
 	waiting_for_first_scan = false;
 	resource_preview->stop(); // Stop early to avoid crashes.
@@ -4814,7 +4817,7 @@ void EditorNode::_update_recent_scenes() {
 	recent_scenes->clear();
 
 	if (rc.size() == 0) {
-		recent_scenes->add_item(TTRC("No Recent Scenes"), -1);
+		recent_scenes->add_item(TTR("No Recent Scenes"), -1);
 		recent_scenes->set_item_disabled(-1, true);
 	} else {
 		String path;
@@ -7668,32 +7671,10 @@ EditorNode::EditorNode() {
 	top_split->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	top_split->set_collapsed(true);
 
-	VBoxContainer *srt = memnew(VBoxContainer);
-	srt->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-	srt->add_theme_constant_override("separation", 0);
-	top_split->add_child(srt);
-
-	scene_tabs = memnew(EditorSceneTabs);
-	srt->add_child(scene_tabs);
-	scene_tabs->connect("tab_changed", callable_mp(this, &EditorNode::_set_current_scene));
-	scene_tabs->connect("tab_closed", callable_mp(this, &EditorNode::_scene_tab_closed));
-
-	distraction_free = memnew(Button);
-	distraction_free->set_theme_type_variation("FlatMenuButton");
-	ED_SHORTCUT_AND_COMMAND("editor/distraction_free_mode", TTRC("Distraction Free Mode"), KeyModifierMask::CTRL | KeyModifierMask::SHIFT | Key::F11);
-	ED_SHORTCUT_OVERRIDE("editor/distraction_free_mode", "macos", KeyModifierMask::META | KeyModifierMask::SHIFT | Key::D);
-	ED_SHORTCUT_AND_COMMAND("editor/toggle_last_opened_bottom_panel", TTRC("Toggle Last Opened Bottom Panel"), KeyModifierMask::CMD_OR_CTRL | Key::J);
-	distraction_free->set_shortcut(ED_GET_SHORTCUT("editor/distraction_free_mode"));
-	distraction_free->set_tooltip_text(TTRC("Toggle distraction-free mode."));
-	distraction_free->set_accessibility_name(TTRC("Distraction-free Mode"));
-	distraction_free->set_toggle_mode(true);
-	scene_tabs->add_extra_button(distraction_free);
-	distraction_free->connect(SceneStringName(pressed), callable_mp(this, &EditorNode::_toggle_distraction_free_mode));
-
 	editor_main_screen = memnew(EditorMainScreen);
 	editor_main_screen->set_custom_minimum_size(Size2(0, 80) * EDSCALE);
 	editor_main_screen->set_draw_behind_parent(true);
-	srt->add_child(editor_main_screen);
+	top_split->add_child(editor_main_screen);
 	editor_main_screen->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 
 	scene_root = memnew(SubViewport);
@@ -7871,13 +7852,9 @@ EditorNode::EditorNode() {
 	ED_SHORTCUT_OVERRIDE("editor/quit_to_project_list", "macos", KeyModifierMask::META + KeyModifierMask::CTRL + KeyModifierMask::ALT + Key::Q);
 	project_menu->add_shortcut(ED_GET_SHORTCUT("editor/quit_to_project_list"), PROJECT_QUIT_TO_PROJECT_MANAGER, true);
 
-	// Spacer to center 2D / 3D / Script buttons.
-	left_spacer = memnew(HBoxContainer);
-	left_spacer->set_mouse_filter(Control::MOUSE_FILTER_PASS);
-	left_spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	title_bar->add_child(left_spacer);
-
 	if (can_expand && global_menu) {
+		// Separator main_menu.
+		title_bar->add_child(memnew(VSeparator));
 		project_title = memnew(Label);
 		project_title->add_theme_font_override(SceneStringName(font), theme->get_font(SNAME("bold"), EditorStringName(EditorFonts)));
 		project_title->add_theme_font_size_override(SceneStringName(font_size), theme->get_font_size(SNAME("bold_size"), EditorStringName(EditorFonts)));
@@ -7885,14 +7862,8 @@ EditorNode::EditorNode() {
 		project_title->set_vertical_alignment(VERTICAL_ALIGNMENT_CENTER);
 		project_title->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 		project_title->set_mouse_filter(Control::MOUSE_FILTER_PASS);
-		left_spacer->add_child(project_title);
+		title_bar->add_child(project_title);
 	}
-
-	HBoxContainer *main_editor_button_hb = memnew(HBoxContainer);
-	main_editor_button_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
-	editor_main_screen->set_button_container(main_editor_button_hb);
-	title_bar->add_child(main_editor_button_hb);
-	title_bar->set_center_control(main_editor_button_hb);
 
 	// Options are added and handled by DebuggerEditorPlugin.
 	debug_menu = memnew(PopupMenu);
@@ -7975,11 +7946,40 @@ EditorNode::EditorNode() {
 	}
 	help_menu->add_icon_shortcut(_get_editor_theme_native_menu_icon(SNAME("Heart"), global_menu, dark_mode), ED_SHORTCUT_AND_COMMAND("editor/support_development", TTRC("Support Godot Development")), HELP_SUPPORT_GODOT_DEVELOPMENT);
 
-	// Spacer to center 2D / 3D / Script buttons.
-	right_spacer = memnew(Control);
-	right_spacer->set_mouse_filter(Control::MOUSE_FILTER_PASS);
-	right_spacer->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	title_bar->add_child(right_spacer);
+	// Separator main_menu.
+	title_bar->add_child(memnew(VSeparator));
+
+	scene_tabs = memnew(EditorSceneTabs);
+	title_bar->add_child(scene_tabs);
+	scene_tabs->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	scene_tabs->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	scene_tabs->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+	scene_tabs->connect("tab_changed", callable_mp(this, &EditorNode::_set_current_scene));
+	scene_tabs->connect("tab_closed", callable_mp(this, &EditorNode::_scene_tab_closed));
+
+	distraction_free = memnew(Button);
+	distraction_free->set_theme_type_variation("FlatMenuButton");
+	ED_SHORTCUT_AND_COMMAND("editor/distraction_free_mode", TTRC("Distraction Free Mode"), KeyModifierMask::CTRL | KeyModifierMask::SHIFT | Key::F11);
+	ED_SHORTCUT_OVERRIDE("editor/distraction_free_mode", "macos", KeyModifierMask::META | KeyModifierMask::SHIFT | Key::D);
+	ED_SHORTCUT_AND_COMMAND("editor/toggle_last_opened_bottom_panel", TTRC("Toggle Last Opened Bottom Panel"), KeyModifierMask::CMD_OR_CTRL | Key::J);
+	distraction_free->set_shortcut(ED_GET_SHORTCUT("editor/distraction_free_mode"));
+	distraction_free->set_tooltip_text(TTRC("Toggle distraction-free mode."));
+	distraction_free->set_accessibility_name(TTRC("Distraction-free Mode"));
+	distraction_free->set_toggle_mode(true);
+	scene_tabs->add_extra_button(distraction_free);
+	distraction_free->connect(SceneStringName(pressed), callable_mp(this, &EditorNode::_toggle_distraction_free_mode));
+
+	// Separator scene_tabs.
+	title_bar->add_child(memnew(VSeparator));
+
+	HBoxContainer *main_editor_button_hb = memnew(HBoxContainer);
+	main_editor_button_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
+	editor_main_screen->set_button_container(main_editor_button_hb);
+	title_bar->add_child(main_editor_button_hb);
+	title_bar->set_center_control(main_editor_button_hb);
+
+	// Separator for main_editor_button_hb.
+	title_bar->add_child(memnew(VSeparator));
 
 	project_run_bar = memnew(EditorRunBar);
 	project_run_bar->set_mouse_filter(Control::MOUSE_FILTER_STOP);
@@ -7999,6 +7999,7 @@ EditorNode::EditorNode() {
 	renderer->set_focus_mode(Control::FOCUS_NONE);
 	renderer->set_tooltip_text(TTR("Choose a rendering method.\n\nNotes:\n- On mobile platforms, the Mobile rendering method is used if Forward+ is selected here.\n- On the web platform, the Compatibility rendering method is always used."));
 	renderer->set_accessibility_name(TTRC("Rendering Method"));
+	renderer->hide();
 
 	right_menu_hb->add_child(renderer);
 
@@ -8513,16 +8514,6 @@ EditorNode::EditorNode() {
 	add_child(screenshot_timer);
 	screenshot_timer->set_owner(get_owner());
 
-	// Adjust spacers to center 2D / 3D / Script buttons.
-	if (main_menu_button != nullptr) {
-		int max_w = MAX(project_run_bar->get_minimum_size().x + right_menu_hb->get_minimum_size().x, main_menu_button->get_minimum_size().x);
-		left_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - main_menu_button->get_minimum_size().x), 0));
-		right_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - project_run_bar->get_minimum_size().x - right_menu_hb->get_minimum_size().x), 0));
-	} else {
-		int max_w = MAX(project_run_bar->get_minimum_size().x + right_menu_hb->get_minimum_size().x, main_menu_bar->get_minimum_size().x);
-		left_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - main_menu_bar->get_minimum_size().x), 0));
-		right_spacer->set_custom_minimum_size(Size2(MAX(0, max_w - project_run_bar->get_minimum_size().x - right_menu_hb->get_minimum_size().x), 0));
-	}
 	// Extend menu bar to window title.
 	if (can_expand) {
 		DisplayServer::get_singleton()->process_events();
