@@ -42,6 +42,7 @@
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/debugger/script_editor_debugger.h"
 #include "editor/editor_command_palette.h"
+#include "editor/editor_dock_manager.h"
 #include "editor/editor_help_search.h"
 #include "editor/editor_interface.h"
 #include "editor/editor_main_screen.h"
@@ -1263,13 +1264,25 @@ TypedArray<Script> ScriptEditor::_get_open_scripts() const {
 }
 
 bool ScriptEditor::toggle_files_panel() {
-	list_split->set_visible(!list_split->is_visible());
-	EditorSettings::get_singleton()->set_project_metadata("files_panel", "show_files_panel", list_split->is_visible());
-	return list_split->is_visible();
+	if (list_split_dock->is_inside_tree()) {
+		list_split_dock->remove_child(list_split);
+		script_split->add_child(list_split);
+		script_split->move_child(list_split, 0);
+		list_split->set_h_size_flags(SIZE_FILL);
+		EditorDockManager::get_singleton()->remove_dock(list_split_dock);
+	} else {
+		script_split->remove_child(list_split);
+		list_split_dock->add_child(list_split);
+		list_split->set_h_size_flags(SIZE_EXPAND_FILL);
+		EditorDockManager::get_singleton()->add_dock(list_split_dock, "Script", EditorDockManager::DOCK_SLOT_LEFT_BR, nullptr, "Script");
+		TabContainer *tb = dynamic_cast<TabContainer *>(list_split_dock->get_parent());
+		tb->set_current_tab(list_split_dock->get_index() - 1);
+	}
+	return list_split_dock->is_inside_tree();
 }
 
 bool ScriptEditor::is_files_panel_toggled() {
-	return list_split->is_visible();
+	return list_split_dock->is_inside_tree();
 }
 
 void ScriptEditor::_menu_option(int p_option) {
@@ -1800,6 +1813,7 @@ void ScriptEditor::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_EXIT_TREE: {
+			list_split_dock->queue_free();
 			EditorRunBar::get_singleton()->disconnect("stop_pressed", callable_mp(this, &ScriptEditor::_editor_stop));
 		} break;
 
@@ -4182,8 +4196,15 @@ ScriptEditor::ScriptEditor(WindowWrapper *p_wrapper) {
 	overview_vbox->set_custom_minimum_size(Size2(0, 90));
 	overview_vbox->set_v_size_flags(SIZE_EXPAND_FILL);
 
+	list_split_dock = memnew(PanelContainer);
+	list_split_dock->set_v_size_flags(SIZE_EXPAND_FILL);
+	list_split_dock->set_h_size_flags(SIZE_EXPAND_FILL);
+	list_split_dock->set_name(TTR("Script"));
+
 	list_split->add_child(overview_vbox);
-	list_split->set_visible(EditorSettings::get_singleton()->get_project_metadata("files_panel", "show_files_panel", true));
+	if (EditorSettings::get_singleton()->get_project_metadata("files_panel", "show_files_panel", true)) {
+		toggle_files_panel();
+	}
 	buttons_hbox = memnew(HBoxContainer);
 	overview_vbox->add_child(buttons_hbox);
 

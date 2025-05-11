@@ -332,6 +332,7 @@ class ScriptEditor : public PanelContainer {
 	ItemList *help_overview = nullptr;
 	bool help_overview_enabled;
 	VSplitContainer *list_split = nullptr;
+	PanelContainer *list_split_dock = nullptr;
 	TabContainer *tab_container = nullptr;
 	EditorFileDialog *file_dialog = nullptr;
 	AcceptDialog *error_dialog = nullptr;
