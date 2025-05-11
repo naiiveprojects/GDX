@@ -156,7 +156,7 @@ void EditorMainScreen::select_by_name(const String &p_name) {
 	ERR_FAIL_COND(p_name.is_empty());
 
 	for (int i = 0; i < buttons.size(); i++) {
-		if (buttons[i]->get_text() == p_name) {
+		if (buttons[i]->get_name() == p_name) {
 			select(i);
 			return;
 		}
@@ -242,7 +242,8 @@ void EditorMainScreen::add_main_plugin(EditorPlugin *p_editor) {
 	tb->set_toggle_mode(true);
 	tb->set_theme_type_variation("MainScreenButton");
 	tb->set_name(p_editor->get_plugin_name());
-	tb->set_text(p_editor->get_plugin_name());
+	tb->set_tooltip_text(p_editor->get_plugin_name());
+	tb->set_icon_alignment(HORIZONTAL_ALIGNMENT_CENTER);
 
 	Ref<Texture2D> icon = p_editor->get_plugin_icon();
 	if (icon.is_null() && has_theme_icon(p_editor->get_plugin_name(), EditorStringName(EditorIcons))) {
