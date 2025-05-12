@@ -609,7 +609,7 @@ void EditorThemeManager::_create_shared_styles(const Ref<EditorTheme> &p_theme, 
 			p_config.button_style_focus = p_config.button_style->duplicate();
 			p_config.button_style_focus->set_draw_center(false);
 			p_config.button_style_focus->set_border_width_all(Math::round(2 * MAX(1, EDSCALE)));
-			p_config.button_style_focus->set_border_color(p_config.accent_color);
+			p_config.button_style_focus->set_border_color(p_config.font_disabled_color);
 
 			p_config.button_style_pressed = p_config.button_style->duplicate();
 			p_config.button_style_pressed->set_bg_color(p_config.dark_color_1.darkened(0.125));
@@ -927,7 +927,7 @@ void EditorThemeManager::_populate_standard_styles(const Ref<EditorTheme> &p_the
 	// Tree & ItemList.
 	{
 		Ref<StyleBoxFlat> style_tree_focus = p_config.base_style->duplicate();
-		style_tree_focus->set_bg_color(p_config.highlight_color);
+		style_tree_focus->set_bg_color(p_config.Q);
 		style_tree_focus->set_border_width_all(0);
 
 		Ref<StyleBoxFlat> style_tree_selected = style_tree_focus->duplicate();
@@ -1152,43 +1152,68 @@ void EditorThemeManager::_populate_standard_styles(const Ref<EditorTheme> &p_the
 		p_theme->set_stylebox("tab_unselected", "TabContainer", style_tab_unselected);
 		p_theme->set_stylebox("tab_disabled", "TabContainer", style_tab_disabled);
 		p_theme->set_stylebox("tab_focus", "TabContainer", style_tab_focus);
-		p_theme->set_stylebox("tab_selected", "TabBar", style_tab_selected);
-		p_theme->set_stylebox("tab_hovered", "TabBar", style_tab_hovered);
-		p_theme->set_stylebox("tab_unselected", "TabBar", style_tab_unselected);
-		p_theme->set_stylebox("tab_disabled", "TabBar", style_tab_disabled);
-		p_theme->set_stylebox("tab_focus", "TabBar", style_tab_focus);
-		p_theme->set_stylebox("button_pressed", "TabBar", p_config.panel_container_style);
-		p_theme->set_stylebox("button_highlight", "TabBar", p_config.panel_container_style);
 
 		p_theme->set_color("font_selected_color", "TabContainer", p_config.font_color);
 		p_theme->set_color("font_hovered_color", "TabContainer", p_config.font_color);
 		p_theme->set_color("font_unselected_color", "TabContainer", p_config.font_disabled_color);
 		p_theme->set_color("font_outline_color", "TabContainer", p_config.font_outline_color);
-		p_theme->set_color("font_selected_color", "TabBar", p_config.font_color);
-		p_theme->set_color("font_hovered_color", "TabBar", p_config.font_color);
-		p_theme->set_color("font_unselected_color", "TabBar", p_config.font_disabled_color);
-		p_theme->set_color("font_outline_color", "TabBar", p_config.font_outline_color);
 		p_theme->set_color("drop_mark_color", "TabContainer", tab_highlight);
-		p_theme->set_color("drop_mark_color", "TabBar", tab_highlight);
 
 		p_theme->set_icon("menu", "TabContainer", p_theme->get_icon(SNAME("GuiTabMenu"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("menu_highlight", "TabContainer", p_theme->get_icon(SNAME("GuiTabMenuHl"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("close", "TabBar", p_theme->get_icon(SNAME("GuiClose"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("increment", "TabContainer", p_theme->get_icon(SNAME("GuiScrollArrowRight"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("decrement", "TabContainer", p_theme->get_icon(SNAME("GuiScrollArrowLeft"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("increment", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowRight"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("decrement", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowLeft"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("increment_highlight", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowRightHl"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("decrement_highlight", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowLeftHl"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("increment_highlight", "TabContainer", p_theme->get_icon(SNAME("GuiScrollArrowRightHl"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("decrement_highlight", "TabContainer", p_theme->get_icon(SNAME("GuiScrollArrowLeftHl"), EditorStringName(EditorIcons)));
 		p_theme->set_icon("drop_mark", "TabContainer", p_theme->get_icon(SNAME("GuiTabDropMark"), EditorStringName(EditorIcons)));
-		p_theme->set_icon("drop_mark", "TabBar", p_theme->get_icon(SNAME("GuiTabDropMark"), EditorStringName(EditorIcons)));
 
 		p_theme->set_constant("side_margin", "TabContainer", 0);
 		p_theme->set_constant("outline_size", "TabContainer", 0);
-		p_theme->set_constant("h_separation", "TabBar", 4 * EDSCALE);
-		p_theme->set_constant("outline_size", "TabBar", 0);
+
+		// TabBar
+		{
+			Ref<StyleBoxFlat> style_tabbar_base = style_tab_base->duplicate();
+			style_tabbar_base->set_border_width_all(0);
+			style_tabbar_base->set_corner_radius_all(p_config.corner_radius);
+
+			Ref<StyleBoxFlat> style_tabbar_selected = style_tabbar_base->duplicate();
+			style_tabbar_selected->set_bg_color(p_config.base_color);
+
+			Ref<StyleBoxFlat> style_tabbar_hovered = style_tabbar_base->duplicate();
+			style_tabbar_hovered->set_bg_color(p_config.dark_color_1.lerp(p_config.base_color, 0.4));
+
+			Ref<StyleBoxFlat> style_tabbar_unselected = style_tabbar_base->duplicate();
+			style_tabbar_unselected->set_expand_margin(SIDE_BOTTOM, 0);
+			style_tabbar_unselected->set_bg_color(p_config.dark_color_1);
+			style_tabbar_unselected->set_border_color(Color(0, 0, 0, 0));
+
+			Ref<StyleBoxFlat> style_tabbar_disabled = style_tabbar_base->duplicate();
+			style_tabbar_disabled->set_expand_margin(SIDE_BOTTOM, 0);
+			style_tabbar_disabled->set_bg_color(p_config.disabled_bg_color);
+			style_tabbar_disabled->set_border_color(p_config.disabled_bg_color);
+
+			p_theme->set_stylebox("tab_selected", "TabBar", style_tabbar_selected);
+			p_theme->set_stylebox("tab_hovered", "TabBar", style_tabbar_hovered);
+			p_theme->set_stylebox("tab_unselected", "TabBar", style_tabbar_unselected);
+			p_theme->set_stylebox("tab_disabled", "TabBar", style_tabbar_disabled);
+			p_theme->set_stylebox("tab_focus", "TabBar", style_tab_focus);
+			p_theme->set_stylebox("button_pressed", "TabBar", p_config.panel_container_style);
+			p_theme->set_stylebox("button_highlight", "TabBar", p_config.panel_container_style);
+
+			p_theme->set_color("font_selected_color", "TabBar", p_config.font_color);
+			p_theme->set_color("font_hovered_color", "TabBar", p_config.font_color);
+			p_theme->set_color("font_unselected_color", "TabBar", p_config.font_disabled_color);
+			p_theme->set_color("font_outline_color", "TabBar", p_config.font_outline_color);
+
+			p_theme->set_color("drop_mark_color", "TabBar", tab_highlight);
+
+			p_theme->set_icon("close", "TabBar", p_theme->get_icon(SNAME("GuiClose"), EditorStringName(EditorIcons)));
+			p_theme->set_icon("increment", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowRight"), EditorStringName(EditorIcons)));
+			p_theme->set_icon("decrement", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowLeft"), EditorStringName(EditorIcons)));
+			p_theme->set_icon("increment_highlight", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowRightHl"), EditorStringName(EditorIcons)));
+			p_theme->set_icon("decrement_highlight", "TabBar", p_theme->get_icon(SNAME("GuiScrollArrowLeftHl"), EditorStringName(EditorIcons)));
+			p_theme->set_icon("drop_mark", "TabBar", p_theme->get_icon(SNAME("GuiTabDropMark"), EditorStringName(EditorIcons)));
+		}
 	}
 
 	// Separators.
