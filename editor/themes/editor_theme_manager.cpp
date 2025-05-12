@@ -927,7 +927,7 @@ void EditorThemeManager::_populate_standard_styles(const Ref<EditorTheme> &p_the
 	// Tree & ItemList.
 	{
 		Ref<StyleBoxFlat> style_tree_focus = p_config.base_style->duplicate();
-		style_tree_focus->set_bg_color(p_config.highlight_color);
+		style_tree_focus->set_bg_color(p_config.Q);
 		style_tree_focus->set_border_width_all(0);
 
 		Ref<StyleBoxFlat> style_tree_selected = style_tree_focus->duplicate();
